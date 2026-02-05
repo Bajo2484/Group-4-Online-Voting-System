@@ -8,11 +8,16 @@ import { Router } from '@angular/router';
   styleUrl: './login.css'
 })
 export class LoginComponent {
+  username = 'admin';
+  password = 'admin123';
 
   constructor(private router: Router) {}
 
   login() {
+    if (this.username && this.password)
     this.router.navigate(['/dashboard']);
-  }
-
+  else {
+      alert('Enter username and password');
+    }
+}
 }
