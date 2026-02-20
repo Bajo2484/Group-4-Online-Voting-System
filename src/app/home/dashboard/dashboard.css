@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-=======
-/* Dashboard page content (inside the shared layout) */
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -23,11 +18,10 @@
 }
 
 .stat-card {
-<<<<<<< HEAD
   background: #78e478;
-=======
+
   background: #ffffff;
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
+
   border-radius: 16px;
   padding: 18px 18px 16px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);

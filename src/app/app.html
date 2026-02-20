@@ -1,10 +1,11 @@
 <ng-container *ngIf="isLoginRoute; else mainLayout">
+  <!-- Login page only -->
   <router-outlet></router-outlet>
 </ng-container>
 
 <ng-template #mainLayout>
-  <!-- Show admin layout when current user is admin; otherwise use student layout -->
-  <ng-container *ngIf="auth.isAdmin(); else studentLayout">
+  <!-- Admin Layout -->
+  <ng-container *ngIf="auth.isAdmin(); else elecomLayout">
     <div class="app-layout">
       <aside class="sidebar">
         <div class="logo-section">
@@ -13,36 +14,21 @@
           <p class="logo-subtitle">Online Voting System</p>
         </div>
 
-<nav class="nav-menu">
-  <ul class="menu">
-    <li
-      routerLink="/dashboard"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <span>Dashboard</span>
-    </li>
-    <li routerLink="/candidates" routerLinkActive="active">
-      <span>Candidates</span>
-    </li>
-    <li routerLink="/voters" routerLinkActive="active">
-      <span>Voters</span>
-    </li>
-    <li routerLink="/results" routerLinkActive="active">
-      <span>Results</span>
-    </li>
-    <li routerLink="/organizations" routerLinkActive="active">
-      <span>Organizations</span>
-    </li>
-    <li routerLink="/setting" routerLinkActive="active">
-      <span>Settings</span>
-    </li>
-  </ul>
-</nav>
+        <nav class="nav-menu">
+          <ul class="menu">
+            <li routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <span>Dashboard</span>
+            </li>
+            <li routerLink="/candidates" routerLinkActive="active"><span>Candidates</span></li>
+            <li routerLink="/voters" routerLinkActive="active"><span>Voters</span></li>
+            <li routerLink="/elecom" routerLinkActive="active"><span>Elecom</span></li>
+            <li routerLink="/elections" routerLinkActive="active"><span>Elections</span></li>
+            <li routerLink="/results" routerLinkActive="active"><span>Results</span></li>
+            <li routerLink="/setting" routerLinkActive="active"><span>Settings</span></li>
+          </ul>
+        </nav>
 
-<button class="logout" type="button" (click)="logout()">
-  Logout
-</button>
+        <button class="logout" type="button" (click)="logout()">Logout</button>
       </aside>
 
       <main class="content">
@@ -58,23 +44,99 @@
     </div>
   </ng-container>
 
-  <ng-template #studentLayout>
-    <div class="app-layout student-layout">
-      <main class="content">
-        <header class="content-header">
-          <h1 class="content-title">Student Voting Portal</h1>
-          <p class="content-subtitle">Cast your vote securely and anonymously.</p>
-        </header>
+  <!-- Elecom Layout -->
+  <ng-template #elecomLayout>
+    <ng-container *ngIf="auth.isElecom(); else studentLayout">
+      <div class="app-layout elecom-layout">
+        <aside class="sidebar">
+          <div class="logo-section">
+            <img src="/logo.jpg" alt="Application logo" />
+            <h2>Elecom Panel</h2>
+            <p class="logo-subtitle">Election Committee Portal</p>
+          </div>
 
-        <section class="content-body">
-          <!-- Students primarily access the elections page -->
+          <nav class="nav-menu">
+            <ul class="menu">
+              <li routerLink="/elecom-dashboard" routerLinkActive="active">
+                <span>Elecom Dashboard</span>
+              </li>
+
+              <li routerLink="/voters" routerLinkActive="active">
+                <span>Voters</span>
+              </li>
+
+              <li routerLink="/candidates" routerLinkActive="active">
+                <span>Candidates</span>
+              </li>
+
+
+              <li routerLink="/results" routerLinkActive="active">
+                <span>Results</span>
+              </li>
+
+              <li routerLink="/setting" routerLinkActive="active">
+                <span>Settings</span>
+              </li>
+            </ul>
+          </nav>
+
+          <button class="logout" type="button" (click)="logout()">Logout</button>
+        </aside>
+
+        <main class="content">
+          <header class="content-header">
+            <h1 class="content-title">Elecom Dashboard</h1>
+            <p class="content-subtitle">Manage voters, elections, and results.</p>
+          </header>
+
+          <section class="content-body">
+            <router-outlet></router-outlet>
+          </section>
+        </main>
+      </div>
+    </ng-container>
+
+    <!-- Student Layout -->
+    <ng-template #studentLayout>
+      <div class="app-layout student-layout">
+        <aside class="sidebar">
+          <div class="logo-section">
+            <img src="/logo.jpg" alt="Logo" />
+            <h2>E-Voting</h2>
+          </div>
+
+          <nav class="nav-menu">
+            <ul class="menu">
+              <li routerLink="/student-dashboard"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                <span>Dashboard</span>
+              </li>
+
+              <li routerLink="/student-result"
+                  routerLinkActive="active">
+                <span>Results</span>
+              </li>
+
+              <li routerLink="/student-profile"
+                  routerLinkActive="active">
+                <span>Profile</span>
+              </li>
+
+              <li routerLink="/student-apply-candidate"
+                  routerLinkActive="active">
+                <span>Apply Candidate</span>
+              </li>
+            </ul>
+          </nav>
+
+          <button class="logout" (click)="logout()">Logout</button>
+        </aside>
+
+        <main class="content">
           <router-outlet></router-outlet>
-        </section>
-
-        <button class="logout" type="button" (click)="logout()">
-          Logout
-        </button>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ng-template>
   </ng-template>
 </ng-template>

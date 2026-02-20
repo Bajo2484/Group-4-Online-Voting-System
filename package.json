@@ -30,10 +30,7 @@
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
     "rxjs": "~7.8.0",
-<<<<<<< HEAD
     "sweetalert2": "^11.26.18",
-=======
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -44,8 +41,4 @@
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a

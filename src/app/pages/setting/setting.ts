@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-<<<<<<< HEAD
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -13,21 +12,20 @@ import Swal from 'sweetalert2';
 })
 export class Settings {
 
-
+  // Admin profile fields
   adminName = 'Admin';
   adminEmail = 'admin@example.com';
   oldPassword = '';
   newPassword = '';
   confirmPassword = '';
 
-
+  // Preferences
   theme = 'light';
   language = 'English';
   notifications = true;
 
-
+  /** Update admin name and email */
   updateProfile() {
-
     if (!this.adminName || !this.adminEmail) {
       Swal.fire({
         icon: 'warning',
@@ -49,9 +47,8 @@ export class Settings {
     });
   }
 
-
+  /** Change admin password */
   changePassword() {
-
     if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
       Swal.fire({
         icon: 'warning',
@@ -79,14 +76,14 @@ export class Settings {
       confirmButtonColor: '#28a745'
     });
 
+    // Reset password fields
     this.oldPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';
   }
 
-
+  /** Save theme, language, and notification preferences */
   updatePreferences() {
-
     Swal.fire({
       icon: 'success',
       title: 'Preferences Saved!',
@@ -102,15 +99,4 @@ export class Settings {
       `Theme: ${this.theme}, Language: ${this.language}, Notifications: ${this.notifications}`
     );
   }
-=======
-
-@Component({
-  selector: 'app-setting',
-  imports: [],
-  templateUrl: './setting.html',
-  styleUrl: './setting.css',
-})
-export class Setting {
-
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
 }

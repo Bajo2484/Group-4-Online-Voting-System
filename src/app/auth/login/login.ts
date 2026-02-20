@@ -3,187 +3,115 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { StudentAccountService } from '../../services/student-account.service';
-<<<<<<< HEAD
 import { ElecomAccountService } from '../../services/elecom-account.service';
 import Swal from 'sweetalert2';
-=======
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
 
 @Component({
   selector: 'app-auth-login',
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login.html',
-<<<<<<< HEAD
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.css'], // fixed: styleUrls instead of styleUrl
 })
 export class LoginComponent {
-
-=======
-  styleUrl: './login.css'
-})
-export class LoginComponent {
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
   username = '';
   password = '';
 
   constructor(
     private readonly router: Router,
     private readonly auth: AuthService,
-<<<<<<< HEAD
     private readonly studentAccounts: StudentAccountService,
     private readonly elecomAccounts: ElecomAccountService
   ) {}
 
   async login() {
-
     const trimmedUsername = this.username.trim();
     const trimmedPassword = this.password.trim();
-
 
     if (!trimmedUsername || !trimmedPassword) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Information',
-        text: 'Please enter username and password'
+        text: 'Please enter username and password',
       });
       return;
     }
 
+    // Admin login
     if (trimmedUsername === 'admin') {
-
       if (trimmedPassword === 'admin123') {
-
         this.auth.setCurrentUser({ role: 'admin' });
-
         await Swal.fire({
           icon: 'success',
           title: 'Welcome Admin!',
           text: 'Login successful',
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
-
         this.router.navigate(['/dashboard']);
-
       } else {
         Swal.fire({
           icon: 'error',
           title: 'Invalid Password',
-          text: 'Incorrect admin password'
+          text: 'Incorrect admin password',
         });
       }
-
       return;
     }
 
+    // Student login
     const student = this.studentAccounts.findByCredentials(trimmedUsername, trimmedPassword);
-
     if (student) {
-
       if (student.hasVoted) {
         Swal.fire({
           icon: 'info',
           title: 'Vote Already Cast',
-          text: 'You have already voted. Thank you!'
+          text: 'You have already voted. Thank you!',
         });
         return;
       }
 
-      this.auth.setCurrentUser({
-        role: 'student',
-        studentId: student.id
-      });
-
+      this.auth.setCurrentUser({ role: 'student', studentId: student.id });
       await Swal.fire({
         icon: 'success',
         title: 'Login Successful!',
         text: 'Welcome Student',
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-
       this.router.navigate(['/student-dashboard']);
       return;
     }
 
-
+    // Elecom login
     const elecom = this.elecomAccounts.findByCredentials(trimmedUsername, trimmedPassword);
-
     if (elecom) {
-
       if (!elecom.isActive) {
         Swal.fire({
           icon: 'warning',
           title: 'Account Inactive',
-          text: 'This Elecom account is currently inactive.'
+          text: 'This Elecom account is currently inactive.',
         });
         return;
       }
 
-      this.auth.setCurrentUser({
-        role: 'elecom',
-        elecomUsername: elecom.username
-      });
-
+      this.auth.setCurrentUser({ role: 'elecom', elecomUsername: elecom.username });
       await Swal.fire({
         icon: 'success',
         title: 'Welcome Elecom!',
         text: 'Login successful',
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-
       this.router.navigate(['/elecom-dashboard']);
       return;
     }
 
+  
     Swal.fire({
       icon: 'error',
       title: 'Login Failed',
-      text: 'Invalid username or password'
+      text: 'Invalid username or password',
     });
   }
 }
-=======
-    private readonly studentAccounts: StudentAccountService
-  ) {}
-
-  login() {
-    const trimmedUsername = this.username.trim();
-    const trimmedPassword = this.password.trim();
-
-    if (!trimmedUsername || !trimmedPassword) {
-      alert('Enter username and password');
-      return;
-    }
-
-    // Admin login (fixed credentials)
-    if (trimmedUsername === 'admin') {
-      if (trimmedPassword === 'admin123') {
-        this.auth.setCurrentUser({ role: 'admin' });
-        this.router.navigate(['/dashboard']);
-      } else {
-        alert('Invalid admin password');
-      }
-      return;
-    }
-
-    // Student login using accounts created by the admin
-    const student = this.studentAccounts.findByCredentials(trimmedUsername, trimmedPassword);
-
-    if (!student) {
-      alert('Invalid student ID or password');
-      return;
-    }
-
-    if (student.hasVoted) {
-      alert('You have already cast your vote. Thank you!');
-      return;
-    }
-
-    this.auth.setCurrentUser({ role: 'student', studentId: student.id });
-    this.router.navigate(['/elections']);
-  }
-}
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a

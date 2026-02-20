@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-elecom-dashboard',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './elecom-dashboard.html',
-  styleUrl: './elecom-dashboard.css'
+  styleUrls: ['./elecom-dashboard.css']
 })
 export class ElecomDashboardComponent {
-
   totalStudents = 0;
   totalCandidates = 0;
   overallParticipation = 0;

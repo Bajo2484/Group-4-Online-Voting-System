@@ -1,32 +1,21 @@
 <div class="page">
-
-<<<<<<< HEAD
-
   <div class="header">
     <div>
       <h2>Candidate Registration</h2>
       <p>Register candidates and approve them for elections</p>
     </div>
-
-    <button class="btn-add" (click)="openModal()">
-      + Add Candidate
-    </button>
+    <button class="btn-add" (click)="openModal()">+ Add Candidate</button>
   </div>
-
-
 
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-card">
-
       <div class="modal-header">
         <h3>{{ isEditMode ? 'Edit Candidate' : 'Register Candidate' }}</h3>
         <button class="close-btn" (click)="closeModal()">×</button>
       </div>
 
-  
       <form (ngSubmit)="registerCandidate()" class="form-grid">
 
- 
         <div class="form-group">
           <label>Full Name</label>
           <input type="text"
@@ -36,7 +25,6 @@
                  required>
         </div>
 
-    
         <div class="form-group">
           <label>Organization</label>
           <select [(ngModel)]="course"
@@ -44,26 +32,20 @@
                   (change)="onCourseChange()"
                   required>
             <option value="" disabled hidden>Select organization</option>
-            <option *ngFor="let c of courses" [value]="c">
-              {{ c }}
-            </option>
+            <option *ngFor="let c of courses" [value]="c">{{ c }}</option>
           </select>
         </div>
 
-       
         <div class="form-group">
           <label>Position</label>
           <select [(ngModel)]="position"
                   name="position"
                   required>
             <option value="" disabled hidden>Select position</option>
-            <option *ngFor="let p of positions" [value]="p">
-              {{ p }}
-            </option>
+            <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
           </select>
         </div>
 
-      
         <div class="form-group">
           <label>Party / Team</label>
           <input type="text"
@@ -72,7 +54,6 @@
                  name="partyName">
         </div>
 
-     
         <div class="form-group">
           <label>Platform / Goals</label>
           <textarea placeholder="Enter platform"
@@ -83,28 +64,18 @@
           <small>{{ platform.length || 0 }}/500 characters</small>
         </div>
 
-    
         <div class="form-group">
           <label>Upload Photo</label>
           <input type="file" (change)="onPhotoSelected($event)">
           <small>JPG or PNG format. Max file size: 2MB</small>
-
           <div *ngIf="photoPreview" class="photo-preview">
             <img [src]="photoPreview" alt="Preview">
           </div>
         </div>
 
-        <!-- ACTION BUTTONS -->
         <div class="modal-actions">
-          <button type="button"
-                  class="btn-cancel"
-                  (click)="closeModal()">
-            Cancel
-          </button>
-
-          <button type="submit"
-                  class="btn-save"
-                  [disabled]="!fullName || !position || !course">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="!fullName || !position || !course">
             {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
           </button>
         </div>
@@ -113,183 +84,41 @@
     </div>
   </div>
 
-
-
-=======
-  <!-- HEADER -->
-  <div class="header">
-    <h2>Candidate Registration</h2>
-    <p>Register candidate and approve them for elections</p>
-  </div>
-
-  <!-- FORM CARD -->
-  <div class="card">
-    <form (ngSubmit)="registerCandidate()" class="form-grid">
-
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text"
-               placeholder="Enter candidate full name"
-               [(ngModel)]="fullName"
-               name="fullName"
-               required>
-      </div>
-
-      <!-- ORGANIZATION -->
-      <div class="form-group">
-        <label>Organization</label>
-        <select [(ngModel)]="course"
-                name="course"
-                (change)="onCourseChange()"
-                required>
-          <option value="" disabled selected hidden>Select organization</option>
-          <option *ngFor="let c of courses" [value]="c">
-            {{ c }}
-          </option>
-        </select>
-      </div>
-
-      <!-- POSITION (DYNAMIC) -->
-      <div class="form-group">
-        <label>Position</label>
-        <select [(ngModel)]="position"
-                name="position"
-                required>
-          <option value="" disabled selected hidden>Select position</option>
-          <option *ngFor="let p of positions" [value]="p">
-            {{ p }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Party / Team</label>
-        <input type="text"
-               placeholder="Enter party or team"
-               [(ngModel)]="party"
-               name="party">
-      </div>
-
-      <div class="form-group">
-        <label>Upload Photo</label>
-        <input type="file">
-        <small>JPG or PNG format. Max file size: 2MB</small>
-      </div>
-
-      <div class="btn-area">
-        <button type="submit"
-                [disabled]="!fullName || !position || !course">
-          {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
-        </button>
-      </div>
-
-    </form>
-  </div>
-
-  <!-- TABLE CARD -->
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
   <div class="card">
     <h3>Candidate List</h3>
-
     <table>
       <thead>
         <tr>
           <th>Full Name</th>
           <th>Position</th>
           <th>Organization</th>
-<<<<<<< HEAD
           <th>Party</th>
           <th>Platform</th>
-=======
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
           <th>Status</th>
           <th>Action</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let c of candidateService.candidates$ | async">
-<<<<<<< HEAD
-
           <td>{{ c.fullName }}</td>
           <td>{{ c.position }}</td>
           <td>{{ c.organization }}</td>
           <td>{{ c.partyName }}</td>
           <td>{{ c.platform }}</td>
-
-   
+          <td><span [ngClass]="c.status">{{ c.status }}</span></td>
           <td>
-            <span [ngClass]="c.status">
-              {{ c.status }}
-            </span>
+            <button *ngIf="c.status === 'pending'" (click)="candidateService.approveCandidate(c.id)">Approve</button>
+            <button *ngIf="c.status === 'pending'" (click)="candidateService.rejectCandidate(c.id)">Reject</button>
+            <button (click)="editCandidate(c)">Edit</button>
+            <button (click)="deleteCandidate(c.id)">Delete</button>
           </td>
-
-
-          <td>
-
-       
-            <button *ngIf="c.status === 'pending'"
-=======
-          <td>{{ c.fullName }}</td>
-          <td>{{ c.position }}</td>
-          <td>{{ c.organization }}</td>
-          <td>
-            <span [ngClass]="c.status">{{ c.status }}</span>
-          </td>
-          <td>
-
-            <button class="approve"
-                    *ngIf="c.status === 'pending'"
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
-                    (click)="candidateService.approveCandidate(c.id)">
-              Approve
-            </button>
-
-<<<<<<< HEAD
-            <button *ngIf="c.status === 'pending'"
-=======
-            <button class="reject"
-                    *ngIf="c.status === 'pending'"
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
-                    (click)="candidateService.rejectCandidate(c.id)">
-              Reject
-            </button>
-
-<<<<<<< HEAD
-            
-=======
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
-            <button (click)="editCandidate(c)">
-              Edit
-            </button>
-
-<<<<<<< HEAD
-        
-            <button (click)="deleteCandidate(c.id)">
-=======
-            <button class="reject"
-                    (click)="deleteCandidate(c.id)">
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
-              Delete
-            </button>
-
-          </td>
-<<<<<<< HEAD
-
         </tr>
-
-
         <tr *ngIf="(candidateService.candidates$ | async)?.length === 0">
           <td colspan="7" style="text-align:center; padding:20px; color:#888;">
             No candidates registered yet.
           </td>
         </tr>
-
-=======
-        </tr>
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
       </tbody>
     </table>
   </div>
-
 </div>

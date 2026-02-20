@@ -1,236 +1,83 @@
-<<<<<<< HEAD
-<div class="voters-container">
-  <div class="page-header">
-    <div>
-      <h2>Students</h2>
-      <p>Manage student accounts</p>
-    </div>
-    <button class="btn-add" (click)="openModal()">+ Add Student</button>
+<div class="page">
+
+  <div class="header">
+    <h2>Voters Management</h2>
+    <button class="btn-add" (click)="openModal()">Add Voter</button>
   </div>
 
-  <table *ngIf="students.length > 0">
+  <table class="table">
     <thead>
       <tr>
-        <th>ID/Username</th>
-        <th>Full Name</th>
-        <th>Gender</th>
-        <th>Year Level</th>
-        <th>Section</th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Program</th>
+        <th>Year</th>
         <th>Status</th>
-        <th>Email</th>
-        <th>Mobile</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let s of students">
-        <td>{{ s.id }}</td>
-        <td>{{ s.firstName }} {{ s.middleName }} {{ s.lastName }}</td>
-        <td>{{ s.gender }}</td>
-        <td>{{ s.yearLevel }}</td>
-        <td>{{ s.section }}</td>
-        <td>{{ s.status }}</td>
-        <td>{{ s.email }}</td>
-        <td>{{ s.mobile }}</td>
+      <tr *ngFor="let student of students">
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.course }}</td>
+        <td>{{ student.yearLevel }}</td>
+        <td>{{ student.status }}</td>
         <td>
-  <button class="edit-btn" (click)="editStudent(s)">Edit</button>
-  <button class="delete-btn" (click)="deleteStudent(s.id)">Delete</button>
-</td>
-
+          <button (click)="editStudent(student)">Edit</button>
+          <button (click)="deleteStudent(student.id)">Delete</button>
+        </td>
       </tr>
     </tbody>
   </table>
 
-  <div class="empty-state" *ngIf="students.length === 0">
-    No students registered.
-  </div>
-</div>
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Edit Voter' : 'Add Voter' }}</h3>
 
-<!-- Modal -->
-<div class="modal-backdrop" *ngIf="showModal">
-  <div class="modal">
-    <h3>{{ isEditMode ? 'Edit Student' : 'Register Student' }}</h3>
+      <form (ngSubmit)="saveStudent()" class="form-grid">
 
-    <input type="text" placeholder="Student ID / Username" [(ngModel)]="newStudent.id">
-    <input type="text" placeholder="First Name" [(ngModel)]="newStudent.firstName">
-    <input type="text" placeholder="Middle Name (optional)" [(ngModel)]="newStudent.middleName">
-    <input type="text" placeholder="Last Name" [(ngModel)]="newStudent.lastName">
+        <input type="text" [(ngModel)]="newStudent.id" name="id" placeholder="Student ID" required />
+        <input type="password" [(ngModel)]="newStudent.password" name="password" placeholder="Password" required />
 
-    <select [(ngModel)]="newStudent.gender">
-      <option value="" disabled>Select Gender</option>
-      <option>Male</option>
-      <option>Female</option>
-      <option>Other</option>
-    </select>
+        <input type="text" [(ngModel)]="newStudent.firstName" name="firstName" placeholder="First Name" required />
+        <input type="text" [(ngModel)]="newStudent.middleName" name="middleName" placeholder="Middle Name" />
+        <input type="text" [(ngModel)]="newStudent.lastName" name="lastName" placeholder="Last Name" required />
 
-    <select [(ngModel)]="newStudent.yearLevel">
-      <option value="" disabled>Select Year Level</option>
-      <option>1st Year</option>
-      <option>2nd Year</option>
-      <option>3rd Year</option>
-      <option>4th Year</option>
-    </select>
+        <select [(ngModel)]="newStudent.gender" name="gender" required>
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
 
-    <input type="text" placeholder="Block/Section" [(ngModel)]="newStudent.section">
+        <select [(ngModel)]="newStudent.course" name="course" required>
+          <option value="">Select Program</option>
+          <option *ngFor="let p of programs">{{ p }}</option>
+        </select>
 
-    <select [(ngModel)]="newStudent.status">
-      <option>Undergraduate</option>
-      <option>Graduate</option>
-    </select>
+        <select [(ngModel)]="newStudent.yearLevel" name="yearLevel" required>
+          <option value="">Select Year Level</option>
+          <option *ngFor="let y of yearLevels">{{ y }}</option>
+        </select>
 
-    <input type="email" placeholder="Email" [(ngModel)]="newStudent.email">
-    <input type="text" placeholder="Mobile" [(ngModel)]="newStudent.mobile">
-    <input type="password" placeholder="Password" [(ngModel)]="newStudent.password">
+        <select [(ngModel)]="newStudent.status" name="status" required>
+          <option value="">Select Status</option>
+          <option *ngFor="let s of statuses">{{ s }}</option>
+        </select>
 
-    
+        <input type="text" [(ngModel)]="newStudent.section" name="section" placeholder="Section" required />
+        <input type="email" [(ngModel)]="newStudent.email" name="email" placeholder="Email" required />
+        <input type="text" [(ngModel)]="newStudent.mobile" name="mobile" placeholder="Mobile Number" required />
 
+        <div class="modal-actions">
+          <button type="submit">
+            {{ isEditMode ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" (click)="closeModal()">Cancel</button>
+        </div>
 
-    <div class="modal-actions">
-      <button (click)="closeModal()" class="btn-cancel">Cancel</button>
-      <button (click)="saveStudent()" class="btn-save">{{ isEditMode ? 'Update' : 'Save' }}</button>
+      </form>
     </div>
   </div>
-=======
-<div class="voters-page">
-  <h2 class="page-title">Voters</h2>
 
-  <section class="voters-layout">
-    <article class="voter-form-card">
-      <h3>Create Student Account</h3>
-      <p class="form-description">
-        Add student accounts here. Students will use their <strong>Student ID</strong> and
-        <strong>Password</strong> to log in and vote.
-      </p>
-
-      <form (ngSubmit)="addStudent()" class="voter-form">
-        <div class="form-row">
-          <label>
-            Student ID
-            <input
-              type="text"
-              [(ngModel)]="newStudent.id"
-              name="id"
-              required
-              placeholder="e.g. 2024-00123"
-            />
-          </label>
-        </div>
-
-        <div class="form-row">
-          <label>
-            Full Name
-            <input
-              type="text"
-              [(ngModel)]="newStudent.name"
-              name="name"
-              required
-              placeholder="e.g. Juan Dela Cruz"
-            />
-          </label>
-        </div>
-
-        <div class="form-grid">
-          <label>
-            Course / Program
-            <input
-              type="text"
-              [(ngModel)]="newStudent.course"
-              name="course"
-              placeholder="e.g. BSIT"
-            />
-          </label>
-
-          <label>
-            Year Level
-            <input
-              type="text"
-              [(ngModel)]="newStudent.yearLevel"
-              name="yearLevel"
-              placeholder="e.g. 2nd Year"
-            />
-          </label>
-
-          <label>
-            Section
-            <input
-              type="text"
-              [(ngModel)]="newStudent.section"
-              name="section"
-              placeholder="e.g. A"
-            />
-          </label>
-        </div>
-
-        <div class="form-row">
-          <label>
-            Password
-            <input
-              type="password"
-              [(ngModel)]="newStudent.password"
-              name="password"
-              required
-              placeholder="Temporary password"
-            />
-          </label>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit">Save Account</button>
-        </div>
-
-        <p *ngIf="errorMessage" class="message error">
-          {{ errorMessage }}
-        </p>
-        <p *ngIf="successMessage" class="message success">
-          {{ successMessage }}
-        </p>
-      </form>
-    </article>
-
-    <article class="voter-list-card">
-      <h3>Registered Students</h3>
-
-      <p *ngIf="!students.length" class="empty-state">
-        No student accounts yet. Start by adding a new student on the left.
-      </p>
-
-      <div *ngIf="students.length" class="table-wrapper">
-        <table class="voters-table">
-          <thead>
-            <tr>
-              <th>Student ID</th>
-              <th>Name</th>
-              <th>Course</th>
-              <th>Year</th>
-              <th>Section</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let student of students">
-              <td>{{ student.id }}</td>
-              <td>{{ student.name }}</td>
-              <td>{{ student.course || '—' }}</td>
-              <td>{{ student.yearLevel || '—' }}</td>
-              <td>{{ student.section || '—' }}</td>
-              <td>
-                <span
-                  class="status-pill"
-                  [class.voted]="student.hasVoted"
-                  [class.not-voted]="!student.hasVoted"
-                >
-                  {{ student.hasVoted ? 'Voted' : 'Not yet voted' }}
-                </span>
-              </td>
-              <td class="actions">
-                <button type="button" (click)="deleteStudent(student.id)">Remove</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </article>
-  </section>
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
 </div>

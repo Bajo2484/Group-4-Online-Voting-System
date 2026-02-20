@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-<<<<<<< HEAD
 
 // Auth
 import { LoginComponent } from './auth/login/login';
@@ -7,67 +6,48 @@ import { LoginComponent } from './auth/login/login';
 // Admin
 import { DashboardComponent } from './home/dashboard/dashboard';
 import { CandidatesComponent } from './pages/candidates/candidates';
-import { VotersComponent } from './pages/voters/voters';
+import { Voters } from './pages/voters/voters';
 import { ElectionComponent } from './pages/elections/elections';
 import { Results } from './pages/results/results';
 import { ElecomComponent } from './pages/elecom/elecom';
 import { Settings } from './pages/setting/setting';
 
-
 // Elecom
 import { ElecomDashboardComponent } from './elecom-portal/elecom-dashboard/elecom-dashboard';
-import { ElecomSettings } from './elecom-portal/elecom-settings/elecom-settings';
 
 // Student
 import { StudentDashboardComponent } from './student-portal/student-dashboard/student-dashboard';
 import { StudentResult } from './student-portal/student-result/student-result';
-import { StudentProfileComponent} from './student-portal/student-profile/student-profile';
+import { StudentProfileComponent } from './student-portal/student-profile/student-profile';
 import { StudentApplyCandidateComponent } from './student-portal/student-apply-candidate/student-apply-candidate';
 
 export const routes: Routes = [
   // Login
   { path: '', component: LoginComponent },
 
-  // Admin
+  // Admin Routes
   { path: 'dashboard', component: DashboardComponent },
   { path: 'candidates', component: CandidatesComponent },
-  { path: 'voters', component: VotersComponent },
+  { path: 'voters', component: Voters },
   { path: 'elections', component: ElectionComponent },
   { path: 'results', component: Results },
-  { path: 'elecom', component: ElecomComponent },
   { path: 'setting', component: Settings },
 
-  // Elecom
-  { path: 'elecom-dashboard', component: ElecomDashboardComponent },
-  { path: 'elecom-settings', component: ElecomSettings },
+  // Elecom Routes
+  { path: 'elecom', component: ElecomComponent }, // Main Elecom page
+  { path: 'elecom-dashboard', component: ElecomDashboardComponent }, // Elecom dashboard
+  { path: 'elecom-voters', component: Voters }, // Optional: Elecom access voters
+  { path: 'elecom-candidates', component: CandidatesComponent }, // Optional: Elecom access candidates
+  { path: 'elecom-elections', component: ElectionComponent }, // Optional: Elecom access elections
+  { path: 'elecom-results', component: Results }, // Optional: Elecom access results
+  { path: 'elecom-setting', component: Settings }, 
 
-  // Student
+  // Student Routes
   { path: 'student-dashboard', component: StudentDashboardComponent },
   { path: 'student-result', component: StudentResult },
   { path: 'student-profile', component: StudentProfileComponent },
-  { path: 'student-apply-candidate', component: StudentApplyCandidateComponent},
+  { path: 'student-apply-candidate', component: StudentApplyCandidateComponent },
 
-
+  // Wildcard
   { path: '**', redirectTo: '' }
 ];
-=======
-import { LoginComponent } from './auth/login/login';
-import { DashboardComponent } from './home/dashboard/dashboard';
-import { CandidatesComponent } from './pages/candidates/candidates';
-import { Voters} from './pages/voters/voters';
-import { Elections} from './pages/elections/elections';
-import { Results } from './pages/results/results';
-import { Organizations } from './pages/organizations/organizations';
-import { Setting } from './pages/setting/setting';
-
-export const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'candidates', component: CandidatesComponent },
-  { path: 'voters', component: Voters},
-  { path: 'elections', component:Elections},
-  { path: 'results', component: Results },
-  { path: 'organizations', component: Organizations },
-  { path: 'setting', component: Setting },
-];
->>>>>>> 8ccb40de7f1159cb0de74a78380d18a8ca31a88a
