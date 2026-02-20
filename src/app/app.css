@@ -1,0 +1,360 @@
+/* Overall app layout */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f3f4f6;
+  color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #1f3b57;
+  color: #f9fafb;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(15, 23, 42, 0.3);
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo-section img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  margin-bottom: 10px;
+  background-color: #f9fafb;
+}
+
+.logo-section h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.logo-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #cbd5f5;
+}
+
+.nav-menu {
+  flex: 1;
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.25));
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.menu li span {
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+.menu li:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(129, 140, 248, 0.45));
+  border-color: rgba(129, 140, 248, 0.8);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.45);
+  transform: translateX(3px);
+}
+
+.menu li.active {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #f9fafb;
+  border-color: transparent;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.5);
+}
+
+.menu li.active span {
+  font-weight: 600;
+}
+
+.logout {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #111827, #020617);
+  color: #e5e7eb;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    background-color 0.15s ease,
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+
+.logout:hover {
+  background: linear-gradient(135deg, #1e293b, #020617);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.45);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* Main content area */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, #e0f2fe, #f9fafb 45%, #e5e7eb 100%);
+}
+
+.content-header {
+  padding: 20px 28px;
+  background: rgba(249, 250, 251, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(209, 213, 219, 0.8);
+}
+
+.content-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.content-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.content-body {
+  padding: 24px 28px 32px;
+}
+
+/* ===== Student Layout ===== */
+.student-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #eef1f6; /* clean light gray */
+}
+
+/* ===== Main Content Wrapper ===== */
+.student-layout .content {
+  flex: 1;
+  max-width: 1500px;
+  margin: 40px auto;
+  background: #fffdfd;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ===== Header Section ===== */
+.student-layout .content-header {
+  padding: 26px 30px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.student-layout .content-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.student-layout .content-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* ===== Body Section ===== */
+.student-layout .content-body {
+  padding: 26px 30px 30px;
+}
+
+/* ===== Section Title ===== */
+.student-layout .section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+/* ===== Election Cards ===== */
+.student-layout .election-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.student-layout .election-card {
+  flex: 1;
+  min-width: 260px;
+  background: hsl(210, 20%, 98%);
+  padding: 18px 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.student-layout .election-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Status Badge ===== */
+.student-layout .status {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.student-layout .status.voted {
+  background: #22c55e;
+  color: white;
+}
+
+.student-layout .status.not-voted {
+  background: #ef4444;
+  color: white;
+}
+
+/* ===== Buttons ===== */
+.student-layout .btn-primary {
+  background: #1f3c88;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.student-layout .btn-secondary {
+  background: #334155;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.student-layout .btn-primary:hover,
+.student-layout .btn-secondary:hover {
+  opacity: 0.9;
+}
+
+/* ===== Progress Box ===== */
+.student-layout .progress-box {
+  margin-top: 30px;
+  padding: 18px 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.student-layout .progress-bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.student-layout .progress-fill {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+/* ===== Logout ===== */
+.student-layout .logout {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Basic responsiveness */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+  }
+
+  .logo-section img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .nav-menu {
+    flex: 1;
+    margin: 0 12px;
+  }
+
+  .menu {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .menu li {
+    white-space: nowrap;
+    margin-right: 8px;
+  }
+
+  .logout {
+    margin-top: 0;
+  }
+}

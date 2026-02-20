@@ -1,0 +1,40 @@
+<div class="login-page">
+  <div class="card">
+
+    <div class="logo-circle">
+      <img src="/logo.jpg" alt="logo">
+    </div>
+
+    <h1>E-Voting</h1>
+    <p class="subtitle">Online Voting System</p>
+
+    <h3>Login to Your Account</h3>
+    <p class="hint">Please enter your credentials to continue.</p>
+
+    <form (ngSubmit)="login()">
+      <input
+        type="text"
+        placeholder="Username / Student ID"
+        [(ngModel)]="username"
+        name="username"
+      />
+
+      <div class="password-field">
+        <input
+          type="password"
+          placeholder="Password"
+          [(ngModel)]="password"
+          name="password"
+        />
+        <span class="eye"></span>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="links">
+      <a>Forgot Password?</a>
+    </div>
+
+  </div>
+</div>

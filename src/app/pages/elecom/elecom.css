@@ -1,0 +1,126 @@
+* {
+  box-sizing: border-box;
+}
+
+
+.elecom-page {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.elecom-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+
+.elecom-form-card {
+  flex: 1 1 300px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.elecom-form-card h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.elecom-form-card .form-row,
+.elecom-form-card .form-grid {
+  margin-bottom: 15px;
+}
+
+.elecom-form-card input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.elecom-form-card button {
+  background-color: #1e90ff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.elecom-form-card button:hover {
+  background-color: #0073e6;
+}
+
+.message.success {
+  color: green;
+  margin-top: 10px;
+}
+
+.message.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.elecom-list-card {
+  flex: 2 1 600px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.elecom-list-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.elecom-list-card th,
+.elecom-list-card td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.elecom-list-card th {
+  background-color: #f0f0f0;
+}
+
+.elecom-list-card td .status-pill {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  color: white;
+}
+
+.status-pill.active {
+  background-color: #28a745;
+}
+
+.status-pill.inactive {
+  background-color: #dc3545;
+}
+
+.elecom-list-card td .actions button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.elecom-list-card td .actions button:hover {
+  background: #e60000;
+}
+
+
+@media screen and (max-width: 900px) {
+  .elecom-layout {
+    flex-direction: column;
+  }
+}

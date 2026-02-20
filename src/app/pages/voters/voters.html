@@ -1,0 +1,92 @@
+<div class="voters-container">
+  <div class="page-header">
+    <div>
+      <h2>Students</h2>
+      <p>Manage student accounts</p>
+    </div>
+    <button class="btn-add" (click)="openModal()">+ Add Student</button>
+  </div>
+
+  <table *ngIf="students.length > 0">
+    <thead>
+      <tr>
+        <th>ID/Username</th>
+        <th>Full Name</th>
+        <th>Gender</th>
+        <th>Year Level</th>
+        <th>Section</th>
+        <th>Status</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of students">
+        <td>{{ s.id }}</td>
+        <td>{{ s.firstName }} {{ s.middleName }} {{ s.lastName }}</td>
+        <td>{{ s.gender }}</td>
+        <td>{{ s.yearLevel }}</td>
+        <td>{{ s.section }}</td>
+        <td>{{ s.status }}</td>
+        <td>{{ s.email }}</td>
+        <td>{{ s.mobile }}</td>
+        <td>
+  <button class="edit-btn" (click)="editStudent(s)">Edit</button>
+  <button class="delete-btn" (click)="deleteStudent(s.id)">Delete</button>
+</td>
+
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state" *ngIf="students.length === 0">
+    No students registered.
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="showModal">
+  <div class="modal">
+    <h3>{{ isEditMode ? 'Edit Student' : 'Register Student' }}</h3>
+
+    <input type="text" placeholder="Student ID / Username" [(ngModel)]="newStudent.id">
+    <input type="text" placeholder="First Name" [(ngModel)]="newStudent.firstName">
+    <input type="text" placeholder="Middle Name (optional)" [(ngModel)]="newStudent.middleName">
+    <input type="text" placeholder="Last Name" [(ngModel)]="newStudent.lastName">
+
+    <select [(ngModel)]="newStudent.gender">
+      <option value="" disabled>Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+
+    <select [(ngModel)]="newStudent.yearLevel">
+      <option value="" disabled>Select Year Level</option>
+      <option>1st Year</option>
+      <option>2nd Year</option>
+      <option>3rd Year</option>
+      <option>4th Year</option>
+    </select>
+
+    <input type="text" placeholder="Block/Section" [(ngModel)]="newStudent.section">
+
+    <select [(ngModel)]="newStudent.status">
+      <option>Undergraduate</option>
+      <option>Graduate</option>
+    </select>
+
+    <input type="email" placeholder="Email" [(ngModel)]="newStudent.email">
+    <input type="text" placeholder="Mobile" [(ngModel)]="newStudent.mobile">
+    <input type="password" placeholder="Password" [(ngModel)]="newStudent.password">
+
+    
+
+
+    <div class="modal-actions">
+      <button (click)="closeModal()" class="btn-cancel">Cancel</button>
+      <button (click)="saveStudent()" class="btn-save">{{ isEditMode ? 'Update' : 'Save' }}</button>
+    </div>
+  </div>
+</div>

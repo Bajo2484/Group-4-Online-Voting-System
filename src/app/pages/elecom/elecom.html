@@ -1,0 +1,120 @@
+<div class="elecom-page">
+  <h2 class="page-title">Elecom Members</h2>
+
+  <section class="elecom-layout">
+ 
+    <article class="elecom-form-card">
+      <h3>Create Elecom Account</h3>
+      <p class="form-description">
+        Add Elecom accounts here. Members will use their <strong>Username</strong> and
+        <strong>Password</strong> to log in.
+      </p>
+
+      <form (ngSubmit)="addElecom()" class="elecom-form">
+        <div class="form-row">
+          <label>
+            Username
+            <input
+              type="text"
+              [(ngModel)]="newElecom.username"
+              name="username"
+              required
+              placeholder="e.g JuwanaCutie@gamil.com"
+            />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Full Name
+            <input
+              type="text"
+              [(ngModel)]="newElecom.name"
+              name="name"
+              required
+              placeholder="e.g. Joana Galceran"
+            />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Email
+            <input
+              type="email"
+              [(ngModel)]="newElecom.email"
+              name="email"
+              required
+              placeholder="e.g. joanacutie@email.com"
+            />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Password
+            <input
+              type="password"
+              [(ngModel)]="newElecom.password"
+              name="password"
+              required
+              placeholder="Temporary password"
+            />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit">Save Account</button>
+        </div>
+
+        <p *ngIf="errorMessage" class="message error">
+          {{ errorMessage }}
+        </p>
+        <p *ngIf="successMessage" class="message success">
+          {{ successMessage }}
+        </p>
+      </form>
+    </article>
+
+    <article class="elecom-list-card">
+      <h3>Registered Elecom Members</h3>
+
+      <p *ngIf="!elecoms.length" class="empty-state">
+        No Elecom accounts yet. Start by adding a new member on the left.
+      </p>
+
+      <div *ngIf="elecoms.length" class="table-wrapper">
+        <table class="elecom-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let elecom of elecoms">
+              <td>{{ elecom.username }}</td>
+              <td>{{ elecom.name }}</td>
+              <td>{{ elecom.email }}</td>
+              <td>
+                <span
+                  class="status-pill"
+                  [class.active]="elecom.isActive"
+                  [class.inactive]="!elecom.isActive"
+                >
+                  {{ elecom.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button type="button" (click)="deleteElecom(elecom.username)">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</div>

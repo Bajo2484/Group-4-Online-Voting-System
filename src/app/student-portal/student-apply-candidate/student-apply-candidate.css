@@ -1,0 +1,169 @@
+
+.page {
+  padding: 30px;
+  background: #f4f6f9;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.apply-candidate-container {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+
+.header h2 {
+  font-size: 26px;
+  margin-bottom: 5px;
+  color: #1a202c;
+}
+
+.header p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+
+.form-grid {
+  display: grid;
+  gap: 15px;
+}
+
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #2d3748;
+}
+
+input,
+select,
+textarea {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  background: white;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 2px rgba(47, 128, 237, 0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+
+small {
+  font-size: 12px;
+  color: #888;
+  margin-top: 3px;
+}
+
+
+.photo-preview {
+  margin-top: 10px;
+}
+
+.photo-preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-area {
+  text-align: right;
+  margin-top: 10px;
+}
+
+button[type="submit"] {
+  background: #2f80ed;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+button[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  background: #b0c7f5;
+  cursor: not-allowed;
+}
+
+
+.confirmation {
+  margin-top: 20px;
+  padding: 12px 15px;
+  background-color: #38a16920;
+  border: 1px solid #38a169;
+  color: #2f855a;
+  border-radius: 6px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  border: 1px solid #2f80ed;
+  border-radius: 5px;
+  background: #0c7ff1;
+  cursor: pointer;
+}
+
+.selected {
+  padding: 10px;
+}
+
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #2f80ed;
+  border-top: none;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdown-list li {
+  padding: 10px;
+  list-style: none;
+  transition: 0.2s;
+}
+
+.dropdown-list li:hover {
+  background: #2f80ed;
+  color: white;
+}
+
+.dropdown-list li.active {
+  background: #28a745;
+  color: white;
+}

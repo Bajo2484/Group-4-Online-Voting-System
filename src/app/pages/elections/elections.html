@@ -1,0 +1,70 @@
+<div class="elections-container">
+
+  <div class="page-header">
+    <div>
+      <h2>Elections</h2>
+      <p>Manage elections</p>
+    </div>
+
+    <button class="btn-add" (click)="openModal()">
+      + Add Election
+    </button>
+  </div>
+
+  <table class="elections-table" *ngIf="electionService.elections().length > 0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>Start Time</th>
+        <th>End Date</th>
+        <th>End Time</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let election of electionService.elections()">
+        <td>{{ election.name }}</td>
+        <td>{{ election.startDate }}</td>
+        <td>{{ election.startTime }}</td>
+        <td>{{ election.endDate }}</td>
+        <td>{{ election.endTime }}</td>
+        <td>{{ election.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state" *ngIf="electionService.elections().length === 0">
+    No elections yet.
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="showModal">
+  <div class="modal">
+    <h3>Create Election</h3>
+
+    <input type="text"
+      placeholder="Election Name"
+      [(ngModel)]="newElection.name">
+
+    <input type="date"
+      [(ngModel)]="newElection.startDate">
+
+    <input type="time"
+      [(ngModel)]="newElection.startTime">
+
+    <input type="date"
+      [(ngModel)]="newElection.endDate">
+
+    <input type="time"
+      [(ngModel)]="newElection.endTime">
+
+    <div class="modal-actions">
+      <button (click)="closeModal()">Cancel</button>
+      <button (click)="saveElection()">Save</button>
+    </div>
+  </div>
+</div>
