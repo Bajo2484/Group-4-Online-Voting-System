@@ -4,6 +4,7 @@ export type UserRole = 'admin' | 'student' | 'elecom';
 
 export interface CurrentUser {
   role: UserRole;
+  name: string;
   studentId?: string;        // for student accounts
   elecomUsername?: string;   // for Elecom accounts
 }

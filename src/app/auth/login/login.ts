@@ -40,7 +40,10 @@ export class LoginComponent {
     // Admin login
     if (trimmedUsername === 'admin') {
       if (trimmedPassword === 'admin123') {
-        this.auth.setCurrentUser({ role: 'admin' });
+        this.auth.setCurrentUser({
+          role: 'admin',
+          name: ''
+        });
         await Swal.fire({
           icon: 'success',
           title: 'Welcome Admin!',
@@ -71,7 +74,10 @@ export class LoginComponent {
         return;
       }
 
-      this.auth.setCurrentUser({ role: 'student', studentId: student.id });
+      this.auth.setCurrentUser({
+        role: 'student', studentId: student.id,
+        name: ''
+      });
       await Swal.fire({
         icon: 'success',
         title: 'Login Successful!',
@@ -95,7 +101,10 @@ export class LoginComponent {
         return;
       }
 
-      this.auth.setCurrentUser({ role: 'elecom', elecomUsername: elecom.username });
+      this.auth.setCurrentUser({
+        role: 'elecom', elecomUsername: elecom.username,
+        name: ''
+      });
       await Swal.fire({
         icon: 'success',
         title: 'Welcome Elecom!',
