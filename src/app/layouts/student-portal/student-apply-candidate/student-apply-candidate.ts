@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CandidateService } from '../../services/candidate.service';
-import { Candidate } from '../../services/candidate.model';
+import { CandidateService } from '../../../services/candidate.service';
+import { Candidate } from '../../../services/candidate.model';
 
 @Component({
   selector: 'app-student-apply-candidate',
@@ -12,6 +12,12 @@ import { Candidate } from '../../services/candidate.model';
   styleUrls: ['./student-apply-candidate.css']
 })
 export class StudentApplyCandidateComponent {
+  public get candidateService(): CandidateService {
+    return this._candidateService;
+  }
+  public set candidateService(value: CandidateService) {
+    this._candidateService = value;
+  }
 
   candidate: Candidate = {
     id: crypto.randomUUID(),
@@ -45,7 +51,7 @@ export class StudentApplyCandidateComponent {
  
   submitted: boolean = false;
 
-  constructor(private candidateService: CandidateService) {}
+  constructor(private _candidateService: CandidateService) {}
 
   updatePositions() {
     if (this.candidate.organization === 'ATLAS') {

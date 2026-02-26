@@ -28,6 +28,7 @@ export class Voters {
     this.loadStudents();
   }
 
+  /** Return a clean student object */
   getEmptyStudent(): StudentAccount {
     return {
       id: '',
@@ -47,10 +48,12 @@ export class Voters {
     };
   }
 
+  /** Load all students from service */
   loadStudents(): void {
     this.students = this.studentService.getAll();
   }
 
+  /** Open modal for add or edit */
   openModal(student?: StudentAccount) {
     if (student) {
       this.isEditMode = true;
@@ -62,20 +65,22 @@ export class Voters {
     this.showModal = true;
   }
 
+  /** Close modal */
   closeModal() {
     this.showModal = false;
   }
 
+  /** Save new or edited student */
   saveStudent(): void {
-    if (!this.newStudent.id || !this.newStudent.password) {
-      Swal.fire('Error', 'Student ID and Password are required.', 'warning');
+    if (!this.newStudent.id || !this.newStudent.password || !this.newStudent.firstName || !this.newStudent.lastName) {
+      Swal.fire('Error', 'Please fill all required fields (ID, Password, First Name, Last Name).', 'warning');
       return;
     }
 
-    this.newStudent.name =
-      this.newStudent.firstName + ' ' +
-      this.newStudent.middleName + ' ' +
-      this.newStudent.lastName;
+    // Combine first, middle, last names
+    this.newStudent.name = [this.newStudent.firstName, this.newStudent.middleName, this.newStudent.lastName]
+      .filter(n => n && n.trim() !== '')
+      .join(' ');
 
     try {
       if (this.isEditMode) {
@@ -93,21 +98,25 @@ export class Voters {
     }
   }
 
+  /** Trigger modal edit */
   editStudent(student: StudentAccount) {
     this.openModal(student);
   }
 
+  /** Delete a student with confirmation */
   deleteStudent(id: string) {
     Swal.fire({
       title: 'Delete this student?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33'
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete'
     }).then(result => {
       if (result.isConfirmed) {
         this.studentService.delete(id);
         this.loadStudents();
-        Swal.fire('Deleted!', '', 'success');
+        Swal.fire('Deleted!', 'Student has been removed.', 'success');
       }
     });
   }

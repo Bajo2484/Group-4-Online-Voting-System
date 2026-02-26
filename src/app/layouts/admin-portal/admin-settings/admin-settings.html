@@ -1,0 +1,94 @@
+<div class="settings-page">
+  <h1 class="page-title">Admin Settings</h1>
+
+  <!-- Profile Section -->
+  <section class="settings-section">
+    <h2>Profile Settings</h2>
+    <p class="section-description">Update your admin profile information.</p>
+
+    <div class="settings-grid">
+      <div class="form-group">
+        <label>Admin Name</label>
+        <input type="text" [(ngModel)]="adminName" placeholder="Enter your name">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="adminEmail" placeholder="Enter your email">
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <span class="spacer"></span>
+      <button type="button" (click)="updateProfile()">Update Profile</button>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Security Section -->
+  <section class="settings-section">
+    <h2>Change Password</h2>
+    <p class="section-description">Update your password for account security.</p>
+
+    <div class="settings-grid">
+      <div class="form-group">
+        <label>Old Password</label>
+        <input type="password" [(ngModel)]="oldPassword" placeholder="Enter old password">
+      </div>
+
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" [(ngModel)]="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" [(ngModel)]="confirmPassword" placeholder="Confirm new password">
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <span class="spacer"></span>
+      <button type="button" (click)="changePassword()">Change Password</button>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- System Preferences Section -->
+  <section class="settings-section">
+    <h2>System Preferences</h2>
+    <p class="section-description">Customize system-wide settings.</p>
+
+    <div class="settings-grid">
+      <div class="form-group">
+        <label>Theme</label>
+        <select [(ngModel)]="theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Language</label>
+        <select [(ngModel)]="language">
+          <option value="en">English</option>
+          <option value="fil">Filipino</option>
+        </select>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="notifications">
+          <span>Enable Notifications</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <span class="spacer"></span>
+      <button type="button" (click)="updatePreferences()">Save Preferences</button>
+    </div>
+  </section>
+</div>

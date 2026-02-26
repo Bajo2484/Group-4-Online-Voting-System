@@ -1,3 +1,4 @@
+
 .app-layout {
   display: flex;
   min-height: 100vh;
@@ -100,6 +101,7 @@
   transform: translateY(-1px);
 }
 
+
 .content {
   flex: 1;
   display: flex;
@@ -107,11 +109,15 @@
   background: radial-gradient(circle at top left, #e0f2fe, #f9fafb 45%, #e5e7eb 100%);
 }
 
+
 .content-header {
   padding: 20px 28px;
   background: rgba(249, 250, 251, 0.9);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(209, 213, 219, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .content-title {
@@ -123,14 +129,97 @@
 .content-subtitle {
   margin: 4px 0 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: #515052;
+ 
 }
+
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.notification-icon .bell {
+  font-size: 1.9rem;
+}
+
+
+.notification-icon .badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.80rem;
+  padding: 2px 6px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.profile-dropdown {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f9fafb;
+}
+
+.dropdown-icon {
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 8px 0;
+  display: none;
+  min-width: 140px;
+  z-index: 1000;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f3f4f6;
+}
+
 
 .content-body {
   padding: 24px 28px 32px;
 }
 
-/* STUDENT LAYOUT CLEAN MERGED */
 
 .student-layout {
   display: flex;
@@ -176,7 +265,16 @@
   cursor: pointer;
 }
 
-/* RESPONSIVE */
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panels {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
   .app-layout {
