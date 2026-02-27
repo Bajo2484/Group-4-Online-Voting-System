@@ -119,18 +119,55 @@
           <button class="logout" type="button" (click)="logout()">Logout</button>
         </aside>
 
-        <main class="content">
-          <header class="content-header">
-            <h1 class="content-title">Elecom Dashboard</h1>
-            <p class="content-subtitle">Manage voters, elections, and results.</p>
-          </header>
+        
+      <main class="content">
+        <header class="content-header">
+  <div class="header-left">
+    <h1 class="content-title">Elecom Panel</h1>
+    <p class="content-subtitle">
+      Manage candidates, voters, and results.
+    </p>
+  </div>
+  <!-- Right side topbar -->
+  <div class="topbar-right">
 
-          <section class="content-body">
-            <router-outlet></router-outlet>
-          </section>
-        </main>
-      </div>
-    </ng-container>
+    <!-- Logout Button -->
+  <button class="btn-logout" (click)="logout()" style="
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    ">
+    Logout
+  </button>
+
+     <div class="notification-icon" (click)="toggleNotifications()">
+      <span class="bell">🔔</span>
+      <span class="badge">3</span>
+     </div>
+     
+     <div class="profile-dropdown" (click)="toggleProfileMenu()">
+      <img src="/admin.jpg" alt="Admin Avatar" class="profile-avatar" />
+      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
+      <span class="dropdown-icon">▼</span>
+
+      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+      <li (click)="goToAdminSettings($event)">Settings</li>
+      <li (click)="goToProfile(); $event.stopPropagation()">My Profile</li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+        <section class="content-body">
+          <router-outlet></router-outlet>
+        </section>
+      </main>
+    </div>
+  </ng-container>
 
     <!-- Student Layout -->
     <ng-template #studentLayout>
