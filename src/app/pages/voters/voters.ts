@@ -1,12 +1,12 @@
 // src/app/pages/voters/voters.ts
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { StudentAccountService } from '../../services/student-account.service';
 import { StudentAccount } from '../../services/student-account.model';
 import { AuthService } from '../../services/auth.service';
-import { Firestore, collection, collectionData, addDoc } from '@angular/fire/firestore'; // use AngularFire imports
 import Swal from 'sweetalert2';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-voters',
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
   templateUrl: './voters.html',
   styleUrls: ['./voters.css'],
 })
-export class Voters {
+export class Voters implements OnInit, OnDestroy {
   searchText: string = '';
   filteredStudents: StudentAccount[] = [];
   showModal = false;
@@ -25,13 +25,28 @@ export class Voters {
   statuses: string[] = ['UNDERGRADUATE', 'GRADUATE'];
   yearLevels: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
   newStudent: StudentAccount = this.getEmptyStudent();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private studentService: StudentAccountService,
     private authService: AuthService,
-    private firestore: Firestore
-  ) {
-    this.loadStudents();
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.studentService
+      .getAll$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((students) => {
+        this.students = students;
+        this.filterVoters();
+        this.cdr.detectChanges();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /** Initialize empty student object */
@@ -52,12 +67,6 @@ export class Voters {
       mobile: '',
       gender: '',
     };
-  }
-
-  /** Load all students from local service */
-  loadStudents(): void {
-    this.students = this.studentService.getAll();
-    this.filteredStudents = [...this.students];
   }
 
   /** Filter students for search bar */
@@ -110,36 +119,29 @@ export class Voters {
 
     try {
       if (this.isEditMode) {
-        // Update local student
-        this.studentService.update(this.newStudent);
-        Swal.fire('Updated!', 'Student updated successfully.', 'success');
+        await this.studentService.update(this.newStudent);
+        Swal.fire('Updated!', 'Voter updated successfully.', 'success');
       } else {
-        // Register student in auth service
         await this.authService.registerStudent(
           this.newStudent.id,
           this.newStudent.name,
-          this.newStudent.password
+          this.newStudent.password,
+          {
+            firstName: this.newStudent.firstName,
+            middleName: this.newStudent.middleName,
+            lastName: this.newStudent.lastName,
+            course: this.newStudent.course,
+            yearLevel: this.newStudent.yearLevel,
+            section: this.newStudent.section,
+            gender: this.newStudent.gender,
+            status: this.newStudent.status,
+            email: this.newStudent.email,
+            mobile: this.newStudent.mobile,
+          }
         );
-
-        // Add to Firestore properly using AngularFire DI
-        const usersRef = collection(this.firestore, 'users'); // ✅ AngularFire collection reference
-        await addDoc(usersRef, {
-          studentId: this.newStudent.id,
-          name: this.newStudent.name,
-          email: `${this.newStudent.id}@students.evoting.com`,
-          role: 'student',
-          hasVoted: false,
-          isActive: true,
-          createdAt: new Date(),
-        });
-
-        // Add to local service
-        this.studentService.add(this.newStudent);
-
-        Swal.fire('Created!', 'Student added successfully.', 'success');
+        Swal.fire('Created!', 'Voter added to Firebase successfully.', 'success');
       }
 
-      this.loadStudents();
       this.closeModal();
     } catch (err: any) {
       Swal.fire('Error', err.message || 'An unexpected error occurred', 'error');
@@ -151,20 +153,23 @@ export class Voters {
     this.openModal(student);
   }
 
-  /** Delete student */
-  deleteStudent(id: string) {
+  /** Delete voter from Firebase */
+  deleteStudent(id: string): void {
     Swal.fire({
-      title: 'Delete this student?',
+      title: 'Delete this voter?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, delete',
-    }).then(result => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        this.studentService.delete(id);
-        this.loadStudents();
-        Swal.fire('Deleted!', 'Student has been removed.', 'success');
+        try {
+          await this.studentService.delete(id);
+          Swal.fire('Deleted!', 'Voter has been removed from Firebase.', 'success');
+        } catch (err: any) {
+          Swal.fire('Error', err.message || 'Failed to delete voter.', 'error');
+        }
       }
     });
   }

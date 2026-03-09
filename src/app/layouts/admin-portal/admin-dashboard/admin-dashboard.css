@@ -54,7 +54,7 @@
 .stat-caption {
   margin: 0;
   font-size: 0.8rem;
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* Individual Card Colors */
@@ -80,7 +80,11 @@
 
 .stat-card:nth-child(4) {
   background: linear-gradient(135deg, #f59e0b, #fde68a); /* Yellow */
-  color: rgb(255, 255, 255);
+  color: #111827;
+}
+
+.stat-card:nth-child(4) .stat-caption {
+  color: rgba(17, 24, 39, 0.75);
 }
 
 
@@ -98,17 +102,105 @@
   border: 1px solid #e5e7eb;
 }
 
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
 .panel h3 {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 1rem;
   font-weight: 600;
   color: #111827;
+}
+
+.panel-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .panel-empty {
   margin: 0;
   font-size: 0.9rem;
   color: #6b7280;
+}
+
+.panel-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-item {
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid #eef2f7;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.panel-item:hover {
+  transform: translateY(-1px);
+  border-color: #dbeafe;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+}
+
+.panel-item-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-item-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-item-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  flex: 0 0 auto;
+}
+
+.panel-item-sub {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.2;
 }
 
 

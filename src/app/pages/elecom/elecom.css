@@ -105,17 +105,48 @@
   background-color: #dc3545;
 }
 
-.elecom-list-card td .actions button {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+.elecom-list-card td.actions {
+  white-space: nowrap;
 }
 
-.elecom-list-card td .actions button:hover {
-  background: #e60000;
+.elecom-list-card td.actions .btn-action {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    filter 0.12s ease;
+}
+
+.elecom-list-card td.actions .btn-action:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.elecom-list-card td.actions .btn-action:active {
+  transform: translateY(0);
+}
+
+.elecom-list-card td.actions .btn-action:focus-visible {
+  outline: 3px solid rgba(239, 68, 68, 0.25);
+  outline-offset: 2px;
+}
+
+.elecom-list-card td.actions .btn-remove {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22);
+}
+
+.elecom-list-card td.actions .btn-remove:hover {
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.28);
 }
 
 

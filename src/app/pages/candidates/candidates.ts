@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -42,14 +42,20 @@ export class CandidatesComponent implements OnInit {
     'President','Vice President','Secretary','Treasurer','Auditor','PRO'
   ];
 
-  constructor(public candidateService: CandidateService) {
+  constructor(
+    public candidateService: CandidateService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.candidates$ = new Observable<Candidate[]>();
   }
 
   ngOnInit() {
     // Subscribe to Firestore candidates (real-time updates)
     this.candidates$ = this.candidateService.getCandidates();
-    this.candidates$.subscribe(data => this.candidates = data);
+    this.candidates$.subscribe(data => {
+      this.candidates = data;
+      this.cdr.detectChanges();
+    });
   }
 
   openModal() {

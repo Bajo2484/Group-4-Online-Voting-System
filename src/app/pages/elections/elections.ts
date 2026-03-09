@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -31,7 +31,10 @@ export class ElectionComponent implements OnInit {
   endDateInput: string = '';
   endTimeInput: string = '';
 
-  constructor(public electionService: ElectionService) {}
+  constructor(
+    public electionService: ElectionService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.electionService.getElections().subscribe(data => {
@@ -42,6 +45,7 @@ export class ElectionComponent implements OnInit {
       }));
 
       this.elections.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+      this.cdr.detectChanges();
     });
   }
 

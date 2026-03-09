@@ -35,9 +35,25 @@ export class AuthService {
   }
 
   // =========================
-  // Admin creates a student
+  // Admin creates a student (voter)
   // =========================
-  async registerStudent(studentId: string, name: string, password: string): Promise<CurrentUser> {
+  async registerStudent(
+    studentId: string,
+    name: string,
+    password: string,
+    extra?: {
+      firstName?: string;
+      middleName?: string;
+      lastName?: string;
+      course?: string;
+      yearLevel?: string;
+      section?: string;
+      gender?: string;
+      status?: string;
+      email?: string;
+      mobile?: string;
+    }
+  ): Promise<CurrentUser> {
     try {
       const fakeEmail = `${studentId}@students.evoting.com`; // required for Firebase Auth
 
@@ -47,9 +63,21 @@ export class AuthService {
       await setDoc(doc(this.firestore, 'students', uid), {
         id: studentId,
         name,
-        email: fakeEmail,
+        email: extra?.email || fakeEmail,
         hasVoted: false,
         isActive: true,
+        ...(extra && {
+          firstName: extra.firstName,
+          middleName: extra.middleName,
+          lastName: extra.lastName,
+          course: extra.course,
+          yearLevel: extra.yearLevel,
+          section: extra.section,
+          gender: extra.gender,
+          status: extra.status,
+          email: extra.email || fakeEmail,
+          mobile: extra.mobile,
+        }),
       });
 
       const studentUser: CurrentUser = {

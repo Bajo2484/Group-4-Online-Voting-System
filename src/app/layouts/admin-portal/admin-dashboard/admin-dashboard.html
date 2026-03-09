@@ -29,17 +29,53 @@
 
   <section class="panels">
     <article class="panel">
-      <h3>Upcoming Elections</h3>
-      <p class="panel-empty">
-        No upcoming elections yet. Create one from the <strong>Elections</strong> page.
-      </p>
+      <div class="panel-header">
+        <h3>Upcoming Elections</h3>
+        <span class="panel-badge">{{ upcomingElections.length }}</span>
+      </div>
+      <ng-container *ngIf="upcomingElections.length; else noUpcoming">
+        <ul class="panel-list">
+          <li *ngFor="let election of upcomingElections" class="panel-item">
+            <div class="panel-item-main">
+              <span class="panel-item-title">{{ election.title }}</span>
+              <span class="panel-item-status">{{ election.status | titlecase }}</span>
+            </div>
+            <div class="panel-item-sub">
+              {{ election.startDate | date: 'MMM d, y, h:mm a' }}
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+      <ng-template #noUpcoming>
+        <p class="panel-empty">
+          No upcoming elections yet. Create one from the <strong>Elections</strong> page.
+        </p>
+      </ng-template>
     </article>
 
     <article class="panel">
-      <h3>Recent Activity</h3>
-      <p class="panel-empty">
-        System activity will appear here once users start interacting with the system.
-      </p>
+      <div class="panel-header">
+        <h3>Recent Activity</h3>
+        <span class="panel-badge">{{ recentActivities.length }}</span>
+      </div>
+      <ng-container *ngIf="recentActivities.length; else noActivity">
+        <ul class="panel-list">
+          <li *ngFor="let activity of recentActivities" class="panel-item">
+            <div class="panel-item-main">
+              <span class="panel-item-title">{{ activity.title }}</span>
+            </div>
+            <div class="panel-item-sub">
+              {{ activity.description }} •
+              {{ activity.date | date: 'MMM d, y, h:mm a' }}
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+      <ng-template #noActivity>
+        <p class="panel-empty">
+          System activity will appear here once users start interacting with the system.
+        </p>
+      </ng-template>
     </article>
   </section>
 </div>

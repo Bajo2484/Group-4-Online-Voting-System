@@ -60,6 +60,63 @@
   background-color: #f7f7f7;
 }
 
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    filter 0.12s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.btn-action:active {
+  transform: translateY(0);
+}
+
+.btn-action:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.25);
+  outline-offset: 2px;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+}
+
+.btn-edit:hover {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22);
+}
+
+.btn-delete:hover {
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.28);
+}
+
 .status {
   padding: 4px 10px;
   border-radius: 12px;
@@ -119,24 +176,33 @@
 
 .modal-actions button {
   padding: 8px 12px;
-  border-radius: 4px;
-  border: none;
+  border-radius: 999px;
+  border: 1px solid transparent;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease,
+    background-color 0.12s ease;
 }
 
 .modal-actions button:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  filter: brightness(1.02);
 }
 
 .modal-actions .btn-cancel {
-  background-color: #ccc;
-  color: #333;
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #111827;
 }
 
 .modal-actions .btn-save {
-  background-color: #2e86de;
-  color: white;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
 }
 
 
