@@ -1,0 +1,72 @@
+<div class="settings-container">
+
+  <h2>Account Settings</h2>
+
+  <!-- ACCOUNT INFORMATION -->
+  <div class="section">
+    <label>Full Name</label>
+    <input type="text" formControlName="fullName" [formGroup]="profileForm">
+
+    <label>Email</label>
+    <div class="email-row">
+      <input type="email" formControlName="email" [formGroup]="profileForm">
+      <button *ngIf="!isEditingEmail" class="edit-btn" (click)="toggleEmailEdit()">Edit</button>
+      <button *ngIf="isEditingEmail" class="save-btn" (click)="saveEmail()">Save</button>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="section">
+    <label>Security</label>
+    <button class="primary-btn" (click)="openPasswordModal()">Change Password</button>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="section">
+    <label>Notifications</label>
+
+    <div class="toggle-row">
+      <span>System Alerts</span>
+      <label class="switch">
+        <input type="checkbox" formControlName="systemAlerts" [formGroup]="profileForm">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span>Activity Alerts</span>
+      <label class="switch">
+        <input type="checkbox" formControlName="activityAlerts" [formGroup]="profileForm">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENTS -->
+  <div class="section">
+    <label>Announcements</label>
+    <div class="toggle-row">
+      <span>Announcement Reminder</span>
+      <label class="switch">
+        <input type="checkbox" formControlName="announcementAlerts" [formGroup]="profileForm">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- PASSWORD MODAL -->
+  <div class="modal-backdrop" *ngIf="showPasswordModal">
+    <div class="modal">
+      <h3>Change Password</h3>
+
+      <input type="password" placeholder="New Password">
+      <input type="password" placeholder="Confirm Password">
+
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closePasswordModal()">Cancel</button>
+        <button class="primary-btn" (click)="closePasswordModal()">Update</button>
+      </div>
+    </div>
+  </div>
+
+</div>

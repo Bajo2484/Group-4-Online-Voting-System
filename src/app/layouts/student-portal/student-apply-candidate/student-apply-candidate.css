@@ -1,0 +1,182 @@
+/* PAGE WRAPPER */
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f3f4f7;
+  font-family: "Segoe UI", Arial, sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 12px 0 6px;
+  color: #2f66c9;
+}
+.header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+/* INSTRUCTIONS CHECKBOX CENTERED */
+.instructions-bar {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+.instructions-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px; /* dikit sa text */
+  margin-top: 8px;
+  font-size: 12px;
+  justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.instruction-checkbox input {
+  margin: 0;
+}
+
+/* FORM CONTAINER */
+.form-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+/* HORIZONTAL CARD */
+.card.horizontal {
+  display: flex;
+  flex-direction: row;
+  max-width: 900px;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e1e5ee;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 20px;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+}
+
+/* PHOTO LEFT */
+.photo-section {
+  flex: 0 0 120px;
+  text-align: center;
+}
+.avatar img,
+.default-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 6px;
+}
+.upload-btn {
+  display: block;
+  margin: 0 auto 4px auto;
+  padding: 6px 14px;
+  background: #2f66c9;
+  color: white;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.upload-btn:hover { background: #244fa8; }
+.photo-section small { font-size: 11px; color: #6c757d; }
+
+/* FORM RIGHT */
+.form-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+.form-group label {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 2px;
+  display: block;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #d5dbe6;
+  background: #f9fafc;
+  box-sizing: border-box;
+}
+textarea {
+  min-height: 50px;
+  resize: none;
+}
+.char-counter {
+  font-size: 11px;
+  text-align: right;
+  color: #6c757d;
+}
+
+/* LEFT-ALIGNED CONFIRMATION CHECKBOX DIRECTLY BELOW PLATFORM */
+.confirm-section {
+  display: flex;
+  align-items: center;
+  gap: 2px; /* dikit sa text */
+  margin-top: 8px;
+  font-size: 12px;
+  justify-content: flex-start;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.confirm-section input { margin: 0; }
+.confirm-section label { margin: 0; }
+
+/* BUTTONS */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.cancel-btn,
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cancel-btn {
+  border: 1px solid #cfd5df;
+  background: #f1f3f7;
+}
+.cancel-btn:hover { background: #e2e5eb; }
+.submit-btn {
+  border: none;
+  background: #2f66c9;
+  color: white;
+  font-weight: 500;
+}
+.submit-btn:hover:enabled { background: #244fa8; }
+.submit-btn:disabled { background: #9fb6e8; cursor: not-allowed; }
+
+/* RESPONSIVE: STACK ON MOBILE */
+@media (max-width: 768px) {
+  .card.horizontal {
+    flex-direction: column;
+  }
+  .photo-section {
+    flex: none;
+    margin-bottom: 12px;
+  }
+}

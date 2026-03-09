@@ -1,0 +1,49 @@
+
+<div class="main-content">
+
+  <h2 class="page-title">Your Elections</h2>
+
+ 
+  <div class="card-container">
+    <div class="election-card" *ngFor="let election of elections">
+
+      <div class="card-left">
+        <img [src]="election.logo" alt="logo">
+        <div>
+          <h4>{{ election.name }}</h4>
+
+          <span 
+            class="status"
+            [ngClass]="election.voted ? 'voted' : 'not-voted'">
+            {{ election.voted ? 'Voted' : 'Not Voted' }}
+          </span>
+        </div>
+      </div>
+
+      <button *ngIf="!election.voted" class="vote-btn">
+        Vote Now
+      </button>
+
+      <button *ngIf="election.voted" class="details-btn">
+        View Details →
+      </button>
+
+    </div>
+  </div>
+
+
+  <div class="progress-section">
+    <p>
+      {{ completedCount }} out of {{ elections.length }} elections completed
+    </p>
+
+    <div class="progress-bar">
+      <div 
+        class="progress-fill"
+        [style.width.%]="progressPercentage">
+      </div>
+    </div>
+  </div>
+
+</div>
+

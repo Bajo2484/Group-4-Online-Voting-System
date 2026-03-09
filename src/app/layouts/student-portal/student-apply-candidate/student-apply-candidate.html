@@ -1,0 +1,89 @@
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Candidate Application</h1>
+  </div>
+
+  <!-- GUIDELINES CHECKBOX CENTERED -->
+  <div class="instructions-bar">
+    <div class="instruction-checkbox">
+      <input type="checkbox" [(ngModel)]="agreeInstructions" id="agree-guidelines">
+      <label for="agree-guidelines">I understand the guidelines.</label>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL CARD -->
+  <div class="form-container">
+    <div class="card horizontal">
+
+      <!-- PHOTO LEFT -->
+      <div class="photo-section">
+        <div class="avatar">
+          <img *ngIf="photoPreview; else defaultAvatar" [src]="photoPreview">
+          <ng-template #defaultAvatar>
+            <div class="default-avatar"></div>
+          </ng-template>
+        </div>
+        <label class="upload-btn">
+          Upload Photo
+          <input type="file" hidden (change)="onFileSelected($event)">
+        </label>
+        <small>JPG or PNG only</small>
+      </div>
+
+      <!-- FORM RIGHT -->
+      <div class="form-fields">
+        <div class="form-group">
+          <label>Full Name:</label>
+          <input type="text" [(ngModel)]="fullName" placeholder="Juan Dela Cruz">
+        </div>
+
+        <div class="form-group">
+          <label>Organization:</label>
+          <select [(ngModel)]="organization" (change)="onOrganizationChange()">
+            <option value="">Select Organization</option>
+            <option *ngFor="let org of organizations" [value]="org">{{ org }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Position:</label>
+          <select [(ngModel)]="position" [disabled]="!organization">
+            <option value="">Select Position</option>
+            <option *ngFor="let pos of filteredPositions" [value]="pos">{{ pos }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Party / Team:</label>
+          <input type="text" [(ngModel)]="party" placeholder="Unity Party">
+        </div>
+
+        <div class="form-group">
+          <label>Platform / Goals:</label>
+          <textarea
+            [(ngModel)]="platform"
+            [maxLength]="maxCharacters"
+            placeholder="State your plans, goals, and advocacy...">
+          </textarea>
+          <div class="char-counter">{{ platform.length }} / {{ maxCharacters }} characters</div>
+        </div>
+
+        <!-- LEFT-ALIGNED CONFIRMATION CHECKBOX DIRECTLY BELOW PLATFORM -->
+        <div class="confirm-section">
+          <input type="checkbox" [(ngModel)]="confirm" id="confirm-checkbox">
+          <label for="confirm-checkbox">I confirm that all information provided is true.</label>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+          <button class="cancel-btn" type="button" (click)="resetForm()">Cancel</button>
+          <button class="submit-btn" type="button" (click)="submitApplication()" [disabled]="!confirm">Submit</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

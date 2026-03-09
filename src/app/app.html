@@ -19,23 +19,51 @@
             <li routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
               <span>Dashboard</span>
             </li>
-            <li routerLink="/candidates" routerLinkActive="active"><span>Candidates</span></li>
-            <li routerLink="/voters" routerLinkActive="active"><span>Voters</span></li>
-            <li routerLink="/elecom" routerLinkActive="active"><span>Elecom</span></li>
+            <li routerLink="/candidates" routerLinkActive="active"><span>ManageCandidates</span></li>
+            <li routerLink="/voters" routerLinkActive="active"><span>Manage Voters</span></li>
+             <li routerLink="/manage-elecom" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <span>Manage Elecom</span>
             <li routerLink="/elections" routerLinkActive="active"><span>Elections</span></li>
-            <li routerLink="/results" routerLinkActive="active"><span>Results</span></li>
-            <li routerLink="/setting" routerLinkActive="active"><span>Settings</span></li>
+            <li routerLink="/results" routerLinkActive="active"><span>View Results</span></li>
+           
+          
+            
           </ul>
         </nav>
 
-        <button class="logout" type="button" (click)="logout()">Logout</button>
+       
       </aside>
 
       <main class="content">
         <header class="content-header">
-          <h1 class="content-title">Admin Panel</h1>
-          <p class="content-subtitle">Manage elections, voters, and results.</p>
-        </header>
+  <div class="header-left">
+    <h1 class="content-title">Admin Panel</h1>
+    <p class="content-subtitle">
+      Manage elections, voters, and results.
+    </p>
+  </div>
+  <!-- Right side topbar -->
+  <div class="topbar-right">
+
+   
+
+     <div class="notification-icon" (click)="toggleNotifications()">
+      <span class="bell">🔔</span>
+      <span class="badge">3</span>
+     </div>
+     
+     <div class="profile-dropdown" (click)="toggleProfileMenu()">
+      <img src="/admin.jpg" alt="Admin Avatar" class="profile-avatar" />
+      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
+      <span class="dropdown-icon">▼</span>
+
+      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+      <li (click)="goToAdminSettings($event)">Settings</li>
+      <li (click)="logout(); $event.stopPropagation()">Logout</li>
+      </ul>
+    </div>
+  </div>
+</header>
 
         <section class="content-body">
           <router-outlet></router-outlet>
@@ -55,30 +83,27 @@
             <p class="logo-subtitle">Election Committee Portal</p>
           </div>
 
-          <nav class="nav-menu">
-            <ul class="menu">
-              <li routerLink="/elecom-dashboard" routerLinkActive="active">
-                <span>Elecom Dashboard</span>
-              </li>
+          <ul class="menu">
+  <li routerLink="/elecom-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span>Elecom Dashboard</span>
+  </li>
 
-              <li routerLink="/voters" routerLinkActive="active">
-                <span>Voters</span>
-              </li>
+  <li routerLink="/elecom-voters" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span>Voters</span>
+  </li>
 
-              <li routerLink="/candidates" routerLinkActive="active">
-                <span>Candidates</span>
-              </li>
+  <li routerLink="/elecom-candidates" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span>Candidates</span>
+  </li>
 
+  <li routerLink="/elecom-results" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span>Results</span>
+  </li>
 
-              <li routerLink="/results" routerLinkActive="active">
-                <span>Results</span>
-              </li>
-
-              <li routerLink="/setting" routerLinkActive="active">
-                <span>Settings</span>
-              </li>
-            </ul>
-          </nav>
+  <li routerLink="/elecom-setting" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span>Settings</span>
+  </li>
+</ul>
 
           <button class="logout" type="button" (click)="logout()">Logout</button>
         </aside>
@@ -98,45 +123,72 @@
 
     <!-- Student Layout -->
     <ng-template #studentLayout>
-      <div class="app-layout student-layout">
-        <aside class="sidebar">
-          <div class="logo-section">
-            <img src="/logo.jpg" alt="Logo" />
-            <h2>E-Voting</h2>
-          </div>
-
-          <nav class="nav-menu">
-            <ul class="menu">
-              <li routerLink="/student-dashboard"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }">
-                <span>Dashboard</span>
-              </li>
-
-              <li routerLink="/student-result"
-                  routerLinkActive="active">
-                <span>Results</span>
-              </li>
-
-              <li routerLink="/student-profile"
-                  routerLinkActive="active">
-                <span>Profile</span>
-              </li>
-
-              <li routerLink="/student-apply-candidate"
-                  routerLinkActive="active">
-                <span>Apply Candidate</span>
-              </li>
-            </ul>
-          </nav>
-
-          <button class="logout" (click)="logout()">Logout</button>
-        </aside>
-
-        <main class="content">
-          <router-outlet></router-outlet>
-        </main>
+  <div class="app-layout student-layout">
+    <aside class="sidebar">
+      <div class="logo-section">
+        <img src="/logo.jpg" alt="Logo" />
+        <h2>E-Voting</h2>
       </div>
-    </ng-template>
-  </ng-template>
+
+      <nav class="nav-menu">
+        <ul class="menu">
+          <li routerLink="/student-dashboard"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }">
+            <span>Dashboard</span>
+          </li>
+
+          <li routerLink="/student-result"
+              routerLinkActive="active">
+            <span>Results</span>
+          </li>
+
+              
+          <li routerLink="/student-apply-candidate"
+              routerLinkActive="active">
+            <span>Apply Candidate</span>
+          </li>
+        </ul>
+      </nav>
+
+   
+    </aside >
+
+    <main class="content">
+      <header class="content-header">
+  <!-- Left side: Logo + Title -->
+  <div class="header-left">
+    <div class="header-titles">
+      <h1 class="content-title">Admin Panel</h1>
+      <p class="content-subtitle">Manage elections, voters, and results.</p>
+    </div>
+  </div>
+
+  <!-- Right side: Notifications, Profile, Logout -->
+  <div class="header-right">
+    <div class="notification-icon" (click)="toggleNotifications()">
+      <span class="bell">🔔</span>
+      <span class="badge">3</span>
+    </div>
+
+    <div class="profile-dropdown" (click)="toggleProfileMenu()">
+      <img src="/student.jpg" alt="Student Avatar" class="profile-avatar" />
+      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Student User' }}</span>
+      <span class="dropdown-icon">▼</span>
+
+      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+        <li (click)="logout(); $event.stopPropagation()">Logout</li>
+        <li (click)="goToProfile(); $event.stopPropagation()">Settings</li>
+      </ul>
+    </div>
+
+   
+  </div>
+</header>
+
+      <section class="content-body">
+        <router-outlet></router-outlet>
+      </section>
+    </main>
+  </div>
 </ng-template>

@@ -1,0 +1,45 @@
+<div class="dashboard">
+  <h2 class="page-title">Dashboard</h2>
+
+  <section class="stats-grid">
+    <article class="stat-card primary">
+      <h3>Total Voters</h3>
+      <p class="stat-number">{{ totalVoters }}</p>
+      <p class="stat-caption">Registered</p>
+    </article>
+
+    <article class="stat-card">
+      <h3>Active Elections</h3>
+      <p class="stat-number">{{ activeElections }}</p>
+      <p class="stat-caption">Running now</p>
+    </article>
+
+    <article class="stat-card">
+      <h3>Completed Elections</h3>
+      <p class="stat-number">{{ completedElections }}</p>
+      <p class="stat-caption">Archived</p>
+    </article>
+
+    <article class="stat-card">
+      <h3>Registered Candidates</h3>
+      <p class="stat-number">{{ registeredCandidates }}</p>
+      <p class="stat-caption">Registered</p>
+    </article>
+  </section>
+
+  <section class="panels">
+    <article class="panel">
+      <h3>Upcoming Elections</h3>
+      <p class="panel-empty">
+        No upcoming elections yet. Create one from the <strong>Elections</strong> page.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h3>Recent Activity</h3>
+      <p class="panel-empty">
+        System activity will appear here once users start interacting with the system.
+      </p>
+    </article>
+  </section>
+</div>

@@ -3,6 +3,7 @@
 
   <section class="elecom-layout">
  
+    <!-- Form Section -->
     <article class="elecom-form-card">
       <h3>Create Elecom Account</h3>
       <p class="form-description">
@@ -19,7 +20,7 @@
               [(ngModel)]="newElecom.username"
               name="username"
               required
-              placeholder="e.g JuwanaCutie@gamil.com"
+              placeholder="e.g. JuwanaCutie@gmail.com"
             />
           </label>
         </div>
@@ -66,55 +67,51 @@
         <div class="form-actions">
           <button type="submit">Save Account</button>
         </div>
-
-        <p *ngIf="errorMessage" class="message error">
-          {{ errorMessage }}
-        </p>
-        <p *ngIf="successMessage" class="message success">
-          {{ successMessage }}
-        </p>
       </form>
     </article>
 
+    <!-- List Section -->
     <article class="elecom-list-card">
       <h3>Registered Elecom Members</h3>
 
-      <p *ngIf="!elecoms.length" class="empty-state">
-        No Elecom accounts yet. Start by adding a new member on the left.
-      </p>
+      <ng-container *ngIf="elecoms$ | async as elecoms">
+        <p *ngIf="!elecoms.length" class="empty-state">
+          No Elecom accounts yet. Start by adding a new member on the left.
+        </p>
 
-      <div *ngIf="elecoms.length" class="table-wrapper">
-        <table class="elecom-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let elecom of elecoms">
-              <td>{{ elecom.username }}</td>
-              <td>{{ elecom.name }}</td>
-              <td>{{ elecom.email }}</td>
-              <td>
-                <span
-                  class="status-pill"
-                  [class.active]="elecom.isActive"
-                  [class.inactive]="!elecom.isActive"
-                >
-                  {{ elecom.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="actions">
-                <button type="button" (click)="deleteElecom(elecom.username)">Remove</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div *ngIf="elecoms.length" class="table-wrapper">
+          <table class="elecom-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let elecom of elecoms">
+                <td>{{ elecom.username }}</td>
+                <td>{{ elecom.name }}</td>
+                <td>{{ elecom.email }}</td>
+                <td>
+                  <span
+                    class="status-pill"
+                    [class.active]="elecom.isActive"
+                    [class.inactive]="!elecom.isActive"
+                  >
+                    {{ elecom.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button type="button" (click)="deleteElecom(elecom.uid!)">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
     </article>
   </section>
 </div>

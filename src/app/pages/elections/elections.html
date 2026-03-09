@@ -1,5 +1,6 @@
 <div class="elections-container">
 
+  <!-- Page Header -->
   <div class="page-header">
     <div>
       <h2>Elections</h2>
@@ -11,60 +12,70 @@
     </button>
   </div>
 
-  <table class="elections-table" *ngIf="electionService.elections().length > 0">
+  <!-- Elections Table -->
+  <table class="elections-table" *ngIf="elections.length > 0">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Title</th>
         <th>Start Date</th>
         <th>Start Time</th>
         <th>End Date</th>
         <th>End Time</th>
         <th>Status</th>
+        <th>Actions</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let election of electionService.elections()">
-        <td>{{ election.name }}</td>
-        <td>{{ election.startDate }}</td>
-        <td>{{ election.startTime }}</td>
-        <td>{{ election.endDate }}</td>
-        <td>{{ election.endTime }}</td>
-        <td>{{ election.status }}</td>
+      <tr *ngFor="let election of elections">
+        <td>{{ election.title }}</td>
+        <td>{{ election.startDate | date:'shortDate' }}</td>
+        <td>{{ election.startDate | date:'shortTime' }}</td>
+        <td>{{ election.endDate | date:'shortDate' }}</td>
+        <td>{{ election.endDate | date:'shortTime' }}</td>
+        <td>
+          <span [ngClass]="election.status.toLowerCase()">{{ election.status }}</span>
+        </td>
+        <td>
+          <button (click)="editElection(election)">Edit</button>
+          <button (click)="deleteElection(election.id!)">Delete</button>
+        </td>
       </tr>
     </tbody>
   </table>
 
-  <div class="empty-state" *ngIf="electionService.elections().length === 0">
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="elections.length === 0">
     No elections yet.
   </div>
 
 </div>
 
-<!-- Modal -->
+<!-- Modal for Adding/Editing Election -->
 <div class="modal-backdrop" *ngIf="showModal">
   <div class="modal">
-    <h3>Create Election</h3>
+    <h3>{{ isEditMode ? 'Edit Election' : 'Create Election' }}</h3>
 
+    <!-- Election Title -->
     <input type="text"
-      placeholder="Election Name"
-      [(ngModel)]="newElection.name">
+           placeholder="Election Title"
+           [(ngModel)]="newElection.title"
+           required>
 
-    <input type="date"
-      [(ngModel)]="newElection.startDate">
+    <!-- Start Date & Time -->
+    <input type="date" [(ngModel)]="startDateInput" required>
+    <input type="time" [(ngModel)]="startTimeInput" required>
 
-    <input type="time"
-      [(ngModel)]="newElection.startTime">
+    <!-- End Date & Time -->
+    <input type="date" [(ngModel)]="endDateInput" required>
+    <input type="time" [(ngModel)]="endTimeInput" required>
 
-    <input type="date"
-      [(ngModel)]="newElection.endDate">
-
-    <input type="time"
-      [(ngModel)]="newElection.endTime">
-
+    <!-- Modal Actions -->
     <div class="modal-actions">
       <button (click)="closeModal()">Cancel</button>
-      <button (click)="saveElection()">Save</button>
+      <button (click)="saveElection()">
+        {{ isEditMode ? 'Update' : 'Save' }}
+      </button>
     </div>
   </div>
 </div>

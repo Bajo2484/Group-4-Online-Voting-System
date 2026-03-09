@@ -1,0 +1,88 @@
+<div class="admin-container">
+
+  <h2>Admin Settings</h2>
+
+  <!-- Profile Section -->
+  <div class="card">
+    <h3>Profile Information</h3>
+    <p><strong>Name:</strong> {{adminProfile.name}}</p>
+    <p><strong>Email:</strong> {{adminProfile.email}}</p>
+    <p><strong>Contact:</strong> {{adminProfile.contact}}</p>
+    <p><strong>Username:</strong> {{adminProfile.username}}</p>
+    <p><strong>Role:</strong> {{adminProfile.role}}</p>
+  </div>
+
+  <!-- Security Section -->
+  <div class="card">
+    <h3>Security</h3>
+
+    <label class="toggle-label">
+      <input type="checkbox" [(ngModel)]="twoFactorEnabled">
+      Enable Two-Factor Authentication
+    </label>
+
+    <div class="form-group">
+      <label>Auto Voting Timeout (minutes)</label>
+      <select [(ngModel)]="autoVotingTimeout">
+        <option *ngFor="let time of [5,10,15,30]" [value]="time">{{time}}</option>
+      </select>
+    </div>
+
+    <label class="toggle-label">
+      <input type="checkbox" [(ngModel)]="loginHistoryVisible">
+      View Login History
+    </label>
+  </div>
+
+  <!-- Election Settings -->
+  <div class="card">
+    <h3>Election Settings</h3>
+
+    <div class="form-group">
+      <label>Voting Start Time</label>
+      <input type="time" [(ngModel)]="votingStartTime">
+    </div>
+
+    <div class="form-group">
+      <label>Voting End Time</label>
+      <input type="time" [(ngModel)]="votingEndTime">
+    </div>
+
+    <label class="toggle-label">
+      <input type="checkbox" [(ngModel)]="allowMultipleVoting">
+      Allow Multiple Voting
+    </label>
+
+    <div class="form-group">
+      <label>Live Results Delay (minutes)</label>
+      <select [(ngModel)]="liveResultsDelay">
+        <option *ngFor="let time of [5,10,15,30]" [value]="time">{{time}}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Reports -->
+  <div class="card">
+    <h3>Reports</h3>
+    <button class="btn">Export as PDF</button>
+    <button class="btn">Export as Excel</button>
+  </div>
+
+  <!-- Account Preferences -->
+  <div class="card">
+    <h3>Account Preferences</h3>
+
+    <label>Theme:</label>
+    <div class="theme-buttons">
+      <button [class.active]="selectedTheme === 'light'" (click)="toggleTheme('light')">Light</button>
+      <button [class.active]="selectedTheme === 'dark'" (click)="toggleTheme('dark')">Dark</button>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-buttons">
+    <button class="save-btn" (click)="saveSettings()">Save Changes</button>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+</div>

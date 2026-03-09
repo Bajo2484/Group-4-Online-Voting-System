@@ -1,78 +1,54 @@
+// src/app/services/student-account.service.ts
 import { Injectable } from '@angular/core';
 
-export interface StudentAccount {
-  id: string;
-  name: string;
-  course: string;
-  yearLevel: string;
-  section: string;
-  password: string;
-  hasVoted: boolean;
-
-  email: string;
-  status: string;
-  mobile: string;
-  gender: string;
-  lastName: string;
-  middleName: string;
-  firstName: string;
-}
+import { StudentAccount } from './student-account.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StudentAccountService {
+  private students: StudentAccount[] = [];
 
-  private readonly STORAGE_KEY = 'evoting_students';
-
+  /** Get all students */
   getAll(): StudentAccount[] {
-    const raw = localStorage.getItem(this.STORAGE_KEY);
-    if (!raw) return [];
-
-    try {
-      return JSON.parse(raw) as StudentAccount[];
-    } catch {
-      return [];
-    }
+    return this.students;
   }
 
-  private saveAll(list: StudentAccount[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-  }
-
+  /** Add a new student */
   add(student: StudentAccount): void {
-    const current = this.getAll();
-
-    if (current.some(s => s.id === student.id)) {
-      throw new Error('Student ID already exists.');
-    }
-
-    current.push(student);
-    this.saveAll(current);
+    this.students.push(student);
   }
 
-  update(updated: StudentAccount): void {
-    const current = this.getAll();
-    const index = current.findIndex(s => s.id === updated.id);
-
-    if (index === -1) {
-      throw new Error('Student not found.');
+  /** Update an existing student */
+  update(student: StudentAccount): void {
+    const index = this.students.findIndex(s => s.id === student.id);
+    if (index !== -1) {
+      this.students[index] = student;
     }
-
-    current[index] = updated;
-    this.saveAll(current);
   }
 
+  /** Delete student by ID */
   delete(id: string): void {
-    const filtered = this.getAll().filter(s => s.id !== id);
-    this.saveAll(filtered);
+    this.students = this.students.filter(s => s.id !== id);
   }
 
-  findByCredentials(id: string, password: string): StudentAccount | undefined {
-    return this.getAll().find(
-      s => s.id === id && s.password === password
-    );
+  /** Return a new empty student object */
+  getEmptyStudent(): StudentAccount {
+    return {
+      id: '',
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      name: '',
+      course: '',
+      yearLevel: '',
+      section: '',
+      password: '',
+      hasVoted: false,
+      email: '',
+      status: '',
+      mobile: '',
+      gender: '',
+    };
   }
-
- 
-  }
+}

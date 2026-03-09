@@ -60,8 +60,6 @@
           </select>
         </div>
 
-        
-
         <!-- Party / Team -->
         <div class="form-group">
           <label>Party / Team</label>
@@ -111,7 +109,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let c of candidateService.candidates$ | async">
+        <!-- Use local candidates array instead of candidates$ -->
+        <tr *ngFor="let c of candidates">
           <td>
             <img *ngIf="c.photoUrl" [src]="c.photoUrl" class="candidate-photo">
             <span *ngIf="!c.photoUrl">No Photo</span>
@@ -122,18 +121,22 @@
           <td>{{ c.partyName }}</td>
           <td>{{ c.platform }}</td>
           <td><span [ngClass]="c.status">{{ c.status }}</span></td>
-        <td>
-           <button *ngIf="c.status==='pending'" 
-            (click)="candidateService.approveCandidate(c.id)"
-           class="approve-btn">Approve</button>
-            <button *ngIf="c.status==='pending'" 
-            (click)="candidateService.rejectCandidate(c.id)"
-            class="reject-btn">Reject</button>
-           <button (click)="editCandidate(c)" class="edit-btn">Edit</button>
-             <button (click)="deleteCandidate(c.id)" class="delete-btn">Delete</button>
-          </td>
+         <td>
+  <button *ngIf="c.status==='pending'" 
+          (click)="approveCandidate(c)"
+          class="approve-btn">Approve</button>
+
+  <button *ngIf="c.status==='pending'" 
+          (click)="rejectCandidate(c)"
+          class="reject-btn">Reject</button>
+
+  <button (click)="editCandidate(c)" class="edit-btn">Edit</button>
+  <button (click)="deleteCandidate(c.id!)" class="delete-btn">Delete</button>
+</td>
         </tr>
-        <tr *ngIf="(candidateService.candidates$ | async)?.length === 0">
+
+        <!-- Empty state -->
+        <tr *ngIf="candidates.length === 0">
           <td colspan="8" style="text-align:center; padding:20px; color:#888;">
             No candidates registered yet.
           </td>

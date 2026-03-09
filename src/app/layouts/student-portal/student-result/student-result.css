@@ -1,0 +1,171 @@
+/* ================= GENERAL ================= */
+:host {
+    display: block;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+.header {
+    background: #2f4050;
+    color: white;
+    padding: 15px 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* ================= TABS ================= */
+.tabs {
+    margin-bottom: 20px;
+}
+
+.tab {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #ddd;
+    cursor: pointer;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+    transition: 0.3s;
+}
+
+.tab:hover {
+    background: #cfcfcf;
+}
+
+.tab.active {
+    background: #2f4050;
+    color: white;
+    font-weight: bold;
+}
+
+/* ================= CARD ================= */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ================= POSITION TITLE ================= */
+.position-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* ================= CANDIDATE BOX ================= */
+.candidate {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+.candidate:hover {
+    transform: scale(1.01);
+}
+
+/* Candidate name & vote info spacing */
+.name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.vote-info {
+    flex: 1;
+}
+
+/* ================= WINNER STYLE ================= */
+.winner {
+    background: #e6ffe6;
+    border: 2px solid #28a745;
+}
+
+/* ================= WINNER BADGE ================= */
+.badge {
+    background: #28a745;
+    color: white;
+    padding: 3px 8px;
+    font-size: 12px;
+    border-radius: 12px;
+    margin-left: 10px;
+}
+
+/* ================= PROGRESS BAR ================= */
+.progress {
+    background: #ddd;
+    height: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: #28a745;
+    height: 8px;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.progress-bar.second {
+    background: #ffc107;
+}
+
+/* ================= ACCORDION ================= */
+.accordion {
+    width: 100%;
+    background: #ffffff;
+    cursor: pointer;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.accordion:hover {
+    background: #f1f1f1;
+}
+
+.panel {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+    .tab {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .badge {
+        float: none;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .candidate {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .vote-info {
+        margin-top: 5px;
+    }
+}

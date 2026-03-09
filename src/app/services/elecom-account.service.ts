@@ -1,75 +1,55 @@
 import { Injectable } from '@angular/core';
+import { Firestore, collection, collectionData, doc, setDoc, deleteDoc, query, where } from '@angular/fire/firestore';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
 
+// Interface for Elecom account
 export interface ElecomAccount {
-  
-  username: string;
-  
+  uid?: string;        // Firestore document ID
+  username: string;    
   name: string;
- 
   email: string;
-  
-  password: string;
- 
   isActive: boolean;
+  createdAt?: any;     // Timestamp
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class ElecomAccountService {
-  private readonly STORAGE_KEY = 'evoting_elecoms';
+  private readonly collectionName = 'users';
 
- 
-  getAll(): ElecomAccount[] {
-    if (typeof localStorage === 'undefined') return [];
+  constructor(private firestore: Firestore, private auth: Auth) {}
 
-    const raw = localStorage.getItem(this.STORAGE_KEY);
-    if (!raw) return [];
-
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed as ElecomAccount[];
-      return [];
-    } catch {
-      return [];
-    }
+  // ✅ Get all Elecom accounts as AngularFire Observable
+  getAll(): Observable<ElecomAccount[]> {
+    const colRef = collection(this.firestore, this.collectionName);
+    const q = query(colRef, where('role', '==', 'elecom')); 
+    return collectionData(q, { idField: 'uid' }) as Observable<ElecomAccount[]>;
   }
 
-  private saveAll(list: ElecomAccount[]): void {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+  // ✅ Add new Elecom account (Firebase Auth + Firestore)
+  async add(elecom: ElecomAccount, password: string): Promise<void> {
+    const userCredential = await createUserWithEmailAndPassword(this.auth, elecom.email, password);
+    const uid = userCredential.user.uid;
+
+    await setDoc(doc(this.firestore, this.collectionName, uid), {
+      username: elecom.username,
+      name: elecom.name,
+      email: elecom.email,
+      role: 'elecom',
+      isActive: elecom.isActive,
+      createdAt: new Date()
+    });
   }
 
- 
-  add(elecom: ElecomAccount): void {
-    const current = this.getAll();
-
-    if (current.some((e) => e.username === elecom.username)) {
-      throw new Error('An Elecom account with this username already exists.');
-    }
-
-    current.push(elecom);
-    this.saveAll(current);
+  // ✅ Delete Elecom account
+  async delete(uid: string): Promise<void> {
+    await deleteDoc(doc(this.firestore, this.collectionName, uid));
   }
 
-  delete(username: string): void {
-    const current = this.getAll();
-    const filtered = current.filter((e) => e.username !== username);
-    this.saveAll(filtered);
-  }
-
-  findByCredentials(username: string, password: string): ElecomAccount | undefined {
-    return this.getAll().find((e) => e.username === username && e.password === password);
-  }
-
-
-  setActive(username: string, isActive: boolean): void {
-    const current = this.getAll();
-    const index = current.findIndex((e) => e.username === username);
-
-    if (index === -1) return;
-
-    current[index] = { ...current[index], isActive };
-    this.saveAll(current);
+  // ✅ Update isActive status
+  async setActive(uid: string, isActive: boolean): Promise<void> {
+    await setDoc(doc(this.firestore, this.collectionName, uid), { isActive }, { merge: true });
   }
 }
