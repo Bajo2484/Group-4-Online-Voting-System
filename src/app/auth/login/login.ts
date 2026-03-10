@@ -33,35 +33,8 @@ export class LoginComponent {
       return;
     }
 
-<<<<<<< HEAD
     try {
       let user: CurrentUser;
-=======
-    // Admin login
-    if (trimmedUsername === 'admin') {
-      if (trimmedPassword === 'admin123') {
-        this.auth.setCurrentUser({
-          role: 'admin',
-          name: ''
-        });
-        await Swal.fire({
-          icon: 'success',
-          title: 'Welcome Admin!',
-          text: 'Login successful',
-          timer: 1500,
-          showConfirmButton: false,
-        });
-        this.router.navigate(['/dashboard']);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Invalid Password',
-          text: 'Incorrect admin password',
-        });
-      }
-      return;
-    }
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 
       // Check if input is admin username
       if (!input.includes('@')) {
@@ -90,29 +63,7 @@ export class LoginComponent {
         return;
       }
 
-<<<<<<< HEAD
       if (user.role === 'elecom' && !user.isActive) {
-=======
-      this.auth.setCurrentUser({
-        role: 'student', studentId: student.id,
-        name: ''
-      });
-      await Swal.fire({
-        icon: 'success',
-        title: 'Login Successful!',
-        text: 'Welcome Student',
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      this.router.navigate(['/student-dashboard']);
-      return;
-    }
-
-    // Elecom login
-    const elecom = this.elecomAccounts.findByCredentials(trimmedUsername, trimmedPassword);
-    if (elecom) {
-      if (!elecom.isActive) {
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
         Swal.fire({
           icon: 'warning',
           title: 'Account Inactive',
@@ -121,14 +72,7 @@ export class LoginComponent {
         return;
       }
 
-<<<<<<< HEAD
       // Success alert
-=======
-      this.auth.setCurrentUser({
-        role: 'elecom', elecomUsername: elecom.username,
-        name: ''
-      });
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
       await Swal.fire({
         icon: 'success',
         title: `Welcome ${user.name || user.role}!`,

@@ -104,7 +104,6 @@
   <!-- Voters Table -->
   <div class="card">
     <h3>Voter List</h3>
-<<<<<<< HEAD
 
     <!-- Search Bar -->
     <div class="search-bar">
@@ -116,8 +115,6 @@
       >
     </div>
 
-=======
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
     <table class="voter-table">
       <thead>
         <tr>
@@ -130,11 +127,7 @@
         </tr>
       </thead>
       <tbody>
-<<<<<<< HEAD
         <tr *ngFor="let student of filteredStudents">
-=======
-        <tr *ngFor="let student of students">
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
           <td>{{ student.id }}</td>
           <td>{{ student.name }}</td>
           <td>{{ student.course }}</td>
@@ -145,15 +138,9 @@
             <button class="delete-btn" (click)="deleteStudent(student.id)">Delete</button>
           </td>
         </tr>
-<<<<<<< HEAD
         <tr *ngIf="filteredStudents.length === 0">
           <td colspan="6" style="text-align:center; padding:20px; color:#888;">
             No voters found.
-=======
-        <tr *ngIf="students.length === 0">
-          <td colspan="6" style="text-align:center; padding:20px; color:#888;">
-            No voters registered yet.
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
           </td>
         </tr>
       </tbody>

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-<<<<<<< HEAD
 import { CommonModule } from '@angular/common';
 
 interface Candidate {
@@ -147,15 +146,3 @@ export class StudentResult {
   ];
 
 }
-=======
-
-@Component({
-  selector: 'app-student-result',
-  imports: [],
-  templateUrl: './student-result.html',
-  styleUrl: './student-result.css',
-})
-export class StudentResult {
-
-}
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7

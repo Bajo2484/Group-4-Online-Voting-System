@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Auth, authState } from '@angular/fire/auth';
@@ -108,15 +107,3 @@ export class AdminDashboardComponent implements OnInit {
   }
 
 }
-=======
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
-@Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  templateUrl: './admin-dashboard.html',
-  styleUrls: ['./admin-dashboard.css']
-})
-export class DashboardComponent {}
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7

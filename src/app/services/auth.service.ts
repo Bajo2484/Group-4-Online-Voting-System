@@ -13,17 +13,11 @@ export interface CurrentUser {
   uid: string;
   email: string | null;
   role: UserRole;
-<<<<<<< HEAD
   name?: string;
   studentId?: string;
   elecomUsername?: string;
   hasVoted?: boolean;
   isActive?: boolean;
-=======
-  name: string;
-  studentId?: string;        // for student accounts
-  elecomUsername?: string;   // for Elecom accounts
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 }
 
 @Injectable({

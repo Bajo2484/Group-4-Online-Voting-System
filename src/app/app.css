@@ -83,7 +83,6 @@
 }
 
 
-
 .content {
   flex: 1;
   display: flex;
@@ -202,30 +201,7 @@
   padding: 24px 28px 32px;
 }
 
-<<<<<<< HEAD
 /* STUDENT HEADER */
-=======
-
-.student-layout {
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, #dbeafe, transparent 55%),
-    radial-gradient(circle at bottom right, #fee2e2, transparent 45%),
-    #e5e7eb;
-}
-
-.student-layout .content {
-  max-width: 1000px;
-  margin: 40px auto;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
-  overflow: hidden;
-}
-
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 .student-layout .content-header {
   padding: 12px 20px;
   display: flex;
@@ -323,20 +299,8 @@
   cursor: pointer;
 }
 
-<<<<<<< HEAD
 .student-layout .dropdown-menu li:hover {
   background-color: #f3f4f6;
-=======
-
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .panels {
-    grid-template-columns: 1fr;
-  }
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 }
 
 .student-layout .btn-logout {
@@ -349,43 +313,6 @@
   font-weight: 500;
 }
 
-<<<<<<< HEAD
 .student-layout .btn-logout:hover {
   background: #dc2626;
 }
-=======
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-  }
-
-  .logo-section {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-  }
-
-  .logo-section img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-
-  .menu {
-    display: flex;
-    overflow-x: auto;
-  }
-
-  .menu li {
-    white-space: nowrap;
-    margin-right: 8px;
-  }
-
-  .logout {
-    margin-top: 0;
-  }
-}
->>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
