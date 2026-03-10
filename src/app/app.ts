@@ -1,7 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { NgIf } from '@angular/common';
+<<<<<<< HEAD
 import { AuthService, CurrentUser } from './services/auth.service';
+=======
+import { AuthService } from './services/auth.service';
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 
 @Component({
   selector: 'app-root',
@@ -12,6 +16,11 @@ import { AuthService, CurrentUser } from './services/auth.service';
 })
 export class App {
 
+<<<<<<< HEAD
+=======
+  
+
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
   protected readonly title = signal('e-voting');
   protected isLoginRoute = false;
 
@@ -43,6 +52,7 @@ export class App {
       cleaned.startsWith('/login');
   }
 
+<<<<<<< HEAD
   // Auto-redirect if logged in and trying to access login page
   private checkRedirect(url: string): void {
     const cleaned = url.split('?')[0];
@@ -70,6 +80,15 @@ export class App {
   }
 
   // Toggle notifications
+=======
+  // Profile dropdown toggle
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+    this.isNotificationOpen = false; // close notif if open
+  }
+
+  // Notification toggle
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
   toggleNotifications(): void {
     this.isNotificationOpen = !this.isNotificationOpen;
     this.isProfileMenuOpen = false; // close profile if open
@@ -84,6 +103,7 @@ export class App {
     } else {
       this.router.navigate(['/student-profile']);
     }
+<<<<<<< HEAD
     this.isProfileMenuOpen = false;
   }
 
@@ -94,6 +114,21 @@ export class App {
     this.isProfileMenuOpen = false;
   }
 
+=======
+
+    this.isProfileMenuOpen = false;
+  }
+
+  // Navigate to settings
+
+goToAdminSettings(event?: MouseEvent): void {
+  event?.stopPropagation(); // prevent parent toggle
+  this.router.navigate(['/adminsettings']);
+  this.isProfileMenuOpen = false;
+}
+
+   
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
   // Logout
   logout(): void {
     this.auth.clear();

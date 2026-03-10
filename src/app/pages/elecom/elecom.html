@@ -79,6 +79,7 @@
           No Elecom accounts yet. Start by adding a new member on the left.
         </p>
 
+<<<<<<< HEAD
         <div *ngIf="elecoms.length" class="table-wrapper">
           <table class="elecom-table">
             <thead>
@@ -118,6 +119,40 @@
           </table>
         </div>
       </ng-container>
+=======
+      <div *ngIf="elecoms.length" class="table-wrapper">
+        <table class="elecom-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let elecom of elecoms">
+              <td>{{ elecom.username }}</td>
+              <td>{{ elecom.name }}</td>
+              <td>{{ elecom.email }}</td>
+              <td>
+                <span
+                  class="status-pill"
+                  [class.active]="elecom.isActive"
+                  [class.inactive]="!elecom.isActive"
+                >
+                  {{ elecom.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button type="button" class="remove-btn" (click)="deleteElecom(elecom.username)">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
     </article>
   </section>
 </div>

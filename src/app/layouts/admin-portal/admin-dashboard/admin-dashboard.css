@@ -54,7 +54,11 @@
 .stat-caption {
   margin: 0;
   font-size: 0.8rem;
+<<<<<<< HEAD
   color: rgba(255, 255, 255, 0.85);
+=======
+  color: #f8fafd;
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 }
 
 /* Individual Card Colors */
@@ -80,11 +84,15 @@
 
 .stat-card:nth-child(4) {
   background: linear-gradient(135deg, #f59e0b, #fde68a); /* Yellow */
+<<<<<<< HEAD
   color: #111827;
 }
 
 .stat-card:nth-child(4) .stat-caption {
   color: rgba(17, 24, 39, 0.75);
+=======
+  color: black;
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 }
 
 
@@ -102,6 +110,7 @@
   border: 1px solid #e5e7eb;
 }
 
+<<<<<<< HEAD
 .panel-header {
   display: flex;
   align-items: center;
@@ -112,11 +121,16 @@
 
 .panel h3 {
   margin: 0;
+=======
+.panel h3 {
+  margin: 0 0 10px;
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
   font-size: 1rem;
   font-weight: 600;
   color: #111827;
 }
 
+<<<<<<< HEAD
 .panel-badge {
   display: inline-flex;
   align-items: center;
@@ -133,12 +147,15 @@
   letter-spacing: 0.01em;
 }
 
+=======
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 .panel-empty {
   margin: 0;
   font-size: 0.9rem;
   color: #6b7280;
 }
 
+<<<<<<< HEAD
 .panel-list {
   list-style: none;
   padding: 0;
@@ -203,6 +220,8 @@
   line-height: 1.2;
 }
 
+=======
+>>>>>>> d55779593b30664f3eda9f9eec1350274bf88dd7
 
 @media (max-width: 1024px) {
   .stats-grid {

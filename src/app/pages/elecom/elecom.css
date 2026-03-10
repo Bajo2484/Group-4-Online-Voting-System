@@ -150,6 +150,19 @@
 }
 
 
+.remove-btn {
+  background-color: #ff4d4f; 
+  color: white; 
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #ff7875; 
+}
+
 @media screen and (max-width: 900px) {
   .elecom-layout {
     flex-direction: column;
