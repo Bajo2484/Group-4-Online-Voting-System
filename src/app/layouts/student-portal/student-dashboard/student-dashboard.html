@@ -20,9 +20,12 @@
         </div>
       </div>
 
-      <button *ngIf="!election.voted" class="vote-btn">
-        Vote Now
-      </button>
+      <button 
+      *ngIf="!election.voted" 
+      class="vote-btn" 
+      routerLink="/student-voting">
+       Vote Now
+        </button>
 
       <button *ngIf="election.voted" class="details-btn">
         View Details →

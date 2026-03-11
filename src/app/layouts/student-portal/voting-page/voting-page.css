@@ -1,0 +1,83 @@
+
+
+.green{
+    background:#2ecc71;
+}
+
+.blue{
+    background:#3498db;
+}
+
+/* POSITIONS */
+
+.position-section{
+    margin-bottom:30px;
+}
+
+.position-section h3{
+    margin-bottom:15px;
+}
+
+/* CANDIDATE GRID */
+
+.candidate-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:20px;
+}
+
+.candidate-card{
+    display:flex;
+    align-items:center;
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:6px;
+    background:white;
+}
+
+.candidate-img{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    margin-right:15px;
+}
+
+.candidate-info{
+    flex:1;
+}
+
+.party{
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:4px;
+    color:white;
+}
+
+.blue{
+    background:#3b5998;
+}
+
+.red{
+    background:#e74c3c;
+}
+
+input[type="radio"]{
+    transform: scale(1.3);
+}
+
+/* SUBMIT */
+
+.submit-area{
+    text-align:center;
+    margin-top:30px;
+}
+
+.submit-area button{
+    background:#2ecc71;
+    border:none;
+    color:white;
+    padding:12px 35px;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+}

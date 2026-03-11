@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
   templateUrl: './elecom-settings.html',
   styleUrls: ['./elecom-settings.css']
 })
-export class ElecomSettings {
+export class ElecomSettingsComponent {
 
   elecomName = 'Elecom Member';
   elecomEmail = 'elecom@example.com';
