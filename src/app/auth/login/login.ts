@@ -3,17 +3,19 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService, CurrentUser } from '../../services/auth.service';
 import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-auth-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
 })
 export class LoginComponent {
-  username = ''; // can be admin username, elecom email, or student ID
+  username = ''; 
   password = '';
+  loading = false;
 
   constructor(
     private readonly router: Router,
@@ -21,10 +23,14 @@ export class LoginComponent {
   ) {}
 
   async login() {
+    this.loading=true;
+
     const input = this.username.trim();
     const password = this.password.trim();
 
     if (!input || !password) {
+      this.loading = false;
+
       Swal.fire({
         icon: 'warning',
         title: 'Missing Information',
@@ -81,12 +87,16 @@ export class LoginComponent {
         showConfirmButton: false,
       });
 
+      this.loading = false;
+
       // Redirect based on role
       if (user.role === 'admin') this.router.navigate(['/dashboard']);
       else if (user.role === 'student') this.router.navigate(['/student-dashboard']);
       else if (user.role === 'elecom') this.router.navigate(['/elecom-dashboard']);
 
     } catch (error: any) {
+       this.loading = false;
+
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',

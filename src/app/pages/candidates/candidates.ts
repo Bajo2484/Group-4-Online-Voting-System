@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 })
 export class CandidatesComponent implements OnInit {
 
-  candidates$: Observable<Candidate[]>; // Firestore Observable
+  candidates$: Observable<Candidate[]>;
   candidates: Candidate[] = [];
 
   fullName = '';
@@ -23,6 +23,8 @@ export class CandidatesComponent implements OnInit {
   course = '';
   partyName = '';
   platform = '';
+  electionId: string = '';
+
   selectedFile: File | null = null;
   photoPreview: string | ArrayBuffer | null = null;
 
@@ -35,11 +37,11 @@ export class CandidatesComponent implements OnInit {
 
   atlasPositions: string[] = [
     'PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY','ASSOCIATE SECRETARY',
-    'AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO','2ND GOV','3RD YR GOV','4TH YR GOV'
+    'AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO','2ND YR GOV','3RD YR GOV','4TH YR GOV'
   ];
 
   regularPositions: string[] = [
-    'President','Vice President','Secretary','Treasurer','Auditor','PRO'
+    'PRESIDENT','Vice President','SECRETARY','TREASURER','AUDITOR','PRO'
   ];
 
   constructor(
@@ -50,7 +52,6 @@ export class CandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Subscribe to Firestore candidates (real-time updates)
     this.candidates$ = this.candidateService.getCandidates();
     this.candidates$.subscribe(data => {
       this.candidates = data;
@@ -83,6 +84,7 @@ export class CandidatesComponent implements OnInit {
   onPhotoSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
+
     this.selectedFile = input.files[0];
 
     const reader = new FileReader();
@@ -90,17 +92,23 @@ export class CandidatesComponent implements OnInit {
     reader.readAsDataURL(this.selectedFile);
   }
 
-  // ✅ Fixed registerCandidate: Firestore-only, no local push
   async registerCandidate() {
+
+    // ✅ VALIDATION
     if (!this.fullName || !this.position || !this.course) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Fields',
         text: 'Please fill all required fields!',
-        confirmButtonColor: '#3085d6'
       });
       return;
     }
+
+    // ✅ SAFER electionId generation
+    this.electionId = `${this.course.toUpperCase()}2026`;
+
+    console.log('COURSE:', this.course);
+    console.log('GENERATED electionId:', this.electionId);
 
     const candidate: Candidate = {
       fullName: this.fullName,
@@ -108,6 +116,7 @@ export class CandidatesComponent implements OnInit {
       position: this.position,
       partyName: this.partyName,
       platform: this.platform,
+      electionId: this.electionId,
       status: 'pending',
       photoUrl: (this.photoPreview as string) || ''
     };
@@ -115,26 +124,49 @@ export class CandidatesComponent implements OnInit {
     try {
       if (this.isEditMode && this.editingId) {
         await this.candidateService.updateCandidate(this.editingId, candidate);
-        Swal.fire({ icon: 'success', title: 'Updated!', text: 'Candidate updated!', confirmButtonColor: '#28a745' });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Candidate updated!',
+        });
+
       } else {
         await this.candidateService.addCandidate(candidate);
-        Swal.fire({ icon: 'success', title: 'Registered!', text: 'Candidate added!', confirmButtonColor: '#28a745' });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Registered!',
+          text: 'Candidate added!',
+        });
       }
+
       this.closeModal();
+
     } catch (error) {
       console.error('Error saving candidate:', error);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to save candidate.', confirmButtonColor: '#d33' });
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to save candidate.'
+      });
     }
   }
 
   editCandidate(c: Candidate) {
     this.fullName = c.fullName;
     this.course = c.organization;
+
     this.onCourseChange();
+
     this.position = c.position;
     this.partyName = c.partyName || '';
     this.platform = c.platform || '';
+
+    this.electionId = c.electionId || '';
     this.editingId = c.id || null;
+
     this.isEditMode = true;
     this.photoPreview = c.photoUrl || null;
     this.showModal = true;
@@ -146,8 +178,6 @@ export class CandidatesComponent implements OnInit {
       text: 'This candidate will be permanently deleted!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, delete it!'
     });
 
@@ -172,6 +202,7 @@ export class CandidatesComponent implements OnInit {
     this.course = '';
     this.partyName = '';
     this.platform = '';
+    this.electionId = '';
     this.positions = [];
     this.editingId = null;
     this.isEditMode = false;

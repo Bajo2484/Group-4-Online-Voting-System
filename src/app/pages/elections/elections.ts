@@ -18,8 +18,11 @@ export class ElectionComponent implements OnInit {
   isEditMode = false;
   editingId: string | null = null;
 
+  // ✅ UPDATED MODEL
   newElection: Election = {
     title: '',
+    organization: '',   // ✅ added
+    electionId: '',     // ✅ added
     startDate: new Date(),
     endDate: new Date(),
     status: 'upcoming',
@@ -30,6 +33,9 @@ export class ElectionComponent implements OnInit {
   startTimeInput: string = '';
   endDateInput: string = '';
   endTimeInput: string = '';
+
+  // ✅ organizations
+  organizations: string[] = ['USG', 'ATLAS', 'STCM', 'AEMT'];
 
   constructor(
     public electionService: ElectionService,
@@ -49,10 +55,9 @@ export class ElectionComponent implements OnInit {
     });
   }
 
-  /** Convert Firestore field to JS Date safely */
   private toDate(value: any): Date {
     if (!value) return new Date();
-    if (value?.toDate) return value.toDate(); // works with AngularFire Timestamps
+    if (value?.toDate) return value.toDate();
     return new Date(value);
   }
 
@@ -63,6 +68,7 @@ export class ElectionComponent implements OnInit {
     if (election) {
       this.editingId = election.id || null;
       this.newElection = { ...election };
+
       this.startDateInput = this.formatDate(election.startDate);
       this.startTimeInput = this.formatTime(election.startDate);
       this.endDateInput = this.formatDate(election.endDate);
@@ -78,16 +84,31 @@ export class ElectionComponent implements OnInit {
   }
 
   async saveElection() {
-    if (!this.newElection.title || !this.startDateInput || !this.startTimeInput || !this.endDateInput || !this.endTimeInput) {
+
+    // ✅ validation
+    if (
+      !this.newElection.title ||
+      !this.newElection.organization ||
+      !this.startDateInput ||
+      !this.startTimeInput ||
+      !this.endDateInput ||
+      !this.endTimeInput
+    ) {
       Swal.fire('Missing Fields', 'Please fill in all fields.', 'warning');
       return;
     }
 
-    // Merge date + time into Date objects
+    // Merge date + time
     this.newElection.startDate = new Date(`${this.startDateInput}T${this.startTimeInput}`);
     this.newElection.endDate = new Date(`${this.endDateInput}T${this.endTimeInput}`);
 
-    if (!this.newElection.status) this.newElection.status = 'upcoming';
+    // ✅ AUTO-GENERATE electionId (IMPORTANT)
+    const year = new Date(this.newElection.startDate).getFullYear();
+    this.newElection.electionId = this.newElection.organization.toLowerCase() + year;
+
+    if (!this.newElection.status) {
+      this.newElection.status = 'upcoming';
+    }
 
     try {
       if (this.isEditMode && this.editingId) {
@@ -97,10 +118,12 @@ export class ElectionComponent implements OnInit {
         await this.electionService.addElection(this.newElection);
         Swal.fire('Saved!', 'Election successfully added.', 'success');
       }
+
       this.closeModal();
-    } catch (error: any) {
+
+    } catch (error) {
       console.error('Error saving election:', error);
-      Swal.fire('Error', 'Failed to save election. Please try again.', 'error');
+      Swal.fire('Error', 'Failed to save election.', 'error');
     }
   }
 
@@ -125,14 +148,17 @@ export class ElectionComponent implements OnInit {
     }
   }
 
-  private resetForm() {
+  resetForm() {
     this.newElection = {
       title: '',
+      organization: '',
+      electionId: '',
       startDate: new Date(),
       endDate: new Date(),
       status: 'upcoming',
       candidates: []
     };
+
     this.startDateInput = '';
     this.startTimeInput = '';
     this.endDateInput = '';

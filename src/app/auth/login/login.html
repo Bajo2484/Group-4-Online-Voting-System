@@ -17,6 +17,7 @@
         placeholder="Username / Student ID"
         [(ngModel)]="username"
         name="username"
+        [disabled]="loading"
       />
 
       <div class="password-field">
@@ -25,11 +26,22 @@
           placeholder="Password"
           [(ngModel)]="password"
           name="password"
+          [disabled]="loading"
         />
         <span class="eye"></span>
       </div>
 
-      <button type="submit">Login</button>
+     <button type="submit" [disabled]="loading">
+
+      <span *ngIf="!loading">
+         Login
+      </span>
+
+    <span *ngIf="loading" class="loading-text">
+    <span class="spinner"></span> Logging in...
+  </span>
+
+</button>
     </form>
 
     <div class="links">

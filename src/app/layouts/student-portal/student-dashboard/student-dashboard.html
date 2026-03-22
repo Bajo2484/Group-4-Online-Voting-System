@@ -1,52 +1,51 @@
+<div class="dashboard-container" *ngIf="student; else loading">
 
-<div class="main-content">
+  <!-- Student Info -->
+  <div class="student-info">
+    <h2>Welcome, {{student.name}}</h2>
+    <p>Department {{student.course}}</p>
+    <p>You have 2 active elections </p>
+  </div>
 
-  <h2 class="page-title">Your Elections</h2>
-
- 
-  <div class="card-container">
-    <div class="election-card" *ngFor="let election of elections">
-
-      <div class="card-left">
-        <img [src]="election.logo" alt="logo">
-        <div>
-          <h4>{{ election.name }}</h4>
-
-          <span 
-            class="status"
-            [ngClass]="election.voted ? 'voted' : 'not-voted'">
-            {{ election.voted ? 'Voted' : 'Not Voted' }}
-          </span>
-        </div>
-      </div>
-
-      <button 
-      *ngIf="!election.voted" 
-      class="vote-btn" 
-      routerLink="/student-voting">
-       Vote Now
-        </button>
-
-      <button *ngIf="election.voted" class="details-btn">
-        View Details →
-      </button>
-
+  <!-- Progress Section -->
+   <h3> Your Elections</h3>
+  <div class="progress-section" *ngIf="elections.length > 0">
+    <p>Completed: {{completedCount}} / {{elections.length}}</p>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
     </div>
   </div>
 
+  <!-- Elections Cards -->
+  <div class="elections-container">
+    <div *ngFor="let election of elections" class="election-card">
 
-  <div class="progress-section">
-    <p>
-      {{ completedCount }} out of {{ elections.length }} elections completed
-    </p>
+      <!-- Voted / Not Voted Badge -->
+      <div *ngIf="election.voted" class="badge voted">Voted</div>
+      <div *ngIf="!election.voted" class="badge not-voted">Not Voted</div>
 
-    <div class="progress-bar">
-      <div 
-        class="progress-fill"
-        [style.width.%]="progressPercentage">
-      </div>
+      <!-- Election Logo -->
+      <img [src]="election.logo" 
+           [alt]="election.name || 'Election Logo'" 
+           [title]="election.name || 'Election Logo'">
+
+      <h3>{{election.name}}</h3>
+
+      <!-- Vote Button -->
+      <button *ngIf="!election.voted" 
+        class="vote-btn"
+        (click)="goToVote(election)">
+  Vote Now
+</button>
     </div>
   </div>
 
 </div>
 
+<!-- Loading Template -->
+<ng-template #loading>
+  <div class="loading">
+    <div class = "spinner"></div>
+    Loading student data...
+  </div>
+</ng-template>

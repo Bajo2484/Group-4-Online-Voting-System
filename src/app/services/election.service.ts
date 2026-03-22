@@ -5,6 +5,9 @@ import { Observable, map } from 'rxjs';
 export interface Election {
   id?: string;
   title: string;
+
+  organization: string;
+  electionId: string;
   startDate: Date;
   endDate: Date;
   status: 'upcoming' | 'active' | 'completed';

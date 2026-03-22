@@ -194,7 +194,6 @@
     </div>
 
     <div class="profile-dropdown" (click)="toggleProfileMenu()">
-      <img src="/student.jpg" alt="Student Avatar" class="profile-avatar" />
       <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Student User' }}</span>
       <span class="dropdown-icon">▼</span>
 

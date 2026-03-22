@@ -1,1 +1,80 @@
-<p>voting-page works!</p>
+<div class="main-content">
+
+  <!-- Title -->
+  <div class="title">{{electionName}}</div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <p><span class="green-box"></span> Select one candidate per position.</p>
+    <p><span class="blue-box"></span> Review your selections before confirming</p>
+  </div>
+
+  <!-- Positions -->
+  <div class="position" *ngFor="let position of positions">
+
+    <h3>{{ position.name }}</h3>
+
+    <div class="candidates">
+
+      <div class="card"
+           *ngFor="let candidate of position.candidates"
+           [class.selected]="isSelected(position.name, candidate)">
+
+        <div class="card-top"
+             (click)="selectCandidate(position.name, candidate)">
+
+          <div class="left">
+
+            <div class="avatar">
+              <img *ngIf="candidate.photoUrl" [src]="candidate.photoUrl" />
+            </div>
+
+            <div class="candidate-info">
+
+              <div class="candidate-name">
+                {{ candidate.fullName }}
+              </div>
+
+              <span class="party"
+                    [ngClass]="candidate.partyName?.toLowerCase().includes('blue') ? 'blue' : 'red'">
+                {{ candidate.partyName }}
+              </span>
+
+              <button class="view-platform-btn modern"
+                      (click)="$event.stopPropagation(); togglePlatform(position.name, candidate)">
+                {{ isExpanded(position.name, candidate) ? '▲ Hide Platform' : '▼ View Platform' }}
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDE RADIO -->
+          <div class="radio-side">
+            <div class="radio-circle"
+                 [class.active]="isSelected(position.name, candidate)">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PLATFORM -->
+        <div class="platform"
+             *ngIf="isExpanded(position.name, candidate)">
+          {{ candidate.platform }}
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ✅ GLOBAL SUBMIT BUTTON (MOVE HERE) -->
+  <div class="submit-container">
+    <button class="submit-btn" (click)="submitVotes()">
+      Submit Vote
+    </button>
+  </div>
+
+</div>

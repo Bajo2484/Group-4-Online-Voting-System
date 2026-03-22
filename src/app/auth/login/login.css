@@ -158,6 +158,29 @@ button:active {
   transform: translateY(-1px);
 }
 
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 3px solid white;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  margin-right: 6px;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 480px) {
   .card {
     padding: 28px 22px 22px;

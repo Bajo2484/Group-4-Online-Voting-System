@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, query } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, query,where} from '@angular/fire/firestore';
 import { Candidate } from './candidate.model';
 import { Observable } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,17 @@ export class CandidateService {
     const candidatesQuery = query(candidatesRef); // wrap in query for AngularFire 12
     return collectionData(candidatesQuery, { idField: 'id' }) as Observable<Candidate[]>;
   }
+  getCandidatesByElection(electionId: string): Observable<Candidate[]> {
+  const candidatesRef = collection(this.firestore, 'candidates'); 
+
+  const q = query(
+    candidatesRef,
+    where('electionId', '==', electionId)
+  );
+
+  return collectionData(q, { idField: 'id' }) as Observable<Candidate[]>;
+}
+
 
   /** Add a new candidate */
   async addCandidate(candidate: Candidate) {

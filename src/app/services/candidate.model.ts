@@ -25,4 +25,6 @@ export interface Candidate {
 
   status: CandidateStatus;
 
+  electionId?: string;
+
 }
