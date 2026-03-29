@@ -7,7 +7,51 @@
     <button class="btn-add" (click)="openModal()">+ Add Candidate</button>
   </div>
 
-  <!-- Modal -->
+  <!-- SEARCH BAR -->
+  <div class="search-bar">
+    <input type="text"
+           placeholder="Search by name, organization, or position..."
+           [(ngModel)]="searchTerm"
+           (input)="filterCandidates()">
+  </div>
+
+  <!-- CANDIDATE GRID -->
+  <div class="candidate-grid">
+    <div *ngFor="let c of paginatedCandidates()" class="candidate-card">
+      <img *ngIf="c.photoUrl" [src]="c.photoUrl" alt="Candidate Photo">
+      <img *ngIf="!c.photoUrl" src="assets/no-photo.png" alt="No Photo">
+
+      <div class="candidate-info">
+        <h4>{{ c.fullName }}</h4>
+        <p><strong>Organization:</strong> {{ c.organization }}</p>
+        <p><strong>Position:</strong> {{ c.position }}</p>
+        <p><strong>Party:</strong> {{ c.partyName || 'N/A' }}</p>
+        <p><strong>Platform:</strong> {{ c.platform || 'N/A' }}</p>
+        <span [ngClass]="getStatusClass(c.status)">{{ c.status }}</span>
+      </div>
+
+      <div class="card-actions">
+        <button *ngIf="c.status==='pending'" (click)="approveCandidate(c)" class="approve-btn">Approve</button>
+        <button *ngIf="c.status==='pending'" (click)="rejectCandidate(c)" class="reject-btn">Reject</button>
+        <button (click)="editCandidate(c)" class="edit-btn">Edit</button>
+        <button (click)="deleteCandidate(c.id!)" class="delete-btn">Delete</button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="allCandidates.length === 0" class="empty-state">
+      No candidates registered yet.
+    </div>
+  </div>
+
+  <!-- PAGINATION CONTROLS -->
+  <div class="pagination-controls" *ngIf="allCandidates.length > pageSize">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">← Prev</button>
+    <span>Page {{ currentPage }} / {{ totalPages() }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Next →</button>
+  </div>
+
+  <!-- MODAL -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -16,8 +60,7 @@
       </div>
 
       <form (ngSubmit)="registerCandidate()" class="form-grid">
-
-        <!-- Photo Upload -->
+        <!-- PHOTO UPLOAD -->
         <div class="form-group">
           <label>Upload Photo</label>
           <input type="file" (change)="onPhotoSelected($event)">
@@ -27,121 +70,53 @@
           </div>
         </div>
 
-        <!-- Full Name -->
+        <!-- FULL NAME -->
         <div class="form-group">
           <label>Full Name</label>
-          <input type="text"
-                 placeholder="Enter candidate full name"
-                 [(ngModel)]="fullName"
-                 name="fullName"
-                 required>
+          <input type="text" placeholder="Enter candidate full name"
+                 [(ngModel)]="fullName" name="fullName" required>
         </div>
 
-        <!-- Organization -->
+        <!-- ORGANIZATION -->
         <div class="form-group">
           <label>Organization</label>
-          <select [(ngModel)]="course"
-                  name="course"
-                  (change)="onCourseChange()"
-                  required>
+          <select [(ngModel)]="course" name="course" (change)="onCourseChange()" required>
             <option value="" disabled hidden>Select organization</option>
             <option *ngFor="let c of courses" [value]="c">{{ c }}</option>
           </select>
         </div>
 
-        <!-- Position -->
+        <!-- POSITION -->
         <div class="form-group">
           <label>Position</label>
-          <select [(ngModel)]="position"
-                  name="position"
-                  required>
+          <select [(ngModel)]="position" name="position" required>
             <option value="" disabled hidden>Select position</option>
             <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
           </select>
         </div>
 
-        <!-- Party / Team -->
+        <!-- PARTY -->
         <div class="form-group">
           <label>Party / Team</label>
-          <input type="text"
-                 placeholder="Enter party or team"
-                 [(ngModel)]="partyName"
-                 name="partyName">
+          <input type="text" placeholder="Enter party or team"
+                 [(ngModel)]="partyName" name="partyName">
         </div>
 
-        <!-- Platform / Goals -->
+        <!-- PLATFORM -->
         <div class="form-group">
           <label>Platform / Goals</label>
-          <textarea placeholder="Enter platform"
-                    [(ngModel)]="platform"
-                    name="platform"
-                    rows="4"
-                    maxlength="500"></textarea>
+          <textarea placeholder="Enter platform" [(ngModel)]="platform"
+                    name="platform" rows="4" maxlength="500"></textarea>
           <small>{{ platform.length || 0 }}/500 characters</small>
         </div>
 
-        <!-- Modal Actions -->
         <div class="modal-actions">
           <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
           <button type="submit" class="btn-save" [disabled]="!fullName || !position || !course">
             {{ isEditMode ? 'Update Candidate' : 'Save Candidate' }}
           </button>
         </div>
-
       </form>
     </div>
-  </div>
-
-  <!-- Candidate Table -->
-  <div class="card">
-    <h3>Candidate List</h3>
-    <table class="candidate-table">
-      <thead>
-        <tr>
-          <th>Photo</th>
-          <th>Full Name</th>
-          <th>Organization</th>
-          <th>Position</th>
-          <th>Party</th>
-          <th>Platform</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Use local candidates array instead of candidates$ -->
-        <tr *ngFor="let c of candidates">
-          <td>
-            <img *ngIf="c.photoUrl" [src]="c.photoUrl" class="candidate-photo">
-            <span *ngIf="!c.photoUrl">No Photo</span>
-          </td>
-          <td>{{ c.fullName }}</td>
-          <td>{{ c.organization }}</td>
-          <td>{{ c.position }}</td>
-          <td>{{ c.partyName }}</td>
-          <td>{{ c.platform }}</td>
-          <td><span [ngClass]="c.status">{{ c.status }}</span></td>
-         <td>
-  <button *ngIf="c.status==='pending'" 
-          (click)="approveCandidate(c)"
-          class="approve-btn">Approve</button>
-
-  <button *ngIf="c.status==='pending'" 
-          (click)="rejectCandidate(c)"
-          class="reject-btn">Reject</button>
-
-  <button (click)="editCandidate(c)" class="edit-btn">Edit</button>
-  <button (click)="deleteCandidate(c.id!)" class="delete-btn">Delete</button>
-</td>
-        </tr>
-
-        <!-- Empty state -->
-        <tr *ngIf="candidates.length === 0">
-          <td colspan="8" style="text-align:center; padding:20px; color:#888;">
-            No candidates registered yet.
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>

@@ -121,4 +121,16 @@ export class StudentDashboardComponent implements OnInit {
       }
     });
   }
+
+  handleElectionClick(election: any) {
+  if (election.voted) {
+    // Navigate to view-details page if already voted
+    this.router.navigate(['/view-details', election.org, election.electionId], {
+      queryParams: { name: election.name }
+    });
+  } else {
+    // Otherwise go to vote page
+    this.goToVote(election);
+  }
+}
 }

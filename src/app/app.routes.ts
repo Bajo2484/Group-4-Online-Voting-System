@@ -22,6 +22,7 @@ import { StudentResult } from './layouts/student-portal/student-result/student-r
 import { StudentProfileComponent } from './layouts/student-portal/student-setting/student-profile';
 import { ApplyCandidateComponent } from './layouts/student-portal/student-apply-candidate/student-apply-candidate';
 import { VotingPage } from './layouts/student-portal/voting-page/voting-page';
+import { VoteSuccess } from './layouts/student-portal/vote-success/vote-success';
 
 // Auth Guard
 import { authGuard } from './guards/auth.guard';
@@ -60,6 +61,7 @@ export const routes: Routes = [
   { path: 'student-profile', component: StudentProfileComponent, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-apply-candidate', component: ApplyCandidateComponent, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'voting/:org/:electionId',component: VotingPage, canActivate: [authGuard], data: {role: 'student'}},
+  { path: 'vote-success',component: VoteSuccess, },
 
   // Catch all (redirect unknown routes to login)
   { path: '**', redirectTo: '' }

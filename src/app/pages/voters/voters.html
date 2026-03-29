@@ -138,10 +138,11 @@
             <button class="delete-btn" (click)="deleteStudent(student.id)">Delete</button>
           </td>
         </tr>
+        
         <tr *ngIf="filteredStudents.length === 0">
-          <td colspan="6" style="text-align:center; padding:20px; color:#888;">
-            No voters found.
-          </td>
+         <td colspan="6" class="no-voters">
+           No voters found.
+            </td>
         </tr>
       </tbody>
     </table>

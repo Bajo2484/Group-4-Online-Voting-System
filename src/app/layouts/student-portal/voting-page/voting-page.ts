@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Firestore, collection, query, where, onSnapshot } from '@angular/fire/firestore';
 import { addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -22,30 +22,33 @@ export class VotingPage implements OnInit, OnDestroy {
   selectedVotes: { [position: string]: any } = {};
   expandedCandidate: { [position: string]: any | null } = {};
 
+  isConfirmed: boolean = false;
+
   private snapshotUnsub!: () => void;
 
   constructor(
     private route: ActivatedRoute,
     private firestore: Firestore,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   atlasOrder: string[] = [
-  'PRESIDENT',
-  'INTERNAL VICE PRESIDENT',
-  'EXTERNAL VICE PRESIDENT',
-  'GENERAL SECRETARY',
-  'ASSOCIATE SECRETARY',
-  'TREASURER',
-  'AUDITOR',
-  'INTERNAL PRO',
-  'EXTERNAL PRO',
-  '2ND YR GOV',
-  '3RD YR GOV',
-  '4TH YR GOV'
-];
+    'PRESIDENT',
+    'INTERNAL VICE PRESIDENT',
+    'EXTERNAL VICE PRESIDENT',
+    'GENERAL SECRETARY',
+    'ASSOCIATE SECRETARY',
+    'TREASURER',
+    'AUDITOR',
+    'INTERNAL PRO',
+    'EXTERNAL PRO',
+    '2ND YR GOV',
+    '3RD YR GOV',
+    '4TH YR GOV'
+  ];
 
-regularPositions: string[] = [
+  regularPositions: string[] = [
     'President',
     'VICE PRESIDENT',
     'SECRETARY',
@@ -53,9 +56,8 @@ regularPositions: string[] = [
     'AUDITOR',
     'PRO'
   ];
-      
-  ngOnInit() {
 
+  ngOnInit() {
     const params = this.route.snapshot.paramMap;
 
     this.org = (params.get('org') || '').toUpperCase();
@@ -69,10 +71,8 @@ regularPositions: string[] = [
       return;
     }
 
-    // ✅ Load candidates from Firestore
     this.loadCandidates(this.org, this.electionId);
 
-    // Optional election name
     this.route.queryParamMap.subscribe(params => {
       this.electionName = params.get('name') || 'Election';
     });
@@ -82,9 +82,7 @@ regularPositions: string[] = [
     if (this.snapshotUnsub) this.snapshotUnsub();
   }
 
-  // ✅ Fetch candidates from Firestore
   loadCandidates(org: string, electionId: string) {
-
     const candidatesRef = collection(this.firestore, 'candidates');
 
     const q = query(
@@ -94,13 +92,9 @@ regularPositions: string[] = [
       where('electionId', '==', electionId)
     );
 
-    // Cleanup previous listener
-    if (this.snapshotUnsub) {
-      this.snapshotUnsub();
-    }
+    if (this.snapshotUnsub) this.snapshotUnsub();
 
     this.snapshotUnsub = onSnapshot(q, (snapshot) => {
-
       const candidates = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -113,60 +107,59 @@ regularPositions: string[] = [
       candidates.forEach((c: any) => {
         if (!c.position) return;
 
-        if (!grouped[c.position]) {
-          grouped[c.position] = [];
-        }
-
+        if (!grouped[c.position]) grouped[c.position] = [];
         grouped[c.position].push(c);
       });
 
-      const order  = this.org == 'ATLAS'
-        ? this.atlasOrder
-        : this.regularPositions;
-        
-        this.positions = Object.keys(grouped)
-          .sort((a, b) => {
-            const indexA = order.indexOf(a);
-            const indexB = order.indexOf(b);
+      const order = this.org == 'ATLAS' ? this.atlasOrder : this.regularPositions;
 
-            return (indexA == -1 ? 999 : indexA) - (indexB == -1 ? 999 : indexB);
-          })
-
+      this.positions = Object.keys(grouped)
+        .sort((a, b) => {
+          const indexA = order.indexOf(a);
+          const indexB = order.indexOf(b);
+          return (indexA == -1 ? 999 : indexA) - (indexB == -1 ? 999 : indexB);
+        })
         .map(position => ({
-        name: position,
-        candidates: grouped[position]
-      }));
+          name: position,
+          candidates: grouped[position]
+        }));
 
       console.log("FIREBASE POSITIONS:", this.positions);
       this.cdr.detectChanges();
     });
   }
 
-  // ✅ Select candidate
   selectCandidate(position: string, candidate: any) {
     this.selectedVotes[position] = candidate;
   }
 
-  // ✅ Check selected
   isSelected(position: string, candidate: any): boolean {
     return this.selectedVotes[position] === candidate;
   }
 
-  // ✅ Toggle platform
   togglePlatform(position: string, candidate: any) {
     this.expandedCandidate[position] === candidate
       ? this.expandedCandidate[position] = null
       : this.expandedCandidate[position] = candidate;
   }
 
-  // ✅ Check expanded
   isExpanded(position: string, candidate: any): boolean {
     return this.expandedCandidate[position] === candidate;
   }
 
-  // ✅ Submit votes
   async submitVotes() {
     try {
+      for (let pos of this.positions) {
+        if (!this.selectedVotes[pos.name]) {
+          alert(`Please select a candidate for ${pos.name}`);
+          return;
+        }
+      }
+
+      if (!this.isConfirmed) {
+        alert('Please confirm your votes before submitting.');
+        return;
+      }
 
       if (!this.org || !this.electionId) {
         alert('Missing election information');
@@ -175,18 +168,28 @@ regularPositions: string[] = [
 
       const votesCollection = collection(this.firestore, 'votes');
 
+      // ✅ Only save minimal candidate info to prevent exceeding Firestore 1MB limit
       const voteData = {
         org: this.org,
         electionId: this.electionId,
-        votes: this.selectedVotes,
+        votes: Object.keys(this.selectedVotes).reduce((acc, position) => {
+          const candidate = this.selectedVotes[position];
+          acc[position] = {
+            id: candidate.id,
+            fullName: candidate.fullName,
+            partyName: candidate.partyName
+          };
+          return acc;
+        }, {} as any),
         createdAt: serverTimestamp()
       };
 
       await addDoc(votesCollection, voteData);
 
-      alert('Vote submitted successfully!');
-
       this.selectedVotes = {};
+      this.isConfirmed = false;
+
+      this.router.navigate(['/vote-success']);
 
     } catch (error) {
       console.error(error);

@@ -4,11 +4,11 @@
   <div class="student-info">
     <h2>Welcome, {{student.name}}</h2>
     <p>Department {{student.course}}</p>
-    <p>You have 2 active elections </p>
+    <p>You have {{elections.length}} active elections</p>
   </div>
 
   <!-- Progress Section -->
-   <h3> Your Elections</h3>
+  <h3>Your Elections</h3>
   <div class="progress-section" *ngIf="elections.length > 0">
     <p>Completed: {{completedCount}} / {{elections.length}}</p>
     <div class="progress-bar">
@@ -31,12 +31,13 @@
 
       <h3>{{election.name}}</h3>
 
-      <!-- Vote Button -->
-      <button *ngIf="!election.voted" 
-        class="vote-btn"
-        (click)="goToVote(election)">
-  Vote Now
-</button>
+      <!-- Vote / View Details Button -->
+      <button class="vote-btn"
+              [ngClass]="{'voted-btn': election.voted}"
+              (click)="handleElectionClick(election)">
+        {{ election.voted ? 'View Details' : 'Vote Now' }}
+      </button>
+      
     </div>
   </div>
 
@@ -45,7 +46,7 @@
 <!-- Loading Template -->
 <ng-template #loading>
   <div class="loading">
-    <div class = "spinner"></div>
+    <div class="spinner"></div>
     Loading student data...
   </div>
 </ng-template>

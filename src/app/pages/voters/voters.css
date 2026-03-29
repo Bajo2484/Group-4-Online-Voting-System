@@ -244,6 +244,12 @@
   background-color: #2b4a73;
 }
 
+.no-voters {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
 /* RESPONSIVE */
 @media (max-width: 600px) {
   .modal-card {

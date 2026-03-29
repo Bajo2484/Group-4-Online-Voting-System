@@ -27,4 +27,5 @@ export interface Candidate {
 
   electionId?: string;
 
+  createdAt?: number;
 }

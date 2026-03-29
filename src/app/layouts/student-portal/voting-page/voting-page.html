@@ -49,7 +49,6 @@
 
           </div>
 
-          <!-- RIGHT SIDE RADIO -->
           <div class="radio-side">
             <div class="radio-circle"
                  [class.active]="isSelected(position.name, candidate)">
@@ -58,7 +57,6 @@
 
         </div>
 
-        <!-- PLATFORM -->
         <div class="platform"
              *ngIf="isExpanded(position.name, candidate)">
           {{ candidate.platform }}
@@ -70,9 +68,19 @@
 
   </div>
 
-  <!-- ✅ GLOBAL SUBMIT BUTTON (MOVE HERE) -->
+  <!-- ✅ CHECKBOX (CORRECT PLACE) -->
+  <div class="confirmation">
+    <label>
+      <input type="checkbox" [(ngModel)]="isConfirmed" />
+      I confirm that all selected candidates are final.
+    </label>
+  </div>
+
+  <!-- ✅ FINAL SUBMIT BUTTON (ONLY ONE) -->
   <div class="submit-container">
-    <button class="submit-btn" (click)="submitVotes()">
+    <button class="submit-btn"
+            [disabled]="!isConfirmed"
+            (click)="submitVotes()">
       Submit Vote
     </button>
   </div>
