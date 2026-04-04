@@ -1,12 +1,12 @@
 <div class="main-content">
 
   <!-- Title -->
-  <div class="title">{{electionName}}</div>
+  <div class="title">{{ electionName }}</div>
 
   <!-- Instructions -->
   <div class="instructions">
     <p><span class="green-box"></span> Select one candidate per position.</p>
-    <p><span class="blue-box"></span> Review your selections before confirming</p>
+    <p><span class="blue-box"></span> Review your selections before confirming.</p>
   </div>
 
   <!-- Positions -->
@@ -26,7 +26,8 @@
           <div class="left">
 
             <div class="avatar">
-              <img *ngIf="candidate.photoUrl" [src]="candidate.photoUrl" />
+              <img [src]="candidate.photoUrl || '/default-avatar.jpg'"
+                   [alt]="candidate.fullName" />
             </div>
 
             <div class="candidate-info">
@@ -36,8 +37,11 @@
               </div>
 
               <span class="party"
-                    [ngClass]="candidate.partyName?.toLowerCase().includes('blue') ? 'blue' : 'red'">
-                {{ candidate.partyName }}
+                    [ngClass]="{
+                      blue: candidate.partyName?.toLowerCase().includes('blue'),
+                      red: !candidate.partyName?.toLowerCase().includes('blue')
+                    }">
+                {{ candidate.partyName || 'Independent' }}
               </span>
 
               <button class="view-platform-btn modern"
@@ -59,7 +63,7 @@
 
         <div class="platform"
              *ngIf="isExpanded(position.name, candidate)">
-          {{ candidate.platform }}
+          {{ candidate.platform || 'No platform available.' }}
         </div>
 
       </div>
@@ -68,7 +72,7 @@
 
   </div>
 
-  <!-- ✅ CHECKBOX (CORRECT PLACE) -->
+  <!-- Confirmation Checkbox -->
   <div class="confirmation">
     <label>
       <input type="checkbox" [(ngModel)]="isConfirmed" />
@@ -76,7 +80,7 @@
     </label>
   </div>
 
-  <!-- ✅ FINAL SUBMIT BUTTON (ONLY ONE) -->
+  <!-- Final Submit Button -->
   <div class="submit-container">
     <button class="submit-btn"
             [disabled]="!isConfirmed"

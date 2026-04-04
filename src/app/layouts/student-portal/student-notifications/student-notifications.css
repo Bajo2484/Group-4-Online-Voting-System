@@ -1,0 +1,61 @@
+.notifications-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.notifications-container h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+}
+
+.no-notifications {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-list li {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.notification-list li:hover {
+  background: #f1f1f1;
+}
+
+.notification-list li.unseen {
+  background: #e0f7fa;
+  font-weight: 500;
+}
+
+.message {
+  flex: 1;
+}
+
+.date {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.unseen-count {
+  margin-top: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #d32f2f;
+}

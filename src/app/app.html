@@ -1,69 +1,61 @@
 <ng-container *ngIf="isLoginRoute; else mainLayout">
-  <!-- Login page only -->
+  <!-- LOGIN PAGE -->
   <router-outlet></router-outlet>
 </ng-container>
 
 <ng-template #mainLayout>
-  <!-- Admin Layout -->
+
+  <!-- ================= ADMIN LAYOUT ================= -->
   <ng-container *ngIf="auth.isAdmin(); else elecomLayout">
     <div class="app-layout">
+      <!-- Sidebar -->
       <aside class="sidebar">
         <div class="logo-section">
           <img src="/logo.jpg" alt="Application logo" />
           <h2>Admin Panel</h2>
           <p class="logo-subtitle">Online Voting System</p>
         </div>
-
         <nav class="nav-menu">
           <ul class="menu">
             <li routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
               <span>Dashboard</span>
             </li>
-            <li routerLink="/candidates" routerLinkActive="active"><span>ManageCandidates</span></li>
+            <li routerLink="/candidates" routerLinkActive="active"><span>Manage Candidates</span></li>
             <li routerLink="/voters" routerLinkActive="active"><span>Manage Voters</span></li>
-             <li routerLink="/manage-elecom" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-              <span>Manage Elecom</span>
+            <li routerLink="/manage-elecom" routerLinkActive="active"><span>Manage Elecom</span></li>
             <li routerLink="/elections" routerLinkActive="active"><span>Elections</span></li>
             <li routerLink="/results" routerLinkActive="active"><span>View Results</span></li>
-           
-          
-            
           </ul>
         </nav>
-
-       
       </aside>
 
+      <!-- Main Content -->
       <main class="content">
+        <!-- Topbar / Header -->
         <header class="content-header">
-  <div class="header-left">
-    <h1 class="content-title">Admin Panel</h1>
-    <p class="content-subtitle">
-      Manage elections, voters, and results.
-    </p>
-  </div>
-  <!-- Right side topbar -->
-  <div class="topbar-right">
+          <div class="header-left">
+            <h1 class="content-title">Admin Panel</h1>
+            <p class="content-subtitle">Manage elections, voters, and results.</p>
+          </div>
 
-   
+          <div class="topbar-right">
+            <div class="notification-icon" (click)="goToNotifications()">
+              <span class="bell">🔔</span>
+              <span class="badge" *ngIf="unseenCount > 0">{{ unseenCount }}</span>
+            </div>
 
-     <div class="notification-icon" (click)="toggleNotifications()">
-      <span class="bell">🔔</span>
-      <span class="badge">3</span>
-     </div>
-     
-     <div class="profile-dropdown" (click)="toggleProfileMenu()">
-      <img src="/admin.jpg" alt="Admin Avatar" class="profile-avatar" />
-      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
-      <span class="dropdown-icon">▼</span>
+            <div class="profile-dropdown" (click)="toggleProfileMenu()">
+              <img src="/admin.jpg" alt="Admin Avatar" class="profile-avatar" />
+              <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
+              <span class="dropdown-icon">▼</span>
 
-      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
-      <li (click)="goToAdminSettings($event)">Settings</li>
-      <li (click)="logout(); $event.stopPropagation()">Logout</li>
-      </ul>
-    </div>
-  </div>
-</header>
+              <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+                <li (click)="goToAdminSettings($event)">Settings</li>
+                <li (click)="logout(); $event.stopPropagation()">Logout</li>
+              </ul>
+            </div>
+          </div>
+        </header>
 
         <section class="content-body">
           <router-outlet></router-outlet>
@@ -72,144 +64,115 @@
     </div>
   </ng-container>
 
-  <!-- Elecom Layout -->
+  <!-- ================= ELECOM LAYOUT ================= -->
   <ng-template #elecomLayout>
     <ng-container *ngIf="auth.isElecom(); else studentLayout">
       <div class="app-layout elecom-layout">
+        <!-- Sidebar -->
         <aside class="sidebar">
           <div class="logo-section">
             <img src="/logo.jpg" alt="Application logo" />
             <h2>Elecom Panel</h2>
             <p class="logo-subtitle">Election Committee Portal</p>
           </div>
-
           <ul class="menu">
-  <li routerLink="/elecom-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span>Elecom Dashboard</span>
-  </li>
+            <li routerLink="/elecom-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span>Elecom Dashboard</span></li>
+            <li routerLink="/elecom-voters" routerLinkActive="active"><span>Voters</span></li>
+            <li routerLink="/elecom-candidates" routerLinkActive="active"><span>Candidates</span></li>
+            <li routerLink="/elecom-results" routerLinkActive="active"><span>Results</span></li>
+          </ul>
+        </aside>
 
-  <li routerLink="/elecom-voters" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span>Voters</span>
-  </li>
+        <!-- Main Content -->
+        <main class="content">
+          <header class="content-header">
+            <div class="header-left">
+              <h1 class="content-title">Elecom Panel</h1>
+              <p class="content-subtitle">Manage elections and voters.</p>
+            </div>
 
-  <li routerLink="/elecom-candidates" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span>Candidates</span>
-  </li>
+            <div class="topbar-right">
+              <div class="notification-icon" (click)="goToNotifications()">
+                <span class="bell">🔔</span>
+                <span class="badge" *ngIf="unseenCount > 0">{{ unseenCount }}</span>
+              </div>
 
-  <li routerLink="/elecom-results" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span>Results</span>
-  </li>
+              <div class="profile-dropdown" (click)="toggleProfileMenu()">
+                <img src="/elecom.jpg" alt="Elecom Avatar" class="profile-avatar" />
+                <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Elecom User' }}</span>
+                <span class="dropdown-icon">▼</span>
 
-  
-  </ul>
-        
-      </aside>
+                <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+                  <li (click)="($event)">Settings</li>
+                  <li (click)="logout(); $event.stopPropagation()">Logout</li>
+                </ul>
+              </div>
+            </div>
+          </header>
 
-      <main class="content">
-        <header class="content-header">
-  <div class="header-left">
-    <h1 class="content-title">Admin Panel</h1>
-    <p class="content-subtitle">
-      Manage elections, voters, and results.
-    </p>
-  </div>
-  <!-- Right side topbar -->
-  <div class="topbar-right">
-
-   
-
-     <div class="notification-icon" (click)="toggleNotifications()">
-      <span class="bell">🔔</span>
-      <span class="badge">3</span>
-     </div>
-     
-     <div class="profile-dropdown" (click)="toggleProfileMenu()">
-      <img src="elecom.jpg" alt="Admin Avatar" class="profile-avatar" />
-      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
-      <span class="dropdown-icon">▼</span>
-
-      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
-      <li (click)="($event)">Settings</li>
-      <li (click)="logout(); $event.stopPropagation()">Logout</li>
-      </ul>
-    </div>
-  </div>
-</header>
-
-        <section class="content-body">
-          <router-outlet></router-outlet>
-        </section>
-      </main>
-    </div>
-  </ng-container>
-
-    <!-- Student Layout -->
-    <ng-template #studentLayout>
-  <div class="app-layout student-layout">
-    <aside class="sidebar">
-      <div class="logo-section">
-        <img src="/logo.jpg" alt="Logo" />
-        <h2>E-Voting</h2>
+          <section class="content-body">
+            <router-outlet></router-outlet>
+          </section>
+        </main>
       </div>
+    </ng-container>
 
-      <nav class="nav-menu">
-        <ul class="menu">
-          <li routerLink="/student-dashboard"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }">
-            <span>Dashboard</span>
-          </li>
+    <!-- ================= STUDENT LAYOUT ================= -->
+    <ng-template #studentLayout>
+      <div class="app-layout student-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="logo-section">
+            <img src="/logo.jpg" alt="Logo" />
+            <h2>E-Voting</h2>
+          </div>
 
-          <li routerLink="/student-result"
-              routerLinkActive="active">
-            <span>Results</span>
-          </li>
+          <nav class="nav-menu">
+            <ul class="menu">
+              <li routerLink="/student-dashboard" routerLinkActive="active"><span>Dashboard</span></li>
+              <li routerLink="/student-result" routerLinkActive="active"><span>Results</span></li>
+              <li routerLink="/student-apply-candidate" routerLinkActive="active"><span>Apply Candidate</span></li>
+            </ul>
+          </nav>
+        </aside>
 
-              
-          <li routerLink="/student-apply-candidate"
-              routerLinkActive="active">
-            <span>Apply Candidate</span>
-          </li>
-        </ul>
-      </nav>
+        <!-- Main Content -->
+        <main class="content">
+          <header class="content-header">
+            <div class="header-left">
+              <div class="header-titles">
+                <h1 class="content-title">Student Panel</h1>
+                <p class="content-subtitle">Check notifications and vote safely.</p>
+              </div>
+            </div>
 
-   
-    </aside >
-
-    <main class="content">
-      <header class="content-header">
-  <!-- Left side: Logo + Title -->
-  <div class="header-left">
-    <div class="header-titles">
-      <h1 class="content-title">Admin Panel</h1>
-      <p class="content-subtitle">Manage elections, voters, and results.</p>
-    </div>
+ <!-- Topbar -->
+<div class="topbar-right">
+  <!-- Notification Icon -->
+  <div class="notification-icon" (click)="goToNotifications()">
+    <span class="bell">🔔</span>
+    <span class="badge" *ngIf="unseenCount > 0">{{ unseenCount }}</span>
   </div>
 
-  <!-- Right side: Notifications, Profile, Logout -->
-  <div class="header-right">
-    <div class="notification-icon" (click)="toggleNotifications()">
-      <span class="bell">🔔</span>
-      <span class="badge">3</span>
-    </div>
+              <!-- Profile -->
+              <div class="profile-dropdown" (click)="toggleProfileMenu()">
+                <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Student User' }}</span>
+                <span class="dropdown-icon">▼</span>
 
-    <div class="profile-dropdown" (click)="toggleProfileMenu()">
-      <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Student User' }}</span>
-      <span class="dropdown-icon">▼</span>
+                <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
+                  <li (click)="logout(); $event.stopPropagation()">Logout</li>
+                  <li (click)="goToProfile(); $event.stopPropagation()">Settings</li>
+                </ul>
+              </div>
+            </div>
+          </header>
 
-      <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
-        <li (click)="logout(); $event.stopPropagation()">Logout</li>
-        <li (click)="goToProfile(); $event.stopPropagation()">Settings</li>
-      </ul>
-    </div>
+          <section class="content-body">
+            <router-outlet></router-outlet>
+          </section>
+        </main>
+      </div>
+    </ng-template>
 
-   
-  </div>
-</header>
-
-      <section class="content-body">
-        <router-outlet></router-outlet>
-      </section>
-    </main>
-  </div>
+  </ng-template>
 </ng-template>

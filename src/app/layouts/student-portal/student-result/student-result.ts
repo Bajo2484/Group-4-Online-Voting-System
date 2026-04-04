@@ -1,148 +1,159 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgFor, NgIf, NgClass } from '@angular/common';
+import { Firestore, collection, getDocs, query, where } from '@angular/fire/firestore';
 
 interface Candidate {
+  id: string;
   name: string;
   photo?: string;
   votes: number;
-  percentage: number;
-  winner: boolean;
+  isWinner?: boolean;
+  rank?: number;
 }
 
 interface Position {
-  id: string;
-  title: string;
+  name: string;
   candidates: Candidate[];
 }
 
 @Component({
   selector: 'app-student-result',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgFor, NgIf, NgClass],
   templateUrl: './student-result.html',
   styleUrls: ['./student-result.css']
 })
 export class StudentResult {
 
-  // Active tab
-  activeTab: string = 'usg';
+  orgList: string[] = ['USG', 'ATLAS', 'STCM', 'AEMT'];
+  activeOrg: string = 'USG';
 
-  // Active accordion for BSIT/ATLAS
-  activeAccordion: string | null = null;
+  usgPositions: Position[] = [];
+  atlasPositions: Position[] = [];
+  stcmPositions: Position[] = [];
+  aemtPositions: Position[] = [];
 
-  // Switch tabs
-  setTab(tab: string): void {
-    this.activeTab = tab;
+  constructor(private firestore: Firestore) {
+    this.loadAllData();
   }
 
-  // Toggle accordion
-  toggleAccordion(positionId: string): void {
-    this.activeAccordion =
-      this.activeAccordion === positionId ? null : positionId;
+  async loadAllData() {
+    const candidates = await this.getCandidates();
+    const votes = await this.getVotes();
+    this.processResults(candidates, votes);
   }
 
-  // ================= USG Positions =================
-  usgPositions: Position[] = [
-    {
-      id: 'president',
-      title: 'President',
-      candidates: [
-        { name: 'John Lee', photo: 'assets/photos/john.jpg', votes: 1200, percentage: 55, winner: true },
-        { name: 'Jane Cruz', photo: 'assets/photos/jane.jpg', votes: 980, percentage: 45, winner: false }
-      ]
-    },
-    {
-      id: 'vp',
-      title: 'Vice President',
-      candidates: [
-        { name: 'Mark Reyes', photo: 'assets/photos/mark.jpg', votes: 1100, percentage: 60, winner: true },
-        { name: 'Anna Santos', photo: 'assets/photos/anna.jpg', votes: 730, percentage: 40, winner: false }
-      ]
-    },
-    {
-      id: 'secretary',
-      title: 'Secretary',
-      candidates: [
-        { name: 'Pauline Tan', photo: 'assets/photos/pauline.jpg', votes: 1000, percentage: 50, winner: true },
-        { name: 'Luis Gomez', photo: 'assets/photos/luis.jpg', votes: 1000, percentage: 50, winner: false }
-      ]
-    },
-    {
-      id: 'treasurer',
-      title: 'Treasurer',
-      candidates: [
-        { name: 'Cathy Lim', photo: 'assets/photos/cathy.jpg', votes: 1150, percentage: 57, winner: true },
-        { name: 'Eric Tan', photo: 'assets/photos/eric.jpg', votes: 870, percentage: 43, winner: false }
-      ]
-    },
-    {
-      id: 'auditor',
-      title: 'Auditor',
-      candidates: [
-        { name: 'Miguel Cruz', photo: 'assets/photos/miguel.jpg', votes: 1300, percentage: 65, winner: true },
-        { name: 'Rosa Lee', photo: 'assets/photos/rosa.jpg', votes: 700, percentage: 35, winner: false }
-      ]
-    },
-    {
-      id: 'pro',
-      title: 'PRO',
-      candidates: [
-        { name: 'David Santos', photo: 'assets/photos/david.jpg', votes: 1400, percentage: 70, winner: true },
-        { name: 'Liza Tan', photo: 'assets/photos/liza.jpg', votes: 600, percentage: 30, winner: false }
-      ]
+  async getCandidates(): Promise<any[]> {
+    const ref = collection(this.firestore, 'candidates');
+    const q = query(ref, where('status', '==', 'approved'));
+    const snap = await getDocs(q);
+
+    return snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  }
+
+  async getVotes(): Promise<any[]> {
+    const ref = collection(this.firestore, 'votes');
+    const snap = await getDocs(ref);
+    return snap.docs.map(doc => doc.data());
+  }
+
+  processResults(candidates: any[], votes: any[]) {
+
+    const orgMap: any = { USG: {}, ATLAS: {}, STCM: {}, AEMT: {} };
+
+    // INIT
+    candidates.forEach(c => {
+      const org = c.organization?.toUpperCase();
+      const position = c.position?.toUpperCase();
+
+      if (!orgMap[org]) return;
+
+      if (!orgMap[org][position]) {
+        orgMap[org][position] = [];
+      }
+
+      orgMap[org][position].push({
+        id: c.id,
+        name: c.fullName,
+        photo: c.photoUrl || c.photoURL || c.photo || 'https://via.placeholder.com/40',
+        votes: 0
+      });
+    });
+
+    // COUNT VOTES
+    votes.forEach(v => {
+      const org = v.org?.toUpperCase();
+
+      Object.keys(v.votes || {}).forEach(pos => {
+        const candidateId = v.votes[pos]?.id;
+
+        const list = orgMap[org]?.[pos.toUpperCase()];
+        if (!list) return;
+
+        const found = list.find((c: Candidate) => c.id === candidateId);
+        if (found) found.votes++;
+      });
+    });
+
+    this.usgPositions = this.convert(orgMap['USG']);
+    this.atlasPositions = this.convert(orgMap['ATLAS']);
+    this.stcmPositions = this.convert(orgMap['STCM']);
+    this.aemtPositions = this.convert(orgMap['AEMT']);
+  }
+
+  convert(data: any): Position[] {
+    const positions: Position[] = [];
+
+    Object.keys(data).forEach(pos => {
+      const candidates = data[pos];
+
+      const maxVotes = Math.max(...candidates.map((c: Candidate) => c.votes), 0);
+
+      candidates.forEach((c: Candidate) => {
+        c.isWinner = c.votes === maxVotes && maxVotes > 0;
+      });
+
+      positions.push({
+        name: pos,
+        candidates
+      });
+    });
+
+    return positions;
+  }
+
+  setActiveOrg(org: string) {
+    this.activeOrg = org;
+  }
+
+  getPositions(org: string): Position[] {
+    switch (org) {
+      case 'USG': return this.usgPositions;
+      case 'ATLAS': return this.atlasPositions;
+      case 'STCM': return this.stcmPositions;
+      case 'AEMT': return this.aemtPositions;
+      default: return [];
     }
-  ];
+  }
 
-  // ================= BSIT / ATLAS Positions (12) =================
-  atlasPositions: Position[] = [
-    { id: 'president', title: 'President', candidates: [
-      { name: 'Mark Santos', photo: 'assets/photos/mark.jpg', votes: 150, percentage: 60, winner: true },
-      { name: 'Paul Reyes', photo: 'assets/photos/paul.jpg', votes: 100, percentage: 40, winner: false }
-    ]},
-    { id: 'ivp', title: 'Internal Vice President', candidates: [
-      { name: 'Anna Cruz', photo: 'assets/photos/anna.jpg', votes: 120, percentage: 70, winner: true },
-      { name: 'John Tan', photo: 'assets/photos/john2.jpg', votes: 50, percentage: 30, winner: false }
-    ]},
-    { id: 'evp', title: 'External Vice President', candidates: [
-      { name: 'Pauline Reyes', photo: 'assets/photos/pauline2.jpg', votes: 80, percentage: 55, winner: true },
-      { name: 'Mark Lim', photo: 'assets/photos/mark2.jpg', votes: 65, percentage: 45, winner: false }
-    ]},
-    { id: 'secretary', title: 'General Secretary', candidates: [
-      { name: 'Luis Gomez', photo: 'assets/photos/luis2.jpg', votes: 90, percentage: 60, winner: true },
-      { name: 'Rosa Tan', photo: 'assets/photos/rosa2.jpg', votes: 60, percentage: 40, winner: false }
-    ]},
-    { id: 'assocSec', title: 'Associate Secretary', candidates: [
-      { name: 'David Lee', photo: 'assets/photos/david2.jpg', votes: 100, percentage: 65, winner: true },
-      { name: 'Cathy Tan', photo: 'assets/photos/cathy2.jpg', votes: 55, percentage: 35, winner: false }
-    ]},
-    { id: 'treasurer', title: 'Treasurer', candidates: [
-      { name: 'Eric Santos', photo: 'assets/photos/eric2.jpg', votes: 110, percentage: 70, winner: true },
-      { name: 'Liza Cruz', photo: 'assets/photos/liza2.jpg', votes: 45, percentage: 30, winner: false }
-    ]},
-    { id: 'auditor', title: 'Auditor', candidates: [
-      { name: 'Miguel Tan', photo: 'assets/photos/miguel2.jpg', votes: 95, percentage: 60, winner: true },
-      { name: 'Rosa Gomez', photo: 'assets/photos/rosa3.jpg', votes: 65, percentage: 40, winner: false }
-    ]},
-    { id: 'proInternal', title: 'PRO Internal', candidates: [
-      { name: 'David Cruz', photo: 'assets/photos/david3.jpg', votes: 80, percentage: 50, winner: true },
-      { name: 'Anna Lim', photo: 'assets/photos/anna2.jpg', votes: 80, percentage: 50, winner: false }
-    ]},
-    { id: 'proExternal', title: 'PRO External', candidates: [
-      { name: 'Liza Santos', photo: 'assets/photos/liza3.jpg', votes: 75, percentage: 55, winner: true },
-      { name: 'Paul Tan', photo: 'assets/photos/paul2.jpg', votes: 60, percentage: 45, winner: false }
-    ]},
-    { id: 'gov2', title: '2nd Year Governor', candidates: [
-      { name: 'Mark Tan', photo: 'assets/photos/mark3.jpg', votes: 85, percentage: 60, winner: true },
-      { name: 'Anna Gomez', photo: 'assets/photos/anna3.jpg', votes: 55, percentage: 40, winner: false }
-    ]},
-    { id: 'gov3', title: '3rd Year Governor', candidates: [
-      { name: 'John Cruz', photo: 'assets/photos/john3.jpg', votes: 90, percentage: 65, winner: true },
-      { name: 'Paul Lee', photo: 'assets/photos/paul3.jpg', votes: 50, percentage: 35, winner: false }
-    ]},
-    { id: 'gov4', title: '4th Year Governor', candidates: [
-      { name: 'Anna Santos', photo: 'assets/photos/anna4.jpg', votes: 100, percentage: 70, winner: true },
-      { name: 'Mark Reyes', photo: 'assets/photos/mark4.jpg', votes: 45, percentage: 30, winner: false }
-    ]}
-  ];
+  getTotalVotes(position: Position): number {
+    return position.candidates.reduce((sum: number, c: Candidate) => sum + c.votes, 0);
+  }
 
+  getPercentage(candidate: Candidate, position: Position): number {
+    const total = this.getTotalVotes(position);
+    return total ? Math.round((candidate.votes / total) * 100) : 0;
+  }
+
+  getRankedCandidates(position: Position): Candidate[] {
+    return [...position.candidates]
+      .sort((a: Candidate, b: Candidate) => b.votes - a.votes)
+      .map((c: Candidate, index: number) => ({
+        ...c,
+        rank: index + 1
+      }));
+  }
 }

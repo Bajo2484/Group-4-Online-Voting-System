@@ -3,150 +3,85 @@
   <!-- HEADER -->
   <div class="header">
     <h1>Candidate Application</h1>
+    <p>Fill out the form below to apply as a candidate. All submissions require admin approval.</p>
   </div>
 
-  <!-- GUIDELINES CHECKBOX -->
+  <!-- GUIDELINES -->
   <div class="instructions-bar">
     <div class="instruction-checkbox">
-      <input
-        type="checkbox"
-        id="agree-guidelines"
-        name="agreeInstructions"
-        [(ngModel)]="agreeInstructions">
+      <input type="checkbox" id="agree-guidelines" [(ngModel)]="agreeInstructions">
       <label for="agree-guidelines">I understand the guidelines.</label>
     </div>
   </div>
 
-  <!-- FORM CONTAINER -->
+  <!-- FORM CARD -->
   <div class="form-container">
     <div class="card horizontal">
 
-      <!-- PHOTO SECTION -->
+      <!-- PHOTO -->
       <div class="photo-section">
         <div class="avatar">
-          <img *ngIf="photoPreview; else defaultAvatar" [src]="photoPreview">
+          <img *ngIf="photoPreview; else defaultAvatar" [src]="photoPreview" alt="Photo Preview">
           <ng-template #defaultAvatar>
-            <div class="default-avatar"></div>
+            <div class="default-avatar">No Photo</div>
           </ng-template>
         </div>
-
         <label class="upload-btn">
           Upload Photo
           <input type="file" hidden (change)="onFileSelected($event)">
         </label>
-
         <small>JPG or PNG only</small>
       </div>
 
       <!-- FORM FIELDS -->
       <div class="form-fields">
 
-        <!-- Full Name -->
         <div class="form-group">
           <label>Full Name:</label>
-          <input
-            type="text"
-            name="fullName"
-            [(ngModel)]="fullName"
-            placeholder="Juan Dela Cruz">
+          <input type="text" placeholder="Juan Dela Cruz" [(ngModel)]="fullName">
         </div>
 
         <div class="form-group">
-  <label for="organization">Organization:</label>
-  <select
-    id="organization"
-    name="organization"
-    [(ngModel)]="organization"
-    (change)="onOrganizationChange()"
-    required>
+          <label>Organization:</label>
+          <select [(ngModel)]="organization" (change)="onOrganizationChange()">
+            <option value="">Select Organization</option>
+            <option *ngFor="let org of organizations" [value]="org">{{ org }}</option>
+          </select>
+        </div>
 
-    <option value="">Select Organization</option>
+        <div class="form-group">
+          <label>Position:</label>
+          <select [(ngModel)]="position" [disabled]="!organization">
+            <option value="">Select Position</option>
+            <option *ngFor="let pos of filteredPositions" [value]="pos">{{ pos }}</option>
+          </select>
+        </div>
 
-    <option *ngFor="let org of organizations" [value]="org">
-      {{ org }}
-  </option>
-
-  </select>
-</div>
-
-       <div class="form-group">
-  <label for="position">Position:</label>
-  <select
-    id="position"
-    name="position"
-    [(ngModel)]="position"
-    [disabled]="!organization"
-    required>
-
-    <option value="">Select Position</option>
-
-    <option *ngFor="let pos of filteredPositions" [value]="pos">
-      {{ pos }}
-    </option>
-
-  </select>
-</div>
-
-        <!-- Party / Team -->
         <div class="form-group">
           <label>Party / Team:</label>
-          <input
-            type="text"
-            name="party"
-            [(ngModel)]="party"
-            placeholder="Unity Party">
+          <input type="text" placeholder="Unity Party" [(ngModel)]="party">
         </div>
 
-        <!-- Platform / Goals -->
         <div class="form-group">
           <label>Platform / Goals:</label>
-          <textarea
-            name="platform"
-            [(ngModel)]="platform"
-            [maxLength]="maxCharacters"
-            placeholder="State your plans, goals, and advocacy...">
-          </textarea>
-
-          <div class="char-counter">
-            {{ platform.length || 0 }} / {{ maxCharacters }} characters
-          </div>
+          <textarea [(ngModel)]="platform" [maxLength]="maxCharacters" placeholder="State your plans..."></textarea>
+          <div class="char-counter">{{ platform.length || 0 }} / {{ maxCharacters }} characters</div>
         </div>
 
         <!-- CONFIRMATION -->
         <div class="confirm-section">
-          <input
-            type="checkbox"
-            id="confirm-checkbox"
-            name="confirm"
-            [(ngModel)]="confirm">
-
-          <label for="confirm-checkbox">
-            I confirm that all information provided is true.
-          </label>
+          <input type="checkbox" id="confirm-checkbox" [(ngModel)]="confirm">
+          <label for="confirm-checkbox">I confirm all information is true.</label>
         </div>
 
         <!-- BUTTONS -->
         <div class="buttons">
-          <button
-            class="cancel-btn"
-            type="button"
-            (click)="resetForm()">
-            Cancel
-          </button>
-
+          <button class="cancel-btn" type="button" (click)="resetForm()">Cancel</button>
           <button
             class="submit-btn"
             type="button"
-            (click)="submitApplication()"
-            [disabled]="
-              !confirm ||
-              !agreeInstructions ||
-              !fullName ||
-              !organization ||
-              !position ||
-              !party ||
-              !platform
-            ">
+            [disabled]="!confirm || !agreeInstructions || !fullName || !organization || !position || !party || !platform || !photoPreview"
+            (click)="submitApplication()">
             Submit
           </button>
         </div>

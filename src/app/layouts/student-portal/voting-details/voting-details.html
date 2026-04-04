@@ -1,1 +1,25 @@
-<p>voting-details works!</p>
+<div class="voting-details-container">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">Loading votes...</div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="error">{{ error }}</div>
+
+  <!-- Votes Display -->
+  <div *ngIf="!loading && !error">
+    <h2 class="page-title">My Election Votes</h2>
+
+    <div *ngFor="let pos of getPositions()" class="position-section">
+      <h3 class="position-title">{{ pos }}</h3>
+
+      <div class="candidate-card">
+        <div class="candidate-details">
+          <p class="candidate-name">{{ getCandidate(pos).fullName }}</p>
+          <p class="candidate-party">{{ getCandidate(pos).partyName }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

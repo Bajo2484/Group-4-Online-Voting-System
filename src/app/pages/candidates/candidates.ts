@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { CandidateService } from '../../services/candidate.service';
 import { Candidate } from '../../services/candidate.model';
-import { Observable } from 'rxjs';
+import { Election, ElectionService } from '../../services/election.service';
+import { Timestamp } from '@angular/fire/firestore'; // <-- Import Timestamp
 
 @Component({
   selector: 'app-candidates',
@@ -17,6 +18,9 @@ export class CandidatesComponent implements OnInit {
 
   allCandidates: Candidate[] = [];  // Full list from Firestore
   currentCandidates: Candidate[] = []; // Candidates shown in current page
+
+  elections: Election[] = [];
+  selectedElectionId: string = '';
 
   // FORM FIELDS
   fullName = '';
@@ -46,17 +50,18 @@ export class CandidatesComponent implements OnInit {
   pageSize: number = 10;
   currentPage: number = 1;
 
-  // SORT OPTIONS: 'dateAsc', 'dateDesc', 'positionAsc', 'positionDesc'
+  // SORT OPTIONS
   sortOption: string = 'dateAsc';
 
   constructor(
     private candidateService: CandidateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private electionService: ElectionService
   ) {}
 
   ngOnInit() {
+    // Load candidates
     this.candidateService.getAllCandidates().subscribe(data => {
-      // Ensure every candidate has createdAt
       this.allCandidates = data.map(c => ({
         ...c,
         createdAt: c.createdAt || Date.now()
@@ -64,6 +69,15 @@ export class CandidatesComponent implements OnInit {
       this.applySort();
       this.updateCurrentCandidates();
       this.cdr.detectChanges();
+    });
+
+    // Load elections
+    this.electionService.getElections().subscribe(data => {
+      this.elections = data.map(e => ({
+        ...e,
+        startDate: e.startDate instanceof Timestamp ? e.startDate.toDate() : new Date(e.startDate),
+        endDate: e.endDate instanceof Timestamp ? e.endDate.toDate() : new Date(e.endDate),
+      }));
     });
   }
 
@@ -79,7 +93,7 @@ export class CandidatesComponent implements OnInit {
     this.updateCurrentCandidates();
   }
 
-  // PAGINATION LOGIC
+  // PAGINATION
   totalPages(): number {
     return Math.ceil(this.allCandidates.length / this.pageSize);
   }
@@ -127,7 +141,7 @@ export class CandidatesComponent implements OnInit {
     this.updateCurrentCandidates();
   }
 
-  // MODAL
+  // MODAL HANDLING
   openModal() {
     this.showModal = true;
     this.isEditMode = false;
@@ -155,14 +169,14 @@ export class CandidatesComponent implements OnInit {
     reader.readAsDataURL(this.selectedFile);
   }
 
-  // REGISTER OR UPDATE
+  // REGISTER OR UPDATE CANDIDATE
   async registerCandidate() {
     if (!this.fullName || !this.position || !this.course) {
       Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Please fill all required fields!' });
       return;
     }
 
-    this.electionId = `${this.course.toUpperCase()}2026`;
+    this.electionId = this.selectedElectionId;
     const candidate: Candidate = {
       fullName: this.fullName,
       organization: this.course,
@@ -190,6 +204,7 @@ export class CandidatesComponent implements OnInit {
     }
   }
 
+  // EDIT / DELETE / APPROVE / REJECT
   editCandidate(c: Candidate) {
     this.fullName = c.fullName;
     this.course = c.organization;

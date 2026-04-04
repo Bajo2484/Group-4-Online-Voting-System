@@ -1,12 +1,12 @@
+/* ======================== MAIN CONTENT ======================== */
 .main-content { 
   padding: 20px 40px; 
   background: #f5f7fa;
   min-height: 100vh; 
   font-family: Arial, sans-serif;
- 
 }
 
-/* TITLE */
+/* ======================== TITLE ======================== */
 .title { 
   background: #2f4b6c;
   color: white; 
@@ -17,7 +17,7 @@
   border-radius: 5px; 
 }
 
-/* INSTRUCTIONS */
+/* ======================== INSTRUCTIONS ======================== */
 .instructions { 
   background: #fff; 
   padding: 15px;
@@ -34,31 +34,32 @@
   width: 12px;
   height: 12px; 
   margin-right: 8px; 
+  border-radius: 2px;
 }
 
 .green-box { background: green; } 
 .blue-box { background: blue; }
 
-/* POSITION */
+/* ======================== POSITIONS ======================== */
 .position {
   margin-bottom: 25px;
 }
 
-/* CANDIDATES GRID */
+/* ======================== CANDIDATES GRID ======================== */
 .candidates {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 30px;
   justify-content: flex-start;
-  padding-left: 60px;
 }
 
-/* CARD */
+/* ======================== CARD ======================== */
 .card {
-  width: calc(50% - 300px);
+  flex: 1 1 calc(50% - 20px); /* Responsive width */
+  max-width: 450px;
   background: white;
   border-radius: 6px;
-  padding: 30px 20px;
+  padding: 20px;
   border: 1px solid #ccc;
   cursor: pointer;
   transition: 0.2s;
@@ -67,31 +68,46 @@
   flex-direction: column;
 }
 
-/* CARD TOP */
 .card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* HOVER */
 .card:hover {
   border-color: #2f4b6c;
 }
 
-/* SELECTED */
 .card.selected {
   border: 2px solid #2f6bb2;
 }
 
-/* LEFT SIDE */
+/* ======================== LEFT SIDE ======================== */
 .left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
-/* INFO */
+/* ======================== AVATAR ======================== */
+.avatar {
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ======================== CANDIDATE INFO ======================== */
 .candidate-info {
   display: flex;
   flex-direction: column;
@@ -100,15 +116,14 @@
 .candidate-name {
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-/* PARTY BADGE */
 .party {
   font-size: 12px;
   font-weight: bold;
   color: white;
-  padding: 5px 10px;
+  padding: 4px 8px;
   border-radius: 4px;
   width: fit-content;
 }
@@ -116,7 +131,7 @@
 .party.blue { background: #2f6bb2; }
 .party.red { background: #e74c3c; }
 
-/* RADIO */
+/* ======================== RADIO CIRCLE ======================== */
 .radio-circle {
   width: 18px;
   height: 18px;
@@ -141,7 +156,7 @@
   transform: translate(-50%, -50%);
 }
 
-/* PLATFORM BUTTON */
+/* ======================== PLATFORM BUTTON ======================== */
 .view-platform-btn.modern {
   margin-top: 10px;
   display: flex;
@@ -168,7 +183,7 @@
   transform: scale(0.96);
 }
 
-/* PLATFORM */
+/* ======================== PLATFORM ======================== */
 .platform {
   width: 100%;
   margin-top: 15px;
@@ -180,28 +195,9 @@
   border-radius: 4px;
 }
 
-/* AVATAR */
-.avatar {
-  width: 80px;
-  height: 80px;
-  overflow: hidden;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0;
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ✅ CHECKBOX */
+/* ======================== CONFIRMATION CHECKBOX ======================== */
 .confirmation {
   margin-top: 20px;
-  margin-left: 60px;
   font-size: 14px;
 }
 
@@ -210,7 +206,7 @@
   cursor: pointer;
 }
 
-/* ✅ SUBMIT BUTTON */
+/* ======================== SUBMIT BUTTON ======================== */
 .submit-container {
   margin-top: 30px;
   display: flex;
@@ -235,4 +231,22 @@
 .submit-btn:disabled {
   background: #aaa;
   cursor: not-allowed;
+}
+
+/* ======================== RESPONSIVE ======================== */
+@media screen and (max-width: 768px) {
+  .candidates {
+    flex-direction: column;
+    padding-left: 0;
+    gap: 20px;
+  }
+
+  .card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .left {
+    gap: 12px;
+  }
 }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
-import { StudentCacheService } from '../../../services/student-cache.service'; // Import the cache service
+import { StudentCacheService } from '../../../services/student-cache.service';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -16,6 +16,7 @@ export class StudentDashboardComponent implements OnInit {
 
   student: any = null;
   elections: any[] = [];
+  loading: boolean = true; // show loader while fetching data
 
   // Hardcoded organization data
   orgData: any = {
@@ -29,59 +30,69 @@ export class StudentDashboardComponent implements OnInit {
     private auth: Auth,
     private firestore: Firestore,
     private router: Router,
-    private studentCache: StudentCacheService // Inject service
-  ) { }
+    private studentCache: StudentCacheService
+  ) {}
 
   ngOnInit(): void {
-    // First check if student data is cached
+    const currentUser = this.auth.currentUser;
+
     if (this.studentCache.currentStudent) {
+      // Cached student -> display immediately
       this.student = this.studentCache.currentStudent;
-      this.setupElections(); // Use cached data to setup elections
+      this.setupElections();
+      this.loading = false;
+    } else if (currentUser) {
+      // Load student if logged in
+      this.loadStudentAndSetup(currentUser.uid);
     } else {
-      // Listen to auth state to ensure currentUser is ready
+      // Listen for auth state changes
       onAuthStateChanged(this.auth, user => {
         if (user) {
-          this.loadStudent(user.uid);
+          this.loadStudentAndSetup(user.uid);
         } else {
-          console.log('No user logged in!');
-          this.router.navigate(['/login']); // optional redirect
+          this.router.navigate(['/login']);
         }
       });
     }
   }
 
-  // Fetch student data
-  async loadStudent(uid: string) {
+  /** Helper: load student + setup elections + manage spinner */
+  private async loadStudentAndSetup(uid: string) {
+    this.loading = true;
     try {
-      const ref = doc(this.firestore, `students/${uid}`);
-      const snap = await getDoc(ref);
-
-      if (snap.exists()) {
-        this.student = snap.data();
-
-        // Ensure votes array exists
-        this.student.votes = this.student.votes || [];
-
-        // Trim and uppercase course for safe matching
-        this.student.course = this.student.course?.trim().toUpperCase();
-
-        // Cache the student data
-        this.studentCache.currentStudent = this.student;
-
-        console.log('Student data:', this.student);
-
-        // Setup elections based on course
-        this.setupElections();
-      } else {
-        console.log('Student document not found!');
-      }
-    } catch (error) {
-      console.error('Error fetching student:', error);
+      await this.loadStudent(uid);
+    } catch (err) {
+      console.error('Error loading student:', err);
+    } finally {
+      this.loading = false;
     }
   }
 
-  // Setup elections dynamically
-  setupElections() {
+  /** Load student from Firestore */
+  private async loadStudent(uid: string) {
+    const ref = doc(this.firestore, `students/${uid}`);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      this.student = snap.data();
+      // Ensure votes array exists
+      this.student.votes = Array.isArray(this.student.votes) ? this.student.votes : [];
+      // Normalize course
+      this.student.course = this.student.course?.trim().toUpperCase();
+      // Cache the student
+      this.studentCache.currentStudent = this.student;
+
+      console.log('Student data loaded:', this.student);
+
+      // Setup elections dynamically
+      this.setupElections();
+    } else {
+      console.warn('Student document not found!');
+    }
+  }
+
+  /** Setup elections dynamically and mark voted ones */
+  private setupElections() {
     const studentCourse = this.student.course;
 
     this.elections = Object.keys(this.orgData)
@@ -90,20 +101,27 @@ export class StudentDashboardComponent implements OnInit {
           .map((c: string) => c.trim().toUpperCase())
           .includes(studentCourse)
       )
-      .map(key => ({
-        name: this.orgData[key].title || 'Election Logo',
-        logo: this.orgData[key].logo || '/default-logo.jpg',
-        org: key.toUpperCase(),
-        electionId: key.toUpperCase() + '2026',
-        voted: this.student.votes.includes(this.orgData[key].title)
-      }));
+      .map(key => {
+        const electionId = key.toUpperCase() + '2026';
+        const voted = this.student.votes.some(
+          (v: any) => v.electionId.toUpperCase() === electionId && v.isVoted === true
+        );
+
+        return {
+          name: this.orgData[key].title,
+          logo: this.orgData[key].logo,
+          org: key.toUpperCase(),
+          electionId: electionId,
+          isVoted: voted
+        };
+      });
 
     console.log('Filtered elections:', this.elections.map(e => e.name));
   }
 
   // Count completed votes
   get completedCount() {
-    return this.elections.filter(e => e.voted).length;
+    return this.elections.filter(e => e.isVoted).length;
   }
 
   // Progress percentage
@@ -113,24 +131,28 @@ export class StudentDashboardComponent implements OnInit {
       : 0;
   }
 
-  
-   goToVote(election: any) {
-    this.router.navigate(['/voting', election.org,election.electionId], {
-      queryParams:{
-        name: election.name
-      }
+  get progressColor(): string {
+    const percent = this.progressPercentage;
+    if (percent === 100) return 'green';
+    if (percent >= 50) return 'orange';
+    return 'red';
+  }
+
+  // Navigate to vote page
+  goToVote(election: any) {
+    this.router.navigate(['/voting', election.org, election.electionId], {
+      queryParams: { name: election.name }
     });
   }
 
+  // Handle election card click
   handleElectionClick(election: any) {
-  if (election.voted) {
-    // Navigate to view-details page if already voted
-    this.router.navigate(['/view-details', election.org, election.electionId], {
-      queryParams: { name: election.name }
-    });
-  } else {
-    // Otherwise go to vote page
-    this.goToVote(election);
+    if (election.isVoted) {
+      this.router.navigate(['/view-details', election.org, election.electionId], {
+        queryParams: { name: election.name }
+      });
+    } else {
+      this.goToVote(election);
+    }
   }
-}
 }

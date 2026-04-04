@@ -1,49 +1,56 @@
 <div class="dashboard-container" *ngIf="student; else loading">
 
-  <!-- Student Info -->
+  <!-- ================= STUDENT INFO ================= -->
   <div class="student-info">
     <h2>Welcome, {{student.name}}</h2>
-    <p>Department {{student.course}}</p>
-    <p>You have {{elections.length}} active elections</p>
+    <p>Department: {{student.course}}</p>
+    <p>Active Elections: {{elections.length}}</p>
   </div>
 
-  <!-- Progress Section -->
-  <h3>Your Elections</h3>
+  <!-- ================= PROGRESS SECTION ================= -->
+  <h3>Your Elections Progress</h3>
   <div class="progress-section" *ngIf="elections.length > 0">
     <p>Completed: {{completedCount}} / {{elections.length}}</p>
     <div class="progress-bar">
-      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      <div class="progress-fill" 
+           [style.width.%]="progressPercentage" 
+           [style.background-color]="progressColor">
+      </div>
     </div>
   </div>
 
-  <!-- Elections Cards -->
+  <!-- ================= ELECTION CARDS ================= -->
   <div class="elections-container">
     <div *ngFor="let election of elections" class="election-card">
 
-      <!-- Voted / Not Voted Badge -->
-      <div *ngIf="election.voted" class="badge voted">Voted</div>
-      <div *ngIf="!election.voted" class="badge not-voted">Not Voted</div>
+      <!-- VOTED / NOT VOTED BADGE -->
+      <div class="badge" [ngClass]="election.isVoted ? 'voted' : 'not-voted'">
+        {{ election.isVoted ? 'Voted' : 'Not Voted' }}
+      </div>
 
-      <!-- Election Logo -->
-      <img [src]="election.logo" 
-           [alt]="election.name || 'Election Logo'" 
-           [title]="election.name || 'Election Logo'">
+      <!-- ELECTION LOGO -->
+      <div class="election-logo">
+        <img [src]="election.logo" 
+             [alt]="election.name || 'Election Logo'" 
+             [title]="election.name || 'Election Logo'">
+      </div>
 
+      <!-- ELECTION NAME -->
       <h3>{{election.name}}</h3>
 
-      <!-- Vote / View Details Button -->
+      <!-- VOTE / VIEW DETAILS BUTTON -->
       <button class="vote-btn"
-              [ngClass]="{'voted-btn': election.voted}"
+              [ngClass]="{'voted-btn': election.isVoted}"
               (click)="handleElectionClick(election)">
-        {{ election.voted ? 'View Details' : 'Vote Now' }}
+        {{ election.isVoted ? 'View Details' : 'Vote Now' }}
       </button>
-      
+
     </div>
   </div>
 
 </div>
 
-<!-- Loading Template -->
+<!-- ================= LOADING TEMPLATE ================= -->
 <ng-template #loading>
   <div class="loading">
     <div class="spinner"></div>

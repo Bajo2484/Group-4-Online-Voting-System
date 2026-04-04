@@ -1,4 +1,4 @@
-/* Global Reset */
+/* ================= GLOBAL RESET ================= */
 * {
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Dashboard Container */
+/* ================= DASHBOARD CONTAINER ================= */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -15,7 +15,10 @@
   padding: 20px;
 }
 
-/* Student Info */
+/* ================= STUDENT INFO ================= */
+.student-info {
+  margin-bottom: 30px;
+}
 .student-info h2 {
   font-size: 24px;
   color: #2c3e50;
@@ -26,14 +29,13 @@
   margin-top: 5px;
 }
 
-
-/* Progress Section */
+/* ================= PROGRESS SECTION ================= */
 .progress-section {
-  margin-top: 30px;
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
 }
 .progress-bar {
   width: 100%;
@@ -51,12 +53,11 @@
   transition: width 0.3s ease-in-out;
 }
 
-/* Elections Cards */
+/* ================= ELECTION CARDS ================= */
 .elections-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  margin-top: 30px;
   justify-content: flex-start;
 }
 .election-card {
@@ -69,10 +70,11 @@
   flex-direction: column;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 .election-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .election-card img {
   width: 80px;
@@ -88,77 +90,53 @@
   color: #2c3e50;
 }
 
-/* Voted Badge */
-.election-card .badge {
+/* ================= VOTED / NOT VOTED BADGE ================= */
+.badge {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #fcc429;
-  color: #fff;
   padding: 3px 8px;
   border-radius: 5px;
   font-size: 12px;
   font-weight: bold;
+  color: #fff;
+}
+.badge.voted {
+  background-color: #27ae60; /* green */
+}
+.badge.not-voted {
+  background-color: #e74c3c; /* red */
 }
 
-/* Vote Button */
+/* ================= VOTE BUTTON ================= */
 .vote-btn {
   background-color: #1f3c88;
   color: white;
   border: none;
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.1s;
 }
 .vote-btn:hover:not([disabled]) {
   background-color: #16306d;
+  transform: translateY(-1px);
 }
 .vote-btn[disabled] {
   background-color: #95a5a6;
   cursor: not-allowed;
 }
 
-/* Responsive */
-@media screen and (max-width: 768px) {
-  .elections-container {
-    justify-content: center;
-  }
-  .election-card {
-    width: 80%;
-  }
-}
-
-/* Loading */
-.loading {
-  font-size: 18px;
-  text-align: center;
-  margin-top: 50px;
-  color: gray;
-}
-
-
-/* Voted Badge */
-.badge.voted {
-  background-color: #27ae60; /* green */
-  color: white;
-}
-
-/* Not Voted Badge */
-.badge.not-voted {
-  background-color: #e74c3c; /* red */
-  color: white;
-}
-
-/* Loading Spinner */
+/* ================= LOADING ================= */
 .loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 50px;
   color: gray;
+  font-size: 18px;
 }
-
 .spinner {
   border: 6px solid #f3f3f3; /* Light grey */
   border-top: 6px solid #1f3c88; /* Blue */
@@ -168,13 +146,17 @@
   animation: spin 1s linear infinite;
   margin-bottom: 15px;
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-.loading p {
-  font-size: 18px;
-  text-align: center;
+/* ================= RESPONSIVE ================= */
+@media screen and (max-width: 768px) {
+  .elections-container {
+    justify-content: center;
+  }
+  .election-card {
+    width: 80%;
+  }
 }

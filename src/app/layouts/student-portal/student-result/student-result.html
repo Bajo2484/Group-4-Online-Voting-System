@@ -1,87 +1,64 @@
-<!-- HEADER -->
-<div class="header">
-  E-Ballot Results | BSIT Student
-</div>
-
-<div class="container">
-
-  <h2>Welcome, Juan (BSIT)</h2>
+<div class="result-page">
 
   <!-- TABS -->
-  <div class="tabs">
-    <div 
-      class="tab"
-      [class.active]="activeTab === 'usg'"
-      (click)="setTab('usg')">
-      USG
-    </div>
-
-    <div 
-      class="tab"
-      [class.active]="activeTab === 'bsit'"
-      (click)="setTab('bsit')">
-      BSIT
-    </div>
+  <div class="org-tabs">
+    <button *ngFor="let org of orgList"
+            [class.active]="activeOrg === org"
+            (click)="setActiveOrg(org)">
+      {{ org }}
+    </button>
   </div>
 
-  <!-- ================= POSITIONS ================= -->
-  <ng-container *ngIf="activeTab === 'usg'">
-    <div *ngFor="let position of usgPositions" class="card">
+  <!-- RESULTS -->
+  <div *ngFor="let org of orgList">
+    <div *ngIf="activeOrg === org">
 
-      <div class="position-title">{{ position.title }}</div>
+      <h2>{{ org }} Results</h2>
 
-      <div *ngFor="let candidate of position.candidates" class="candidate" [ngClass]="{'winner': candidate.winner}">
-        
-        <img *ngIf="candidate.photo" [src]="candidate.photo" alt="{{ candidate.name }}" width="50" height="50" style="border-radius:50%; margin-right:10px; vertical-align:middle;">
+      <div class="position-card" *ngFor="let position of getPositions(org)">
 
-        <span class="name">{{ candidate.name }}</span>
+        <div class="position-header">
+          <h3>{{ position.name }}</h3>
+          <span class="total">
+            Total Votes: {{ getTotalVotes(position) }}
+          </span>
+        </div>
 
-        <span class="vote-info">
-          {{ candidate.votes }} votes ({{ candidate.percentage }}%)
-          <span class="badge" *ngIf="candidate.winner">WINNER</span>
+        <div class="candidate-card"
+             *ngFor="let candidate of getRankedCandidates(position)"
+             [ngClass]="{'winner': candidate.isWinner}">
 
-          <div class="progress">
-            <div class="progress-bar" [class.second]="!candidate.winner" [style.width.%]="candidate.percentage"></div>
-          </div>
-        </span>
+          <!-- IMAGE -->
+          <img class="candidate-thumb"
+               [src]="candidate.photo"
+               (error)="candidate.photo='https://via.placeholder.com/40'">
 
-      </div>
+          <!-- INFO -->
+          <div class="info">
 
-      <p><strong>Total Votes:</strong> {{ position.candidates.reduce((sum, c) => sum + c.votes, 0) }}</p>
+            <div class="name">
+              #{{ candidate.rank }} {{ candidate.name }}
+              <span *ngIf="candidate.rank === 1"></span>
+            </div>
 
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="activeTab === 'bsit'">
-    <div *ngFor="let position of atlasPositions" class="card">
-
-      <!-- Accordion for drop-down winner view -->
-      <button class="accordion" (click)="toggleAccordion(position.id)">
-        {{ position.title }}
-      </button>
-
-      <div class="panel" [style.maxHeight]="activeAccordion === position.id ? position.candidates.length * 80 + 'px' : '0px'">
-
-        <div *ngFor="let candidate of position.candidates" class="candidate" [ngClass]="{'winner': candidate.winner}">
-          
-          <img *ngIf="candidate.photo" [src]="candidate.photo" alt="{{ candidate.name }}" width="50" height="50" style="border-radius:50%; margin-right:10px; vertical-align:middle;">
-
-          <span class="name">{{ candidate.name }}</span>
-
-          <span class="vote-info">
-            {{ candidate.votes }} votes ({{ candidate.percentage }}%)
-            <span class="badge" *ngIf="candidate.winner">WINNER</span>
+            <div class="votes">
+              {{ candidate.votes }} votes ({{ getPercentage(candidate, position) }}%)
+              <span *ngIf="candidate.isWinner" class="badge">WINNER</span>
+            </div>
 
             <div class="progress">
-              <div class="progress-bar" [class.second]="!candidate.winner" [style.width.%]="candidate.percentage"></div>
+              <div class="bar"
+                   [style.width.%]="getPercentage(candidate, position)">
+              </div>
             </div>
-          </span>
+
+          </div>
 
         </div>
 
       </div>
 
     </div>
-  </ng-container>
+  </div>
 
 </div>

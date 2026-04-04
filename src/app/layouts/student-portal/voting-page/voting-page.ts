@@ -2,8 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Firestore, collection, query, where, onSnapshot } from '@angular/fire/firestore';
-import { addDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  serverTimestamp,
+  getDoc
+} from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { getAuth } from 'firebase/auth';
+import { StudentCacheService } from '../../../services/student-cache.service';
 
 @Component({
   selector: 'app-voting-page',
@@ -21,17 +35,9 @@ export class VotingPage implements OnInit, OnDestroy {
 
   selectedVotes: { [position: string]: any } = {};
   expandedCandidate: { [position: string]: any | null } = {};
-
   isConfirmed: boolean = false;
 
   private snapshotUnsub!: () => void;
-
-  constructor(
-    private route: ActivatedRoute,
-    private firestore: Firestore,
-    private cdr: ChangeDetectorRef,
-    private router: Router
-  ) {}
 
   atlasOrder: string[] = [
     'PRESIDENT',
@@ -49,7 +55,7 @@ export class VotingPage implements OnInit, OnDestroy {
   ];
 
   regularPositions: string[] = [
-    'President',
+    'PRESIDENT',
     'VICE PRESIDENT',
     'SECRETARY',
     'TREASURER',
@@ -57,20 +63,48 @@ export class VotingPage implements OnInit, OnDestroy {
     'PRO'
   ];
 
-  ngOnInit() {
+  constructor(
+    private route: ActivatedRoute,
+    private firestore: Firestore,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private auth: Auth,
+    private studentCache: StudentCacheService
+  ) {}
+
+  async ngOnInit() {
     const params = this.route.snapshot.paramMap;
-
     this.org = (params.get('org') || '').toUpperCase();
-    this.electionId = (params.get('electionId') || '').toUpperCase();
-
-    console.log('Org:', this.org);
-    console.log('ElectionId:', this.electionId);
+    this.electionId = params.get('electionId') || '';
 
     if (!this.org || !this.electionId) {
       console.warn('Missing org or electionId in route');
       return;
     }
 
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) {
+      alert('You are not logged in.');
+      this.router.navigate(['login']);
+      return;
+    }
+
+    // Check if student already voted
+    try {
+      const studentRef = doc(this.firestore, `students/${currentUser.uid}`);
+      const studentSnap = await getDoc(studentRef);
+      const data: any = studentSnap.data();
+
+      const alreadyVoted = data?.['votes']?.some(
+        (v: any) => v['electionId'] === this.electionId && v['isVoted']
+      );
+
+      
+    } catch (err) {
+      console.error('Error checking student votes', err);
+    }
+
+    // Load candidates
     this.loadCandidates(this.org, this.electionId);
 
     this.route.queryParamMap.subscribe(params => {
@@ -89,42 +123,40 @@ export class VotingPage implements OnInit, OnDestroy {
       candidatesRef,
       where('status', '==', 'approved'),
       where('organization', '==', org),
-      where('electionId', '==', electionId)
+      where('electionId', '==', 'R1B3W2zsy4LThhkr3bOS')
     );
 
     if (this.snapshotUnsub) this.snapshotUnsub();
 
     this.snapshotUnsub = onSnapshot(q, (snapshot) => {
+      console.log('Candidates snapshot docs:', snapshot.docs);
+
       const candidates = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
 
-      console.log("RAW DATABASE DATA:", candidates);
-
       const grouped: any = {};
-
       candidates.forEach((c: any) => {
         if (!c.position) return;
-
-        if (!grouped[c.position]) grouped[c.position] = [];
-        grouped[c.position].push(c);
+        const pos = c.position.toUpperCase();
+        if (!grouped[pos]) grouped[pos] = [];
+        grouped[pos].push(c);
       });
 
-      const order = this.org == 'ATLAS' ? this.atlasOrder : this.regularPositions;
+      const order = this.org === 'ATLAS' ? this.atlasOrder : this.regularPositions;
 
       this.positions = Object.keys(grouped)
         .sort((a, b) => {
           const indexA = order.indexOf(a);
           const indexB = order.indexOf(b);
-          return (indexA == -1 ? 999 : indexA) - (indexB == -1 ? 999 : indexB);
+          return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
         })
         .map(position => ({
           name: position,
           candidates: grouped[position]
         }));
 
-      console.log("FIREBASE POSITIONS:", this.positions);
       this.cdr.detectChanges();
     });
   }
@@ -138,9 +170,7 @@ export class VotingPage implements OnInit, OnDestroy {
   }
 
   togglePlatform(position: string, candidate: any) {
-    this.expandedCandidate[position] === candidate
-      ? this.expandedCandidate[position] = null
-      : this.expandedCandidate[position] = candidate;
+    this.expandedCandidate[position] = this.expandedCandidate[position] === candidate ? null : candidate;
   }
 
   isExpanded(position: string, candidate: any): boolean {
@@ -161,15 +191,14 @@ export class VotingPage implements OnInit, OnDestroy {
         return;
       }
 
-      if (!this.org || !this.electionId) {
-        alert('Missing election information');
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) {
+        alert('User not logged in');
         return;
       }
 
-      const votesCollection = collection(this.firestore, 'votes');
-
-      // ✅ Only save minimal candidate info to prevent exceeding Firestore 1MB limit
       const voteData = {
+        studentId: currentUser.uid,
         org: this.org,
         electionId: this.electionId,
         votes: Object.keys(this.selectedVotes).reduce((acc, position) => {
@@ -177,23 +206,35 @@ export class VotingPage implements OnInit, OnDestroy {
           acc[position] = {
             id: candidate.id,
             fullName: candidate.fullName,
-            partyName: candidate.partyName
+            partyName: candidate.partyName,
+            photo: candidate.photo || null
           };
           return acc;
         }, {} as any),
         createdAt: serverTimestamp()
       };
 
-      await addDoc(votesCollection, voteData);
+      const voteRef = doc(this.firestore, `votes/${currentUser.uid}_${this.electionId}`);
+      await setDoc(voteRef, voteData);
+
+      const studentRef = doc(this.firestore, `students/${currentUser.uid}`);
+      await updateDoc(studentRef, {
+        hasVoted: true,
+        votes: arrayUnion({ electionId: this.electionId, isVoted: true })
+      });
+
+      if (this.studentCache.currentStudent) {
+        this.studentCache.currentStudent.votes = this.studentCache.currentStudent.votes || [];
+        this.studentCache.currentStudent.votes.push({ electionId: this.electionId, isVoted: true });
+      }
 
       this.selectedVotes = {};
       this.isConfirmed = false;
 
       this.router.navigate(['/vote-success']);
-
     } catch (error) {
       console.error(error);
-      alert('Error submitting votes');
+      alert('Error submitting votes. Please try again.');
     }
   }
 }

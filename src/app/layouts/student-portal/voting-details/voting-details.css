@@ -1,0 +1,64 @@
+.voting-details-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.loading, .error {
+  font-size: 1.2rem;
+  text-align: center;
+  color: #555;
+}
+
+.position-section {
+  margin-bottom: 2rem;
+}
+
+.position-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.candidate-card {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom: 0.8rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.candidate-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.candidate-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.candidate-name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.candidate-party {
+  font-size: 0.95rem;
+  color: #4CAF50;
+  font-weight: 500;
+}

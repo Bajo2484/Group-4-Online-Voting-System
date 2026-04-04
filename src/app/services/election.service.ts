@@ -3,10 +3,11 @@ import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDo
 import { Observable, map } from 'rxjs';
 
 export interface Election {
+[x: string]: any;
   id?: string;
   title: string;
 
-  organization: string;
+
   electionId: string;
   startDate: Date;
   endDate: Date;

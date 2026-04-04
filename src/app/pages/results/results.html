@@ -15,59 +15,22 @@
     </button>
   </div>
 
-  <!-- ATLAS Results -->
-  <div class="org-section" *ngIf="activeOrg==='ATLAS'">
-    <h2>ATLAS Results</h2>
-    <div class="position-card" *ngFor="let pos of atlasPositions">
-      <h3>{{ pos.name }}</h3>
-      <ul>
-        <li *ngFor="let candidate of pos.candidates">
-          {{ candidate.name }} - {{ candidate.votes }} votes
-          <span *ngIf="candidate.isWinner" class="winner-badge">Winner</span>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <!-- DYNAMIC RESULT DISPLAY -->
+  <div class="org-section">
+    <h2>{{ activeOrg }} Results</h2>
 
-  <!-- STCM Results -->
-  <div class="org-section" *ngIf="activeOrg==='STCM'">
-    <h2>STCM Results</h2>
-    <div class="position-card" *ngFor="let pos of stcmPositions">
+    <div class="position-card" *ngFor="let pos of getActivePositions()">
       <h3>{{ pos.name }}</h3>
-      <ul>
-        <li *ngFor="let candidate of pos.candidates">
-          {{ candidate.name }} - {{ candidate.votes }} votes
-          <span *ngIf="candidate.isWinner" class="winner-badge">Winner</span>
-        </li>
-      </ul>
-    </div>
-  </div>
 
-  <!-- AEMT Results -->
-  <div class="org-section" *ngIf="activeOrg==='AEMT'">
-    <h2>AEMT Results</h2>
-    <div class="position-card" *ngFor="let pos of aemtPositions">
-      <h3>{{ pos.name }}</h3>
       <ul>
         <li *ngFor="let candidate of pos.candidates">
           {{ candidate.name }} - {{ candidate.votes }} votes
-          <span *ngIf="candidate.isWinner" class="winner-badge">Winner</span>
+          <span *ngIf="candidate.isWinner" class="winner-badge">
+            Winner
+          </span>
         </li>
       </ul>
-    </div>
-  </div>
 
-  <!-- USG Results -->
-  <div class="org-section" *ngIf="activeOrg==='USG'">
-    <h2>USG Results</h2>
-    <div class="position-card" *ngFor="let pos of usgPositions">
-      <h3>{{ pos.name }}</h3>
-      <ul>
-        <li *ngFor="let candidate of pos.candidates">
-          {{ candidate.name }} - {{ candidate.votes }} votes
-          <span *ngIf="candidate.isWinner" class="winner-badge">Winner</span>
-        </li>
-      </ul>
     </div>
   </div>
 

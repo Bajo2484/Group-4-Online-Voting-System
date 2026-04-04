@@ -1,151 +1,107 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CandidateService } from '../../../services/candidate.service';
+import { Candidate } from '../../../services/candidate.model';
+import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, addDoc, serverTimestamp } from '@angular/fire/firestore';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-apply-candidate',
+  selector: 'app-student-apply-candidate',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './student-apply-candidate.html',
-  styleUrls: ['./student-apply-candidate.css']
+  styleUrls: ['./student-apply-candidate.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class ApplyCandidateComponent {
 
-  constructor(private firestore: Firestore) {}
-
   // FORM FIELDS
-  fullName: string = '';
-  organization: string = '';
-  position: string = '';
-  party: string = '';
-  platform: string = '';
+  fullName = '';
+  organization = '';
+  position = '';
+  party = '';
+  platform = '';
+  maxCharacters = 500;
 
-  confirm: boolean = false;
-  agreeInstructions: boolean = false;
-
-  // IMAGE
+  // PHOTO
+  selectedFile: File | null = null;
   photoPreview: string | ArrayBuffer | null = null;
 
-  // SETTINGS
-  maxCharacters: number = 500;
+  // CHECKBOXES
+  agreeInstructions = false;
+  confirm = false;
 
-  // ORGANIZATIONS
-  organizations: string[] = ['ATLAS', 'USG', 'STCM', 'AEMT'];
+  // ORGANIZATION & POSITIONS
+  organizations: string[] = ['ATLAS','USG','STCM','AEMT'];
+  positionsByOrg: {[key: string]: string[]} = {
+    'ATLAS': [
+      'PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY',
+      'ASSOCIATE SECRETARY','AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO',
+      '2ND YR GOV','3RD YR GOV','4TH YR GOV'
+    ],
+    'USG': ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'],
+    'STCM': ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'],
+    'AEMT': ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO']
+  };
+  filteredPositions: string[] = [];
 
-  // POSITIONS
-  regularPositions: string[] = [
-    'President',
-    'Vice President',
-    'Secretary',
-    'Treasurer',
-    'Auditor',
-    'PRO'
-  ];
+  constructor(private candidateService: CandidateService) {}
 
-  atlasPositions: string[] = [
-    'PRESIDENT',
-    'INTERNAL VICE PRESIDENT',
-    'EXTERNAL VICE PRESIDENT',
-    'GENERAL SECRETARY',
-    'ASSOCIATE SECRETARY',
-    'TREASURER',
-    'AUDITOR',
-    'INTERNAL PRO',
-    'EXTERNAL PRO',
-    '2ND YR GOV',
-    '3RD YR GOV',
-    '4TH YR GOV'
-  ];
-
-  // GET POSITIONS BASED ON ORGANIZATION
-  get filteredPositions(): string[] {
-    if (this.organization === 'ATLAS') {
-      return this.atlasPositions;
+  onOrganizationChange() {
+    if(this.organization && this.positionsByOrg[this.organization]) {
+      this.filteredPositions = this.positionsByOrg[this.organization];
+    } else {
+      this.filteredPositions = [];
     }
-    return this.regularPositions;
-  }
-
-  // RESET POSITION WHEN ORGANIZATION CHANGES
-  onOrganizationChange(): void {
     this.position = '';
   }
 
-  // IMAGE UPLOAD
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      alert('Only JPG or PNG files allowed.');
-      return;
-    }
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.selectedFile = input.files[0];
 
     const reader = new FileReader();
-    reader.onload = () => {
-      this.photoPreview = reader.result;
-    };
-    reader.readAsDataURL(file);
+    reader.onload = () => this.photoPreview = reader.result;
+    reader.readAsDataURL(this.selectedFile);
   }
 
-  // SUBMIT APPLICATION
-  async submitApplication(): Promise<void> {
-
-    // VALIDATIONS
-    if (!this.agreeInstructions) {
-      alert('Please agree to the guidelines.');
+  async submitApplication() {
+    if (!this.fullName || !this.organization || !this.position || !this.party || !this.platform || !this.photoPreview) {
+      Swal.fire('Incomplete','Please fill all required fields and upload a photo.','warning');
       return;
     }
 
-    if (
-      !this.fullName.trim() ||
-      !this.organization ||
-      !this.position ||
-      !this.party.trim() ||
-      !this.platform.trim()
-    ) {
-      alert('Please complete all fields.');
-      return;
-    }
-
-    if (!this.confirm) {
-      alert('Please confirm your information.');
-      return;
-    }
+    const candidate: Candidate = {
+      fullName: this.fullName,
+      organization: this.organization,
+      position: this.position,
+      partyName: this.party,
+      platform: this.platform,
+      photoUrl: this.photoPreview as string,
+      status: 'pending',
+      createdAt: Date.now()
+    };
 
     try {
-      await addDoc(collection(this.firestore, 'candidates'), {
-        fullName: this.fullName.trim(),
-        organization: this.organization,
-        position: this.position,
-        partyName: this.party.trim(),
-        platform: this.platform.trim(),
-        photoUrl: this.photoPreview || null,
-
-        // IMPORTANT FIELDS
-        electionId: `${this.organization}2026`,
-        status: 'pending',
-        createdAt: serverTimestamp()
-      });
-
-      alert('Application Submitted Successfully!');
+      await this.candidateService.addCandidate(candidate);
+      Swal.fire('Success','Your application has been submitted for admin approval!','success');
       this.resetForm();
-
-    } catch (error) {
-      console.error(error);
-      alert('Error submitting application.');
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error','Something went wrong while submitting.','error');
     }
   }
 
-  // RESET FORM
-  resetForm(): void {
+  resetForm() {
     this.fullName = '';
     this.organization = '';
     this.position = '';
     this.party = '';
     this.platform = '';
-    this.confirm = false;
-    this.agreeInstructions = false;
+    this.selectedFile = null;
     this.photoPreview = null;
+    this.agreeInstructions = false;
+    this.confirm = false;
+    this.filteredPositions = [];
   }
 }

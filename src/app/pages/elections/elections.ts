@@ -21,8 +21,8 @@ export class ElectionComponent implements OnInit {
   // ✅ UPDATED MODEL
   newElection: Election = {
     title: '',
-    organization: '',   // ✅ added
-    electionId: '',     // ✅ added
+
+    electionId: '',     
     startDate: new Date(),
     endDate: new Date(),
     status: 'upcoming',
@@ -34,8 +34,7 @@ export class ElectionComponent implements OnInit {
   endDateInput: string = '';
   endTimeInput: string = '';
 
-  // ✅ organizations
-  organizations: string[] = ['USG', 'ATLAS', 'STCM', 'AEMT'];
+
 
   constructor(
     public electionService: ElectionService,
@@ -84,11 +83,16 @@ export class ElectionComponent implements OnInit {
   }
 
   async saveElection() {
-
-    // ✅ validation
+      console.log({
+    title: this.newElection.title,
+    startDate: this.startDateInput,
+    startTime: this.startTimeInput,
+    endDate: this.endDateInput,
+    endTime: this.endTimeInput
+  });
+  
     if (
       !this.newElection.title ||
-      !this.newElection.organization ||
       !this.startDateInput ||
       !this.startTimeInput ||
       !this.endDateInput ||
@@ -102,9 +106,11 @@ export class ElectionComponent implements OnInit {
     this.newElection.startDate = new Date(`${this.startDateInput}T${this.startTimeInput}`);
     this.newElection.endDate = new Date(`${this.endDateInput}T${this.endTimeInput}`);
 
-    // ✅ AUTO-GENERATE electionId (IMPORTANT)
+   
     const year = new Date(this.newElection.startDate).getFullYear();
-    this.newElection.electionId = this.newElection.organization.toLowerCase() + year;
+    const timestamp = Date.now();
+
+   this.newElection.electionId = `ELECTION_${year}_${timestamp}`;
 
     if (!this.newElection.status) {
       this.newElection.status = 'upcoming';
@@ -151,7 +157,6 @@ export class ElectionComponent implements OnInit {
   resetForm() {
     this.newElection = {
       title: '',
-      organization: '',
       electionId: '',
       startDate: new Date(),
       endDate: new Date(),

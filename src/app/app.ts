@@ -6,9 +6,9 @@ import { AuthService, CurrentUser } from './services/auth.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf],
   templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  styleUrls: ['./app.css'],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf],
 })
 export class App {
 
@@ -16,7 +16,8 @@ export class App {
   protected isLoginRoute = false;
 
   isProfileMenuOpen = false;
-  isNotificationOpen = false;
+  notifications: any[] = []; // this will hold notifications
+  unseenCount = 0;
 
   constructor(
     private readonly router: Router,
@@ -49,7 +50,6 @@ export class App {
 
     if ((cleaned === '' || cleaned === '/' || cleaned.startsWith('/login')) && this.auth.isLoggedIn()) {
       const user: CurrentUser | undefined = this.auth.getCurrentUser();
-
       if (!user) return;
 
       // Redirect based on role
@@ -66,13 +66,6 @@ export class App {
   // Toggle profile dropdown
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
-    this.isNotificationOpen = false; // close notifications if open
-  }
-
-  // Toggle notifications
-  toggleNotifications(): void {
-    this.isNotificationOpen = !this.isNotificationOpen;
-    this.isProfileMenuOpen = false; // close profile if open
   }
 
   // Navigate to profile
@@ -94,11 +87,21 @@ export class App {
     this.isProfileMenuOpen = false;
   }
 
+  // Navigate to role-specific notifications page
+  goToNotifications(): void {
+    if (this.auth.isStudent()) {
+      this.router.navigate(['/student-notifications']);
+    } else if (this.auth.isElecom()) {
+      this.router.navigate(['/elecom-notifications']);
+    } else if (this.auth.isAdmin()) {
+      this.router.navigate(['/admin-notifications']);
+    }
+  }
+
   // Logout
   logout(): void {
     this.auth.clear();
     this.router.navigateByUrl('/');
     this.isProfileMenuOpen = false;
-    this.isNotificationOpen = false;
   }
 }
