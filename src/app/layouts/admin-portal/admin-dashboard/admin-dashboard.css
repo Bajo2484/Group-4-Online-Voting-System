@@ -1,4 +1,3 @@
-
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -37,13 +36,11 @@
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
 }
 
-
 .stat-card h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 500;
 }
-
 
 .stat-number {
   margin: 0;
@@ -87,7 +84,7 @@
   color: rgba(17, 24, 39, 0.75);
 }
 
-
+/* Panels */
 .panels {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -203,7 +200,33 @@
   line-height: 1.2;
 }
 
+/* Recent Activity Type Labels */
+.panel-item-type {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  margin-left: 6px;
+}
 
+/* Type Colors */
+.panel-item-type.voter {
+  background-color: #2563eb; /* Blue */
+  color: #f9fafb;
+}
+
+.panel-item-type.candidate {
+  background-color: #16a34a; /* Green */
+  color: #f9fafb;
+}
+
+.panel-item-type.election {
+  background-color: #f59e0b; /* Yellow/Orange */
+  color: #111827;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

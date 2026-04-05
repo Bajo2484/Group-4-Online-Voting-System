@@ -3,12 +3,14 @@ import { Firestore, collection, collectionData, doc, setDoc, updateDoc, query, w
 import { Observable } from 'rxjs';
 
 export interface Notification {
-  id?: string;  
-  studentId: string;
+  id?: string;
+  target: 'admin' | 'student' | 'elecom'; // Role who will receive it
+  studentId?: string; // optional if targeting a specific student
   message: string;
   date: Date;
   type: 'general' | 'request' | 'approved' | 'election';
   seen: boolean;
+  createdAt?: Date;
 }
 
 @Injectable({
@@ -18,10 +20,29 @@ export class NotificationService {
 
   constructor(private firestore: Firestore) {}
 
+  // Get notifications for admin
+  getAdminNotifications(): Observable<Notification[]> {
+    const notifRef = collection(this.firestore, 'notifications');
+    const q = query(notifRef, where('target', '==', 'admin'), orderBy('date', 'desc'));
+    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
+  }
+
+  // Get notifications for elecom
+  getElecomNotifications(): Observable<Notification[]> {
+    const notifRef = collection(this.firestore, 'notifications');
+    const q = query(notifRef, where('target', '==', 'elecom'), orderBy('date', 'desc'));
+    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
+  }
+
   // Get notifications for a specific student
   getStudentNotifications(studentId: string): Observable<Notification[]> {
     const notifRef = collection(this.firestore, 'notifications');
-    const q = query(notifRef, where('studentId', '==', studentId), orderBy('date', 'desc'));
+    const q = query(
+      notifRef, 
+      where('target', '==', 'student'), 
+      where('studentId', '==', studentId),
+      orderBy('date', 'desc')
+    );
     return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
   }
 

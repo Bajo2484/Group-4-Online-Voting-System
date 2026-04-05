@@ -12,9 +12,11 @@ import { Result } from './pages/results/results';
 import { AdminSettingsComponent } from './layouts/admin-portal/admin-settings/admin-settings';
 
 
+
 // Elecom Pages
 import { ElecomDashboardComponent } from './layouts/elecom-portal/elecom-dashboard/elecom-dashboard';
 import { ElecomComponent } from './pages/elecom/elecom';
+import { ElecomNotifications } from './layouts/elecom-portal/elecom-notifications/elecom-notifications';
 
 // Student Pages
 import { StudentDashboardComponent } from './layouts/student-portal/student-dashboard/student-dashboard';
@@ -28,6 +30,8 @@ import { StudentNotifications } from './layouts/student-portal/student-notificat
 
 // Auth Guard
 import { authGuard } from './guards/auth.guard';
+import { AdminNotifications } from './layouts/admin-portal/admin-notifications/admin-notifications';
+
 
 
 export const routes: Routes = [
@@ -41,7 +45,8 @@ export const routes: Routes = [
   { path: 'elections', component: ElectionComponent, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'results', component: Result, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'adminsettings', component: AdminSettingsComponent, canActivate: [authGuard], data: { role: 'admin' } },
- 
+  { path: 'admin-notifications', component: AdminNotifications},
+
 
   // Elecom Routes
   { path: 'elecom-dashboard', component: ElecomDashboardComponent, canActivate: [authGuard], data: { role: 'elecom' } },
@@ -50,7 +55,8 @@ export const routes: Routes = [
   { path: 'elecom-elections', component: ElectionComponent, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-results', component: Result, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-setting', component: AdminSettingsComponent, canActivate: [authGuard], data: { role: 'elecom' } },
-  
+  { path: 'admin-notifications', component: ElecomNotifications},
+
  // Admin managing Elecom accounts
 {
   path: 'manage-elecom',

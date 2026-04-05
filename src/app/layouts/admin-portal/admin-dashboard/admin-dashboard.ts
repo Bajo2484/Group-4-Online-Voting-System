@@ -23,22 +23,18 @@ export class AdminDashboardComponent implements OnInit {
   completedElections = 0;
 
   // Upcoming elections + recent activity
-  upcomingElections: {
-    title: string;
-    startDate: Date;
-    status: string;
-  }[] = [];
-
+  upcomingElections: { title: string; startDate: Date; status: string }[] = [];
   recentActivities: {
-    title: string;
-    description: string;
-    date: Date;
-  }[] = [];
+     title: string;
+      description: string;
+       date: Date;
+       type: 'voter' |'candidate'| 'election';
+      }[] = [];
 
   ngOnInit() {
     this.loadDashboardData();
 
-    // Also refresh when auth state is ready (in case of delay)
+    // Refresh when auth state is ready
     authState(this.auth).subscribe(user => {
       if (user) {
         this.loadDashboardData();
@@ -47,17 +43,48 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadDashboardData() {
-    // ----------------- VOTERS (from students collection) -----------------
+    // ----------------- VOTERS -----------------
     const studentsRef = query(collection(this.firestore, 'students'));
-    collectionData(studentsRef).subscribe((voters: any[]) => {
+    collectionData(studentsRef, { idField: 'id' }).subscribe((voters: any[]) => {
       this.totalVoters = voters.length;
+
+      const voterActivities = voters
+        .sort((a, b) => this.timestampToDate(b.createdAt).getTime() - this.timestampToDate(a.createdAt).getTime())
+        .slice(0, 5)
+        .map(v => ({
+          title: 'New Student Registered',
+          description: `${v.name} has been registered as a voter.`,
+          date: this.timestampToDate(v.createdAt),
+          type: 'voter' as const
+        }));
+
+      this.recentActivities = voterActivities;
       this.cdr.detectChanges();
     });
 
     // ----------------- CANDIDATES -----------------
     const candidatesRef = query(collection(this.firestore, 'candidates'));
-    collectionData(candidatesRef).subscribe((candidates: any[]) => {
+    collectionData(candidatesRef, { idField: 'id' }).subscribe((candidates: any[]) => {
       this.registeredCandidates = candidates.length;
+
+      const candidateActivities = candidates
+        .sort((a, b) => this.timestampToDate(b.createdAt).getTime() - this.timestampToDate(a.createdAt).getTime())
+        .slice(0, 5)
+        .map(c => ({
+          title: 'New Candidate Registered',
+          description: `${c.name} has been registered as a candidate.`,
+          date: this.timestampToDate(c.createdAt),
+          type: 'candidate' as const
+        }));
+
+      // Merge candidates into recent activities
+      this.recentActivities = [
+        ...candidateActivities,
+        ...this.recentActivities
+      ]
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 5);
+
       this.cdr.detectChanges();
     });
 
@@ -66,26 +93,23 @@ export class AdminDashboardComponent implements OnInit {
     collectionData(electionsRef).subscribe((elections: any[]) => {
       const normalized = elections.map(e => ({
         ...e,
-        startDate: this.toDate(e['startDate']),
-        endDate: this.toDate(e['endDate'])
+        startDate: this.timestampToDate(e['startDate']),
+        endDate: this.timestampToDate(e['endDate'])
       }));
 
-      this.activeElections =
-        normalized.filter((e: any) => e.status === 'active').length;
-      this.completedElections =
-        normalized.filter((e: any) => e.status === 'completed').length;
+      this.activeElections = normalized.filter(e => e.status === 'active').length;
+      this.completedElections = normalized.filter(e => e.status === 'completed').length;
 
       const now = new Date();
-
       this.upcomingElections = normalized
-        .filter((e: any) => e.status === 'upcoming' && e.startDate > now)
-        .sort((a: any, b: any) => a.startDate.getTime() - b.startDate.getTime())
+        .filter(e => e.status === 'upcoming' && e.startDate > now)
+        .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
         .slice(0, 5);
 
-      this.recentActivities = normalized
-        .sort((a: any, b: any) => b.startDate.getTime() - a.startDate.getTime())
+      const electionActivities = normalized
+        .sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
         .slice(0, 5)
-        .map((e: any) => ({
+        .map(e => ({
           title: e.title,
           description:
             e.status === 'completed'
@@ -93,17 +117,27 @@ export class AdminDashboardComponent implements OnInit {
               : e.status === 'active'
               ? 'Started election'
               : 'Scheduled election',
-          date: e.startDate
+          date: e.startDate,
+          type: 'election' as const
         }));
+
+      // Merge elections with previous activities
+      this.recentActivities = [
+        ...electionActivities,
+        ...this.recentActivities
+      ]
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 5);
 
       this.cdr.detectChanges();
     });
   }
 
-  private toDate(value: any): Date {
+  // Safe timestamp converter
+  private timestampToDate(value: any): Date {
     if (!value) return new Date();
-    if (value?.toDate) return value.toDate();
+    if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value instanceof Date) return value;
     return new Date(value);
   }
-
 }

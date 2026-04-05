@@ -1,6 +1,7 @@
 <div class="dashboard">
   <h2 class="page-title">Dashboard</h2>
 
+  <!-- Stats Grid -->
   <section class="stats-grid">
     <article class="stat-card primary">
       <h3>Total Voters</h3>
@@ -27,7 +28,10 @@
     </article>
   </section>
 
+  <!-- Panels -->
   <section class="panels">
+
+    <!-- Upcoming Elections -->
     <article class="panel">
       <div class="panel-header">
         <h3>Upcoming Elections</h3>
@@ -53,6 +57,7 @@
       </ng-template>
     </article>
 
+    <!-- Recent Activity -->
     <article class="panel">
       <div class="panel-header">
         <h3>Recent Activity</h3>
@@ -63,6 +68,16 @@
           <li *ngFor="let activity of recentActivities" class="panel-item">
             <div class="panel-item-main">
               <span class="panel-item-title">{{ activity.title }}</span>
+              <!-- Type label -->
+              <span 
+                class="panel-item-type"
+                [ngClass]="{
+                  voter: activity.type === 'voter',
+                  candidate: activity.type === 'candidate',
+                  election: activity.type === 'election'
+                }">
+                {{ activity.type | titlecase }}
+              </span>
             </div>
             <div class="panel-item-sub">
               {{ activity.description }} •
@@ -77,5 +92,6 @@
         </p>
       </ng-template>
     </article>
+
   </section>
 </div>

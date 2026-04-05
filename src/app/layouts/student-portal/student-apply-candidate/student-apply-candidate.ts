@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CandidateService } from '../../../services/candidate.service';
 import { Candidate } from '../../../services/candidate.model';
+import { NotificationService } from '../../../services/notification.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -35,7 +36,7 @@ export class ApplyCandidateComponent {
   positionsByOrg: {[key: string]: string[]} = {
     'ATLAS': [
       'PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY',
-      'ASSOCIATE SECRETARY','AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO',
+      'ASSOCIATE SECRETARY','AUDITOR','EXTERNAL PRO','INTERNAL PRO',
       '2ND YR GOV','3RD YR GOV','4TH YR GOV'
     ],
     'USG': ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'],
@@ -44,7 +45,10 @@ export class ApplyCandidateComponent {
   };
   filteredPositions: string[] = [];
 
-  constructor(private candidateService: CandidateService) {}
+  constructor(
+    private candidateService: CandidateService,
+    private notificationService: NotificationService
+  ) {}
 
   onOrganizationChange() {
     if(this.organization && this.positionsByOrg[this.organization]) {
@@ -83,7 +87,20 @@ export class ApplyCandidateComponent {
     };
 
     try {
+      // 1️⃣ Add candidate to Firestore
       await this.candidateService.addCandidate(candidate);
+
+      // 2️⃣ Send notification to admin
+      await this.notificationService.addNotification({
+        studentId: 'admin', // special ID for admin notifications
+        target: 'admin',
+        message: `${this.fullName} has requested to become a candidate.`,
+        date: new Date(),
+        type: 'request',
+        seen: false
+      });
+
+      // 3️⃣ Show success to student
       Swal.fire('Success','Your application has been submitted for admin approval!','success');
       this.resetForm();
     } catch (err) {
