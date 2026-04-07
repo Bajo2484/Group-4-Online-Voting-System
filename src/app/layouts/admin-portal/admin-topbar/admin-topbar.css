@@ -1,0 +1,130 @@
+/* ---------- Topbar Container ---------- */
+.content-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ---------- Hamburger ---------- */
+.hamburger {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1f2937;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+}
+
+/* ---------- Title & Subtitle ---------- */
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.content-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* ---------- Topbar Right ---------- */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ---------- Notifications ---------- */
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.8rem;
+}
+
+.notification-icon .badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Profile ---------- */
+.profile-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #f3f4f6;
+  object-fit: cover;
+}
+
+.dropdown-icon {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* ---------- Dropdown Menu ---------- */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 8px 0;
+  min-width: 140px;
+  display: none;
+  z-index: 1000;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f3f4f6;
+}

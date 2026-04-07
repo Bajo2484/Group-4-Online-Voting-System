@@ -1,0 +1,98 @@
+<div class="settings-container">
+
+  <!-- ================= HEADER ================= -->
+  <h2>Student Settings</h2>
+  <p class="subtitle">Update your profile and password</p>
+
+  <!-- ================= PROFILE INFO ================= -->
+  <div class="card" *ngIf="student && student.studentId">
+    <h3>Profile Information</h3>
+    <form (ngSubmit)="saveProfile()">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input id="fullName" type="text" [(ngModel)]="student.fullName" name="fullName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="studentId">Student ID</label>
+        <input id="studentId" type="text" [(ngModel)]="student.studentId" name="studentId" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="course">Course</label>
+        <input id="course" type="text" [(ngModel)]="student.course" name="course" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="yearLevel">Year Level</label>
+        <input id="yearLevel" type="text" [(ngModel)]="student.yearLevel" name="yearLevel" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="section">Section</label>
+        <input id="section" type="text" [(ngModel)]="student.section" name="section" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" [(ngModel)]="student.email" name="email" required>
+      </div>
+
+      <button type="submit">Save Profile</button>
+    </form>
+  </div>
+
+  <!-- ================= CHANGE PASSWORD ================= -->
+  <div class="card" *ngIf="student && student.studentId">
+    <h3>Change Password</h3>
+    <form (ngSubmit)="changePassword()">
+      <div class="form-group">
+        <label for="newPassword">New Password</label>
+        <input id="newPassword"
+               [type]="showPassword ? 'text' : 'password'"
+               [(ngModel)]="passwords.newPassword"
+               name="newPassword"
+               required
+               autocomplete="new-password">
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword"
+               [type]="showPassword ? 'text' : 'password'"
+               [(ngModel)]="passwords.confirmPassword"
+               name="confirmPassword"
+               required
+               autocomplete="new-password">
+      </div>
+
+      <div class="toggle">
+        <label>Show Passwords</label>
+        <input type="checkbox" [(ngModel)]="showPassword" name="showPassword">
+      </div>
+
+      <button type="submit">Update Password</button>
+    </form>
+  </div>
+
+  <!-- ================= TOGGLES ================= -->
+  <div class="card" *ngIf="student && student.studentId">
+    <h3>Student Portal Options</h3>
+
+    <div class="toggle">
+      <label for="announcementsToggle">Show Announcements</label>
+      <input id="announcementsToggle" type="checkbox" [(ngModel)]="showAnnouncements" name="showAnnouncements">
+    </div>
+
+    <div class="toggle">
+      <label for="resultsToggle">Show Results</label>
+      <input id="resultsToggle" type="checkbox" [(ngModel)]="showResults" name="showResults">
+    </div>
+  </div>
+
+  <!-- ================= LOGOUT ================= -->
+  <div class="card danger">
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+</div>

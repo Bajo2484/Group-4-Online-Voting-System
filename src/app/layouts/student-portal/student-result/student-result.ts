@@ -24,6 +24,7 @@ interface Position {
   styleUrls: ['./student-result.css']
 })
 export class StudentResult {
+  isloading: boolean = false;
 
   orgList: string[] = ['USG', 'ATLAS', 'STCM', 'AEMT'];
   activeOrg: string = 'USG';
@@ -38,9 +39,13 @@ export class StudentResult {
   }
 
   async loadAllData() {
+    this.isloading = true;
+
     const candidates = await this.getCandidates();
     const votes = await this.getVotes();
     this.processResults(candidates, votes);
+
+    this.isloading = false;
   }
 
   async getCandidates(): Promise<any[]> {

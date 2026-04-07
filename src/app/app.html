@@ -1,6 +1,8 @@
 <ng-container *ngIf="isLoginRoute; else mainLayout">
   <!-- LOGIN PAGE -->
+   <div class="login-wrapper">
   <router-outlet></router-outlet>
+  </div>
 </ng-container>
 
 <ng-template #mainLayout>
@@ -9,7 +11,7 @@
   <ng-container *ngIf="auth.isAdmin(); else elecomLayout">
     <div class="app-layout">
       <!-- Sidebar -->
-      <aside class="sidebar">
+      <aside class="sidebar" [class.active]="sidebarOpen">
         <div class="logo-section">
           <img src="/logo.jpg" alt="Application logo" />
           <h2>Admin Panel</h2>
@@ -29,10 +31,14 @@
         </nav>
       </aside>
 
+      <div class="overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+
       <!-- Main Content -->
       <main class="content">
         <!-- Topbar / Header -->
         <header class="content-header">
+          <button class="hamburger" (click)="toggleSidebar()">☰</button>
+
           <div class="header-left">
             <h1 class="content-title">Admin Panel</h1>
             <p class="content-subtitle">Manage elections, voters, and results.</p>
@@ -69,7 +75,7 @@
     <ng-container *ngIf="auth.isElecom(); else studentLayout">
       <div class="app-layout elecom-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+       <aside class="sidebar" [class.active]="sidebarOpen">
           <div class="logo-section">
             <img src="/logo.jpg" alt="Application logo" />
             <h2>Elecom Panel</h2>
@@ -83,9 +89,13 @@
           </ul>
         </aside>
 
+        <div class="overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+
         <!-- Main Content -->
         <main class="content">
           <header class="content-header">
+            <button class="hamburger" (click)="toggleSidebar()">☰</button>
+
             <div class="header-left">
               <h1 class="content-title">Elecom Panel</h1>
               <p class="content-subtitle">Manage elections and voters.</p>
@@ -103,7 +113,7 @@
                 <span class="dropdown-icon">▼</span>
 
                 <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
-                  <li (click)="($event)">Settings</li>
+                  <li (click)="goToElecomSetting($event)">Settings</li>
                   <li (click)="logout(); $event.stopPropagation()">Logout</li>
                 </ul>
               </div>
@@ -121,7 +131,7 @@
     <ng-template #studentLayout>
       <div class="app-layout student-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" [class.active]="sidebarOpen">
           <div class="logo-section">
             <img src="/logo.jpg" alt="Logo" />
             <h2>E-Voting</h2>
@@ -136,9 +146,13 @@
           </nav>
         </aside>
 
+        <div class="overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+
         <!-- Main Content -->
         <main class="content">
           <header class="content-header">
+            <button class="hamburger" (click)="toggleSidebar()">☰</button>
+
             <div class="header-left">
               <div class="header-titles">
                 <h1 class="content-title">Student Panel</h1>
@@ -161,7 +175,7 @@
 
                 <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
                   <li (click)="logout(); $event.stopPropagation()">Logout</li>
-                  <li (click)="goToProfile(); $event.stopPropagation()">Settings</li>
+                  <li (click)="goToSetting(); $event.stopPropagation()">Settings</li>
                 </ul>
               </div>
             </div>

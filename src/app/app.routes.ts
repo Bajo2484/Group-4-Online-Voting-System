@@ -10,18 +10,18 @@ import { Voters } from './pages/voters/voters';
 import { ElectionComponent } from './pages/elections/elections';
 import { Result } from './pages/results/results';
 import { AdminSettingsComponent } from './layouts/admin-portal/admin-settings/admin-settings';
-
-
+import { AdminNotifications } from './layouts/admin-portal/admin-notifications/admin-notifications';
 
 // Elecom Pages
 import { ElecomDashboardComponent } from './layouts/elecom-portal/elecom-dashboard/elecom-dashboard';
 import { ElecomComponent } from './pages/elecom/elecom';
 import { ElecomNotifications } from './layouts/elecom-portal/elecom-notifications/elecom-notifications';
+import { ElecomSettingsComponent } from './layouts/elecom-portal/elecom-settings/elecom-settings';
 
 // Student Pages
 import { StudentDashboardComponent } from './layouts/student-portal/student-dashboard/student-dashboard';
 import { StudentResult } from './layouts/student-portal/student-result/student-result';
-import { StudentProfileComponent } from './layouts/student-portal/student-setting/student-profile';
+import { StudentSettingsComponent } from './layouts/student-portal/student-setting/student-setting';
 import { ApplyCandidateComponent } from './layouts/student-portal/student-apply-candidate/student-apply-candidate';
 import { VotingPage } from './layouts/student-portal/voting-page/voting-page';
 import { VoteSuccess } from './layouts/student-portal/vote-success/vote-success';
@@ -30,52 +30,47 @@ import { StudentNotifications } from './layouts/student-portal/student-notificat
 
 // Auth Guard
 import { authGuard } from './guards/auth.guard';
-import { AdminNotifications } from './layouts/admin-portal/admin-notifications/admin-notifications';
-
-
 
 export const routes: Routes = [
   // Login
   { path: '', component: LoginComponent },
 
+  // =========================
   // Admin Routes
+  // =========================
   { path: 'dashboard', component: AdminDashboardComponent, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'candidates', component: CandidatesComponent, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'voters', component: Voters, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'elections', component: ElectionComponent, canActivate: [authGuard], data: { role: 'admin' } },
   { path: 'results', component: Result, canActivate: [authGuard], data: { role: 'admin' } },
-  { path: 'adminsettings', component: AdminSettingsComponent, canActivate: [authGuard], data: { role: 'admin' } },
-  { path: 'admin-notifications', component: AdminNotifications},
+  { path: 'admin-settings', component: AdminSettingsComponent, canActivate: [authGuard], data: { role: 'admin' } },
+  { path: 'admin-notifications', component: AdminNotifications, canActivate: [authGuard], data: { role: 'admin' } },
 
+  // Admin managing Elecom accounts
+  { path: 'manage-elecom', component: ElecomComponent, canActivate: [authGuard], data: { role: 'admin' } },
 
+  // =========================
   // Elecom Routes
+  // =========================
   { path: 'elecom-dashboard', component: ElecomDashboardComponent, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-voters', component: Voters, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-candidates', component: CandidatesComponent, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-elections', component: ElectionComponent, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-results', component: Result, canActivate: [authGuard], data: { role: 'elecom' } },
-  { path: 'elecom-setting', component: AdminSettingsComponent, canActivate: [authGuard], data: { role: 'elecom' } },
-  { path: 'admin-notifications', component: ElecomNotifications},
-
- // Admin managing Elecom accounts
-{
-  path: 'manage-elecom',
-  component: ElecomComponent,   // reuse ElecomComponent
-  canActivate: [authGuard],
-  data: { role: 'admin' }       // allow admin to access
-},
+  { path: 'elecom-notifications', component: ElecomNotifications, canActivate: [authGuard], data: { role: 'elecom' } },
+  { path: 'elecom-settings', component: ElecomSettingsComponent, canActivate: [authGuard], data: { role: 'elecom' } },
+  // =========================
   // Student Routes
+  // =========================
   { path: 'student-dashboard', component: StudentDashboardComponent, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-result', component: StudentResult, canActivate: [authGuard], data: { role: 'student' } },
-  { path: 'student-profile', component: StudentProfileComponent, canActivate: [authGuard], data: { role: 'student' } },
+  { path: 'student-setting', component: StudentSettingsComponent, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-apply-candidate', component: ApplyCandidateComponent, canActivate: [authGuard], data: { role: 'student' } },
-  { path: 'voting/:org/:electionId',component: VotingPage, canActivate: [authGuard], data: {role: 'student'}},
-  { path: 'vote-success',component: VoteSuccess, },
-  { path: 'view-details/:org/:electionId',component: VotingDetails},
-  { path: 'student-notifications', component: StudentNotifications},
+  { path: 'voting/:org/:electionId', component: VotingPage, canActivate: [authGuard], data: { role: 'student' } },
+  { path: 'vote-success', component: VoteSuccess, canActivate: [authGuard], data: { role: 'student' } },
+  { path: 'view-details/:org/:electionId', component: VotingDetails, canActivate: [authGuard], data: { role: 'student' } },
+  { path: 'student-notifications', component: StudentNotifications, canActivate: [authGuard], data: { role: 'student' } },
 
-
-
-  // Catch all (redirect unknown routes to login)
+  // Catch all unknown routes
   { path: '**', redirectTo: '' }
 ];

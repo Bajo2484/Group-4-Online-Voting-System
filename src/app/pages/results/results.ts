@@ -26,7 +26,7 @@ interface Position {
 export class Result {
 
   activeOrg: string = 'ATLAS';
-  loading: boolean = false;
+  isloading: boolean = false;
 
   atlasPositions: Position[] = [];
   stcmPositions: Position[] = [];
@@ -39,14 +39,14 @@ export class Result {
 
   // ================= LOAD ALL =================
   async loadAllData() {
-    this.loading = true;
+    this.isloading = true;
 
     const candidates = await this.getCandidates();
     const votes = await this.getVotes();
 
     this.processResults(candidates, votes);
 
-    this.loading = false;
+    this.isloading = false;
   }
 
   // ================= GET CANDIDATES =================

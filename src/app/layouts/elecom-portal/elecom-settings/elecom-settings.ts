@@ -1,96 +1,121 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { Firestore, doc, docData, updateDoc } from '@angular/fire/firestore';
+import { getAuth, updatePassword, User } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { AuthService } from '@app/services/auth.service';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-elecom-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './elecom-settings.html',
-  styleUrls: ['./elecom-settings.css']
+  styleUrls: ['./elecom-settings.css'],
+  imports: [FormsModule, CommonModule]
 })
-export class ElecomSettingsComponent {
+export class ElecomSettingsComponent implements OnInit {
+  private firestore: Firestore = inject(Firestore);
+  private storage = getStorage();
+  private auth = getAuth();
 
-  elecomName = 'Elecom Member';
-  elecomEmail = 'elecom@example.com';
-  oldPassword = '';
-  newPassword = '';
-  confirmPassword = '';
+  name: string = '';
+  email: string = '';
+  profileImage: string = '';
 
-  theme = 'light';
-  language = 'English';
-  notifications = true;
+  currentPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
 
-  updateProfile() {
-    if (!this.elecomName || !this.elecomEmail) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Missing Information',
-        text: 'Please fill in your name and email.',
-        confirmButtonColor: '#3085d6'
-      });
-      return;
-    }
+  selectedFile: File | null = null;
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Profile Updated!',
-      html: `
-        <strong>Name:</strong> ${this.elecomName} <br>
-        <strong>Email:</strong> ${this.elecomEmail}
-      `,
-      confirmButtonColor: '#28a745'
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  async ngOnInit() {
+    const user = await this.authService.getCurrentUser();
+    if (!user) return;
+
+    this.email = user.email ?? '';
+
+    const userDocRef = doc(this.firestore, `users/${user.uid}`);
+    docData(userDocRef).subscribe((data: any) => {
+      this.name = data?.name ?? '';
+      this.profileImage = data?.profileImage ?? '';
     });
   }
 
-  changePassword() {
-    if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Missing Fields',
-        text: 'Please fill all password fields.',
-        confirmButtonColor: '#3085d6'
-      });
+  async updateProfile() {
+    const user = await this.authService.getCurrentUser();
+    if (!user) {
+      alert('User not logged in');
       return;
     }
 
+    const userDocRef = doc(this.firestore, `users/${user.uid}`);
+    await updateDoc(userDocRef, { name: this.name });
+
+    alert('Profile updated!');
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  async uploadProfilePicture() {
+    if (!this.selectedFile) return;
+
+    const user = await this.authService.getCurrentUser();
+    if (!user) {
+      alert('User not logged in');
+      return;
+    }
+
+    try {
+      const fileRef = ref(this.storage, `profilePictures/${user.uid}`);
+      await uploadBytes(fileRef, this.selectedFile);
+
+      const downloadURL = await getDownloadURL(fileRef);
+
+      const userDocRef = doc(this.firestore, `users/${user.uid}`);
+      await updateDoc(userDocRef, { profileImage: downloadURL });
+
+      this.profileImage = downloadURL;
+      alert('Profile picture updated!');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to upload profile picture');
+    }
+  }
+
+  async changePassword() {
     if (this.newPassword !== this.confirmPassword) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Password Mismatch',
-        text: "New password and confirm password do not match.",
-        confirmButtonColor: '#d33'
-      });
+      alert('Passwords do not match!');
       return;
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Password Changed!',
-      text: 'Your password has been updated successfully.',
-      confirmButtonColor: '#28a745'
-    });
+    const user: User | null = this.auth.currentUser;
+    if (!user) {
+      alert('User not logged in');
+      return;
+    }
 
-    this.oldPassword = '';
-    this.newPassword = '';
-    this.confirmPassword = '';
+    try {
+      await updatePassword(user, this.newPassword);
+      alert('Password updated!');
+      this.currentPassword = '';
+      this.newPassword = '';
+      this.confirmPassword = '';
+    } catch (error) {
+      console.error(error);
+      alert('Error updating password. You may need to re-login.');
+    }
   }
 
-  updatePreferences() {
-    Swal.fire({
-      icon: 'success',
-      title: 'Preferences Saved!',
-      html: `
-        <strong>Theme:</strong> ${this.theme} <br>
-        <strong>Language:</strong> ${this.language} <br>
-        <strong>Notifications:</strong> ${this.notifications ? 'Enabled' : 'Disabled'}
-      `,
-      confirmButtonColor: '#28a745'
-    });
-
-    console.log(
-      `Theme: ${this.theme}, Language: ${this.language}, Notifications: ${this.notifications}`
-    );
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

@@ -19,6 +19,11 @@
   <div class="org-section">
     <h2>{{ activeOrg }} Results</h2>
 
+    <div class="loading-spinner" *ngIf="isloading">
+      loading result...
+    </div>
+      
+
     <div class="position-card" *ngFor="let pos of getActivePositions()">
       <h3>{{ pos.name }}</h3>
 

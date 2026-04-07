@@ -50,7 +50,7 @@ export class AdminDashboardComponent implements OnInit {
 
       const voterActivities = voters
         .sort((a, b) => this.timestampToDate(b.createdAt).getTime() - this.timestampToDate(a.createdAt).getTime())
-        .slice(0, 5)
+        .slice(0, 50)
         .map(v => ({
           title: 'New Student Registered',
           description: `${v.name} has been registered as a voter.`,
@@ -69,7 +69,7 @@ export class AdminDashboardComponent implements OnInit {
 
       const candidateActivities = candidates
         .sort((a, b) => this.timestampToDate(b.createdAt).getTime() - this.timestampToDate(a.createdAt).getTime())
-        .slice(0, 5)
+        .slice(0, 50)
         .map(c => ({
           title: 'New Candidate Registered',
           description: `${c.name} has been registered as a candidate.`,
@@ -83,7 +83,7 @@ export class AdminDashboardComponent implements OnInit {
         ...this.recentActivities
       ]
         .sort((a, b) => b.date.getTime() - a.date.getTime())
-        .slice(0, 5);
+        .slice(0, 50);
 
       this.cdr.detectChanges();
     });
@@ -104,7 +104,7 @@ export class AdminDashboardComponent implements OnInit {
       this.upcomingElections = normalized
         .filter(e => e.status === 'upcoming' && e.startDate > now)
         .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-        .slice(0, 5);
+        .slice(0, 50);
 
       const electionActivities = normalized
         .sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
@@ -127,7 +127,7 @@ export class AdminDashboardComponent implements OnInit {
         ...this.recentActivities
       ]
         .sort((a, b) => b.date.getTime() - a.date.getTime())
-        .slice(0, 5);
+        .slice(0, 50);
 
       this.cdr.detectChanges();
     });

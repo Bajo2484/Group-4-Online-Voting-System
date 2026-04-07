@@ -243,3 +243,37 @@
 .student-layout .btn-logout:hover {
   background: #dc2626;
 }
+
+/* Hide sidebar on small screens */
+.sidebar {
+  width: 250px;
+  transition: transform 0.3s ease;
+}
+/* ---------- Hamburger ---------- */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  z-index: 1200;
+  margin-right: 1rem;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .sidebar { width: 200px; }
+  .content { margin-left: 200px; }
+}
+
+/* Mobile phones */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); position: fixed; top: 0; height: 100%; }
+  .sidebar.active { transform: translateX(0); }
+  .hamburger { display: block; }
+  .content { margin-left: 0; }
+}
+
+/* Prevent body scroll when sidebar open */
+body.sidebar-open { overflow: hidden; }

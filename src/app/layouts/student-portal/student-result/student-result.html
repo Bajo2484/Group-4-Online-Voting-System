@@ -15,6 +15,10 @@
 
       <h2>{{ org }} Results</h2>
 
+      <div class="loading-spinner" *ngIf="isloading">
+        loading result....
+      </div>
+
       <div class="position-card" *ngFor="let position of getPositions(org)">
 
         <div class="position-header">

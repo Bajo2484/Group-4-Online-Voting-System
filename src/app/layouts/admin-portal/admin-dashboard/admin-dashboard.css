@@ -242,3 +242,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.recent-activity-panel .panel-list {
+  max-height: 320px;  
+  overflow-y: auto;
+  padding-right: 6px;
+}

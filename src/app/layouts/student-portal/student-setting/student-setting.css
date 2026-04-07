@@ -1,0 +1,180 @@
+/* ================= CONTAINER ================= */
+.settings-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ================= HEADER ================= */
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  background: linear-gradient(90deg, #4f46e5, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ================= CARD ================= */
+.card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  padding: 25px 20px;
+  margin-bottom: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* ================= FORM GROUP ================= */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(79,70,229,0.3);
+}
+
+.form-group input[readonly] {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+/* ================= ANGULAR VALIDATION ================= */
+.form-group input.ng-invalid.ng-touched {
+  border-color: #e11d48;
+  background-color: #fff0f0;
+}
+
+.form-group input.ng-valid {
+  border-color: #22c55e;
+}
+
+
+/* ================= TOGGLE SWITCH ================= */
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.toggle label {
+  font-weight: 500;
+  font-size: 15px;
+  color: #333;
+}
+
+/* Style the checkbox as a switch */
+.toggle input[type="checkbox"] {
+  width: 40px;
+  height: 20px;
+  -webkit-appearance: none;
+  appearance: none; 
+  background-color: #ccc;
+  outline: none;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  top: 1px;
+  left: 1px;
+  background-color: #fff;
+  transition: transform 0.3s;
+}
+
+/* Checked state */
+.toggle input[type="checkbox"]:checked {
+  background-color: #4f46e5; /* purple gradient accent */
+}
+
+.toggle input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+/* Optional: focus style */
+.toggle input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+/* ================= BUTTONS ================= */
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* ================= LOGOUT BUTTON ================= */
+.card.danger button.logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 15px;
+    margin: 20px 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}

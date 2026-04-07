@@ -1,50 +1,60 @@
-<h2>Elecom Settings</h2>
+<div class="elecom-settings-container">
+  <div class="settings-card">
 
-<div class="settings-container">
-  <div class="card">
-    <h3>Profile Settings</h3>
-    <label>Name:</label>
-    <input type="text" [(ngModel)]="elecomName">
+    <!-- Profile Picture -->
+    <div class="profile-picture-section">
+      <!-- Circle avatar -->
+      <img 
+        *ngIf="profileImage; else defaultAvatar"
+        [src]="profileImage" 
+        alt="Profile Picture" 
+        class="profile-picture" 
+      />
+      <ng-template #defaultAvatar>
+        <div class="profile-picture placeholder"></div>
+      </ng-template>
 
-    <label>Email:</label>
-    <input type="email" [(ngModel)]="elecomEmail">
+      <!-- Hidden file input -->
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
 
-    <button (click)="updateProfile()">Update Profile</button>
-  </div>
+      <!-- Stylish buttons -->
+      <label for="fileInput" class="upload-btn">Choose Picture</label>
+      <button 
+        (click)="uploadProfilePicture()" 
+        [disabled]="!selectedFile" 
+        class="upload-confirm-btn"
+      >
+        Upload
+      </button>
+    </div>
 
-  <div class="card">
-    <h3>Change Password</h3>
-    <label>Old Password:</label>
-    <input type="password" [(ngModel)]="oldPassword">
+    <!-- Personal Info -->
+    <div class="personal-info-section">
+      <label for="name">Name</label>
+      <input id="name" type="text" [(ngModel)]="name" />
 
-    <label>New Password:</label>
-    <input type="password" [(ngModel)]="newPassword">
+      <label for="email">Email</label>
+      <input id="email" type="email" [value]="email" disabled />
 
-    <label>Confirm Password:</label>
-    <input type="password" [(ngModel)]="confirmPassword">
+      <button (click)="updateProfile()" class="update-btn">Update Profile</button>
+    </div>
 
-    <button (click)="changePassword()">Change Password</button>
-  </div>
+    <!-- Change Password -->
+    <div class="password-section">
+      <label for="currentPassword">Current Password</label>
+      <input id="currentPassword" type="password" [(ngModel)]="currentPassword" />
 
-  <div class="card">
-    <h3>System Preferences</h3>
-    <label>Theme:</label>
-    <select [(ngModel)]="theme">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
+      <label for="newPassword">New Password</label>
+      <input id="newPassword" type="password" [(ngModel)]="newPassword" />
 
-    <label>Language:</label>
-    <select [(ngModel)]="language">
-      <option>English</option>
-      <option>Filipino</option>
-    </select>
+      <label for="confirmPassword">Confirm New Password</label>
+      <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" />
 
-    <label>
-      <input type="checkbox" [(ngModel)]="notifications">
-      Enable Notifications
-    </label>
+      <button (click)="changePassword()" class="change-password-btn">Change Password</button>
+    </div>
 
-    <button (click)="updatePreferences()">Save Preferences</button>
+    <!-- Logout -->
+    <button class="logout-btn" (click)="logout()">Logout</button>
+
   </div>
 </div>

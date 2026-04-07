@@ -4,13 +4,14 @@ import { NgIf } from '@angular/common';
 import { AuthService, CurrentUser } from './services/auth.service';
 import { NotificationService, Notification } from './services/notification.service';
 import { Subscription } from 'rxjs';
+import { AdminTopbarComponent } from './layouts/admin-portal/admin-topbar/admin-topbar';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf,]
 })
 export class App implements OnInit {
 
@@ -20,6 +21,8 @@ export class App implements OnInit {
   isProfileMenuOpen = false;
   notifications: Notification[] = []; // holds notifications
   unseenCount = 0;
+
+  sidebarOpen = false;
 
   private notifSub?: Subscription;
 
@@ -114,15 +117,23 @@ export class App implements OnInit {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
   }
 
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
   // Navigate to profile
-  goToProfile(): void {
+  goToSetting(): void {
     if (this.auth.isAdmin()) {
       this.router.navigate(['/myprofile']);
-    } else if (this.auth.isElecom()) {
-      this.router.navigate(['/elecom-profile']);
     } else {
-      this.router.navigate(['/student-profile']);
+      this.router.navigate(['/student-setting']);
     }
+    this.isProfileMenuOpen = false;
+  }
+
+  goToElecomSetting(event?: MouseEvent): void {
+    event?.stopPropagation(); 
+    this.router.navigate(['/elecom-settings']);
     this.isProfileMenuOpen = false;
   }
 

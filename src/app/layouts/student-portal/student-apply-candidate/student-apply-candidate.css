@@ -1,6 +1,6 @@
-/* Container */
+/* ================= CONTAINER ================= */
 .page-wrapper {
-  max-width: 900px;
+  max-width: 95%;
   margin: 30px auto;
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -9,7 +9,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Header */
+/* ================= HEADER ================= */
 .header {
   text-align: center;
   margin-bottom: 25px;
@@ -27,7 +27,7 @@
   font-size: 14px;
 }
 
-/* Instructions bar */
+/* ================= INSTRUCTIONS ================= */
 .instructions-bar {
   margin-bottom: 20px;
   background-color: #eef6fb;
@@ -41,7 +41,7 @@
   margin-right: 8px;
 }
 
-/* Form card */
+/* ================= FORM CARD ================= */
 .form-container .card {
   display: flex;
   gap: 20px;
@@ -101,7 +101,7 @@
   color: #555;
 }
 
-/* Form fields */
+/* ================= FORM FIELDS ================= */
 .form-fields {
   flex: 2;
   display: flex;
@@ -127,6 +127,7 @@
   font-size: 14px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 textarea {
@@ -140,7 +141,22 @@ textarea {
   margin-top: 2px;
 }
 
-/* Confirm section */
+/* ================= DROPDOWN FIX ================= */
+.form-group select {
+  width: 100%; /* full width */
+  max-width: 100%;
+  font-size: clamp(12px, 2.5vw, 14px); /* responsive text */
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.form-group select option {
+  font-size: clamp(12px, 2.5vw, 14px);
+  padding: 6px 8px;
+}
+
+/* ================= CONFIRM SECTION ================= */
 .confirm-section {
   display: flex;
   align-items: center;
@@ -151,7 +167,7 @@ textarea {
   font-size: 14px;
 }
 
-/* Buttons */
+/* ================= BUTTONS ================= */
 .buttons {
   display: flex;
   justify-content: flex-end;
@@ -188,4 +204,95 @@ textarea {
 
 .submit-btn:hover:enabled {
   background-color: #2380b7;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .page-wrapper {
+    max-width: 95%;
+    margin: 15px auto;
+    padding: 15px;
+  }
+
+  .form-container .card {
+    flex-direction: column; /* stack photo + fields */
+    gap: 15px;
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .form-group select {
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(12px, 2.5vw, 14px);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+.form-group select {
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(12px, 2.5vw, 14px);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+.form-group select option {
+  font-size: clamp(12px, 2.5vw, 14px);
+  padding: 6px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+  .photo-section {
+    flex: none;
+    width: 100%;
+    text-align: center;
+  }
+
+  .form-fields {
+    flex: none;
+    width: 100%;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px auto;
+  }
+
+  .upload-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .buttons {
+    flex-direction: column; /* stack buttons */
+    gap: 10px;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+
+  .form-group select {
+    font-size: 14px; /* slightly bigger for touch */
+    padding: 10px;
+  }
+
+  .form-group select option {
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .header h1 { font-size: 22px; }
+  .header p { font-size: 12px; }
+  .form-group label { font-size: 13px; }
+  .form-group input, select, textarea { font-size: 13px; }
 }
