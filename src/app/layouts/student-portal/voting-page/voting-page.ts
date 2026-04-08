@@ -123,7 +123,7 @@ export class VotingPage implements OnInit, OnDestroy {
       candidatesRef,
       where('status', '==', 'approved'),
       where('organization', '==', org),
-      where('electionId', '==', 'R1B3W2zsy4LThhkr3bOS')
+      where('electionId', '==', 'lqDNkhaC2BKwVRkJ7dvZ')
     );
 
     if (this.snapshotUnsub) this.snapshotUnsub();

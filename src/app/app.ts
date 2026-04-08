@@ -140,7 +140,7 @@ export class App implements OnInit {
   // Navigate to admin settings
   goToAdminSettings(event?: MouseEvent): void {
     event?.stopPropagation(); // prevent parent toggle
-    this.router.navigate(['/adminsettings']);
+    this.router.navigate(['/admin-settings']);
     this.isProfileMenuOpen = false;
   }
 
@@ -149,7 +149,7 @@ export class App implements OnInit {
     if (this.auth.isStudent()) {
       this.router.navigate(['/student-notifications']);
     } else if (this.auth.isElecom()) {
-      this.router.navigate(['/admin-notifications']);
+      this.router.navigate(['/elecom-notifications']);
     } else if (this.auth.isAdmin()) {
       this.router.navigate(['/admin-notifications']);
     }

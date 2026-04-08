@@ -9,13 +9,19 @@
 
 /* ---------- Sidebar ---------- */
 .sidebar {
-  width: 240px;
+  width: 250px;
   background: #1f3b57;
   color: #f9fafb;
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 8px rgba(15, 23, 42, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1100;
+  transition: transform 0.3s ease;
 }
 
 .logo-section {
@@ -77,25 +83,44 @@
   box-shadow: 0 6px 14px rgba(37, 99, 235, 0.5);
 }
 
-/* ---------- Content ---------- */
+/* ---------- Main Content ---------- */
 .content {
+  margin-left: 250px;
   flex: 1;
   display: flex;
   flex-direction: column;
   background: radial-gradient(circle at top left, #e0f2fe, #f9fafb 45%, #e5e7eb 100%);
+  min-height: 100vh;
+  overflow: auto;
 }
 
+/* ================= FIXED HEADER ================= */
 .content-header {
-  padding: 20px 28px;
-  background: rgba(249, 250, 251, 0.9);
+  position: fixed;
+  top: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  height: 70px;
+  background: rgba(249, 250, 251, 0.95);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(209, 213, 219, 0.8);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 1200;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
+.student-layout .content-header {
+  left: 250px;
+  width: calc(100% - 250px);
+  top: 0;
+  z-index: 1200;
+}
+
+/* ---------- Content Titles ---------- */
 .content-title {
   margin: 0;
   font-size: 1.4rem;
@@ -108,7 +133,7 @@
   color: #515052;
 }
 
-/* ---------- Topbar ---------- */
+/* ---------- Topbar Right ---------- */
 .topbar-right {
   display: flex;
   align-items: center;
@@ -129,7 +154,6 @@
   font-size: clamp(1.5rem, 2vw, 1.9rem);
 }
 
-/* ===== UPDATED BADGE ===== */
 .notification-icon .badge {
   position: absolute;
   top: -6px;
@@ -191,7 +215,7 @@
   padding: 8px 0;
   display: none;
   min-width: 140px;
-  z-index: 1000;
+  z-index: 1300;
 }
 
 .dropdown-menu.show { display: block; }
@@ -200,6 +224,7 @@
 
 /* ---------- Content Body ---------- */
 .content-body {
+  margin-top: 80px; /* height of header + spacing */
   padding: 24px 28px 32px;
 }
 
@@ -215,6 +240,7 @@
   backdrop-filter: blur(8px);
 }
 
+/* ---------- Notification / Profile Adjustments for Student ---------- */
 .student-layout .notification-icon {
   font-size: 1.6rem;
 }
@@ -244,11 +270,6 @@
   background: #dc2626;
 }
 
-/* Hide sidebar on small screens */
-.sidebar {
-  width: 250px;
-  transition: transform 0.3s ease;
-}
 /* ---------- Hamburger ---------- */
 .hamburger {
   display: none;
@@ -261,18 +282,31 @@
   margin-right: 1rem;
 }
 
-/* Tablets */
+/* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .sidebar { width: 200px; }
   .content { margin-left: 200px; }
+  .content-header, .student-layout .content-header {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
 }
 
-/* Mobile phones */
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); position: fixed; top: 0; height: 100%; }
+  .sidebar { 
+    transform: translateX(-100%); 
+    position: fixed;
+    top: 70px;
+    height: calc(100% - 70px); 
+    z-index: 1150; }
   .sidebar.active { transform: translateX(0); }
   .hamburger { display: block; }
   .content { margin-left: 0; }
+  .content-header, .student-layout .content-header {
+    left: 0;
+    width: 100%;
+  }
+  .content-body { margin-top: 70px; padding: 20px; }
 }
 
 /* Prevent body scroll when sidebar open */

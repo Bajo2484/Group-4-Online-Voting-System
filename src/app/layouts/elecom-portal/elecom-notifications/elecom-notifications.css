@@ -1,0 +1,146 @@
+.notifications-container {
+  max-width: 600px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 🔔 Header with badge */
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.no-notifications {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 20px 0;
+}
+
+/* 📩 Notification Card */
+.notification-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 🔵 Unseen style */
+.notification-card.unseen {
+  border-left: 5px solid #007BFF;
+  background-color: #f0f8ff;
+}
+
+/* 🔵 Dot indicator */
+.notif-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.notif-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #bbb;
+  flex-shrink: 0;
+}
+
+.notif-dot.unseen-dot {
+  background-color: #007BFF;
+}
+
+/* 📝 Message */
+.notif-message {
+  font-weight: 500;
+  color: #333;
+}
+
+/* 📅 Footer */
+.notif-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-date {
+  font-size: 13px;
+  color: #666;
+}
+
+/* 🔘 Button */
+.mark-seen-btn {
+  background-color: #007BFF;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-left: 10px;
+}
+
+.mark-seen-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 🔴 Notification badge */
+.notif-badge {
+  background-color: red;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* 🌀 Loading Spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007BFF;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Bell animation */
+.animate {
+  animation: bell 0.4s;
+}
+
+@keyframes bell {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}

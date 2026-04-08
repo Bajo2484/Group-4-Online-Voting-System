@@ -20,6 +20,7 @@ h2 {
   text-align: center;
   color: #888;
   font-size: 16px;
+  padding: 20px 0;
 }
 
 /* 📩 Notification Card */
@@ -30,7 +31,7 @@ h2 {
   padding: 15px 20px;
   margin-bottom: 12px;
   transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer; /* 🔥 clickable */
+  cursor: pointer;
 }
 
 .notification-card:hover {
@@ -109,4 +110,37 @@ h2 {
   font-weight: bold;
   min-width: 24px;
   text-align: center;
+}
+
+/* 🌀 Loading Spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007BFF;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Bell animation */
+.animate {
+  animation: bell 0.4s;
+}
+
+@keyframes bell {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
 }

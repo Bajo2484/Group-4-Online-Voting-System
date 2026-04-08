@@ -1,21 +1,32 @@
 <div class="notifications-container">
   <h2>Notifications</h2>
 
+  <!-- Unseen Count -->
+  <div *ngIf="unseenCount > 0" class="unseen-count">
+    You have {{ unseenCount }} new notification{{ unseenCount > 1 ? 's' : '' }}.
+  </div>
+
+  <!-- No notifications message -->
   <div *ngIf="notifications.length === 0" class="no-notifications">
     No notifications yet.
   </div>
 
+  <!-- Notification List -->
   <ul *ngIf="notifications.length > 0" class="notification-list">
-    <li *ngFor="let n of notifications" [class.unseen]="!n.seen" (click)="markAsSeen(n)">
+    <li 
+      *ngFor="let n of notifications" 
+      [class.unseen]="!n.seen" 
+      (click)="markAsSeen(n)"
+    >
       <div class="message">{{ n.message }}</div>
+      
+      <!-- Date -->
       <div class="date">{{ n.date | date:'medium' }}</div>
+
+      <!-- Countdown for election type -->
       <div *ngIf="n.type === 'election'" class="countdown">
-        {{ getRemainingDays(n.date) }} day(s) left
+        {{ getRemainingDays(n.date) }} day{{ getRemainingDays(n.date) > 1 ? 's' : '' }} left
       </div>
     </li>
   </ul>
-
-  <div *ngIf="unseenCount > 0" class="unseen-count">
-    You have {{ unseenCount }} new notification{{ unseenCount > 1 ? 's' : '' }}.
-  </div>
 </div>

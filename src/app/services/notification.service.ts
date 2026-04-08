@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, doc, setDoc, updateDoc, query, where, orderBy } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Notification {
   id?: string;
@@ -43,8 +44,14 @@ export class NotificationService {
       where('studentId', '==', studentId),
       orderBy('date', 'desc')
     );
-    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
-  }
+   return collectionData(q, { idField: 'id' }).pipe(
+    map(notifs => notifs.map(n => ({
+      ...n,
+      // Convert Firestore Timestamp to JS Date
+       date: (n['date'] && (n['date'] as any)?.toDate) ? (n['date'] as any).toDate() : n['date']
+    })))
+  ) as Observable<Notification[]>;
+}
 
   // Add a new notification
   addNotification(notification: Notification) {

@@ -22,23 +22,22 @@ export class AdminDashboardComponent implements OnInit {
   activeElections = 0;
   completedElections = 0;
 
-  // Upcoming elections + recent activity
+  // Panels
   upcomingElections: { title: string; startDate: Date; status: string }[] = [];
+  completedElectionList: { title: string; endDate: Date; status: string }[] = [];
   recentActivities: {
-     title: string;
-      description: string;
-       date: Date;
-       type: 'voter' |'candidate'| 'election';
-      }[] = [];
+    title: string;
+    description: string;
+    date: Date;
+    type: 'voter' | 'candidate' | 'election';
+  }[] = [];
 
   ngOnInit() {
     this.loadDashboardData();
 
-    // Refresh when auth state is ready
+    // Refresh when auth state changes
     authState(this.auth).subscribe(user => {
-      if (user) {
-        this.loadDashboardData();
-      }
+      if (user) this.loadDashboardData();
     });
   }
 
@@ -77,11 +76,7 @@ export class AdminDashboardComponent implements OnInit {
           type: 'candidate' as const
         }));
 
-      // Merge candidates into recent activities
-      this.recentActivities = [
-        ...candidateActivities,
-        ...this.recentActivities
-      ]
+      this.recentActivities = [...candidateActivities, ...this.recentActivities]
         .sort((a, b) => b.date.getTime() - a.date.getTime())
         .slice(0, 50);
 
@@ -91,19 +86,37 @@ export class AdminDashboardComponent implements OnInit {
     // ----------------- ELECTIONS -----------------
     const electionsRef = query(collection(this.firestore, 'elections'));
     collectionData(electionsRef).subscribe((elections: any[]) => {
-      const normalized = elections.map(e => ({
-        ...e,
-        startDate: this.timestampToDate(e['startDate']),
-        endDate: this.timestampToDate(e['endDate'])
-      }));
+      const now = new Date().getTime();
 
+      const normalized = elections.map(e => {
+        const start = this.timestampToDate(e['startDate']).getTime();
+        const end = this.timestampToDate(e['endDate']).getTime();
+        let status: 'upcoming' | 'active' | 'completed' = 'upcoming';
+
+        if (now < start) status = 'upcoming';
+        else if (now >= start && now <= end) status = 'active';
+        else status = 'completed';
+
+        return {
+          ...e,
+          startDate: this.timestampToDate(e['startDate']),
+          endDate: this.timestampToDate(e['endDate']),
+          status
+        };
+      });
+
+      // Dashboard counts
       this.activeElections = normalized.filter(e => e.status === 'active').length;
       this.completedElections = normalized.filter(e => e.status === 'completed').length;
 
-      const now = new Date();
       this.upcomingElections = normalized
-        .filter(e => e.status === 'upcoming' && e.startDate > now)
+        .filter(e => e.status === 'upcoming')
         .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+        .slice(0, 50);
+
+      this.completedElectionList = normalized
+        .filter(e => e.status === 'completed')
+        .sort((a, b) => b.endDate.getTime() - a.endDate.getTime())
         .slice(0, 50);
 
       const electionActivities = normalized
@@ -121,11 +134,7 @@ export class AdminDashboardComponent implements OnInit {
           type: 'election' as const
         }));
 
-      // Merge elections with previous activities
-      this.recentActivities = [
-        ...electionActivities,
-        ...this.recentActivities
-      ]
+      this.recentActivities = [...electionActivities, ...this.recentActivities]
         .sort((a, b) => b.date.getTime() - a.date.getTime())
         .slice(0, 50);
 

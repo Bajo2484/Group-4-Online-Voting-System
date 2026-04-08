@@ -18,11 +18,9 @@ export class ElectionComponent implements OnInit {
   isEditMode = false;
   editingId: string | null = null;
 
-  // ✅ UPDATED MODEL
   newElection: Election = {
     title: '',
-
-    electionId: '',     
+    electionId: '',
     startDate: new Date(),
     endDate: new Date(),
     status: 'upcoming',
@@ -33,8 +31,6 @@ export class ElectionComponent implements OnInit {
   startTimeInput: string = '';
   endDateInput: string = '';
   endTimeInput: string = '';
-
-
 
   constructor(
     public electionService: ElectionService,
@@ -49,6 +45,9 @@ export class ElectionComponent implements OnInit {
         endDate: this.toDate(item.endDate)
       }));
 
+      // ✅ Update status dynamically based on current date
+      this.elections.forEach(election => this.updateElectionStatus(election));
+
       this.elections.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
       this.cdr.detectChanges();
     });
@@ -58,6 +57,20 @@ export class ElectionComponent implements OnInit {
     if (!value) return new Date();
     if (value?.toDate) return value.toDate();
     return new Date(value);
+  }
+
+  private updateElectionStatus(election: Election) {
+    const now = new Date().getTime();
+    const start = new Date(election.startDate).getTime();
+    const end = new Date(election.endDate).getTime();
+
+    if (now < start) {
+      election.status = 'upcoming';
+    } else if (now >= start && now <= end) {
+      election.status = 'active';
+    } else {
+      election.status = 'completed';
+    }
   }
 
   openModal(election?: Election) {
@@ -83,14 +96,6 @@ export class ElectionComponent implements OnInit {
   }
 
   async saveElection() {
-      console.log({
-    title: this.newElection.title,
-    startDate: this.startDateInput,
-    startTime: this.startTimeInput,
-    endDate: this.endDateInput,
-    endTime: this.endTimeInput
-  });
-  
     if (
       !this.newElection.title ||
       !this.startDateInput ||
@@ -106,14 +111,14 @@ export class ElectionComponent implements OnInit {
     this.newElection.startDate = new Date(`${this.startDateInput}T${this.startTimeInput}`);
     this.newElection.endDate = new Date(`${this.endDateInput}T${this.endTimeInput}`);
 
-   
-    const year = new Date(this.newElection.startDate).getFullYear();
-    const timestamp = Date.now();
+    // ✅ Automatically update status based on current date
+    this.updateElectionStatus(this.newElection);
 
-   this.newElection.electionId = `ELECTION_${year}_${timestamp}`;
-
-    if (!this.newElection.status) {
-      this.newElection.status = 'upcoming';
+    // Create unique electionId if new
+    if (!this.newElection.electionId) {
+      const year = new Date(this.newElection.startDate).getFullYear();
+      const timestamp = Date.now();
+      this.newElection.electionId = `ELECTION_${year}_${timestamp}`;
     }
 
     try {
@@ -126,7 +131,6 @@ export class ElectionComponent implements OnInit {
       }
 
       this.closeModal();
-
     } catch (error) {
       console.error('Error saving election:', error);
       Swal.fire('Error', 'Failed to save election.', 'error');

@@ -116,30 +116,32 @@ export class Result {
       });
     });
 
-    // STEP 3: Convert to UI format
-    this.atlasPositions = this.convertToPositions(orgMap['ATLAS']);
-    this.stcmPositions = this.convertToPositions(orgMap['STCM']);
-    this.aemtPositions = this.convertToPositions(orgMap['AEMT']);
-    this.usgPositions = this.convertToPositions(orgMap['USG']);
+    // STEP 3: Convert to UI format with sorted positions
+    this.atlasPositions = this.convertToPositions(orgMap['ATLAS'], 'ATLAS');
+    this.stcmPositions = this.convertToPositions(orgMap['STCM'], 'STCM');
+    this.aemtPositions = this.convertToPositions(orgMap['AEMT'], 'AEMT');
+    this.usgPositions = this.convertToPositions(orgMap['USG'], 'USG');
 
     console.log(this.atlasPositions);
   }
 
-    
-
-  // ================= CONVERT =================
-  convertToPositions(data: any): Position[] {
+  // ================= CONVERT AND SORT =================
+  convertToPositions(data: any, orgName: string): Position[] {
     const positions: Position[] = [];
+
+    // Define order
+    const atlasOrder = ['PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY','ASSOCIATE SECRETARY',
+      'AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO','2ND YR GOV','3RD YR GOV','4TH YR GOV'];
+    const otherOrder = ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'];
 
     Object.keys(data).forEach(pos => {
       const candidates = data[pos];
 
-      // SORT (highest votes first)
+      // SORT candidates by votes descending
       candidates.sort((a: any, b: any) => b.votes - a.votes);
 
       // Determine winner
       const maxVotes = Math.max(...candidates.map((c: any) => c.votes), 0);
-
       candidates.forEach((c: any) => {
         c.isWinner = c.votes === maxVotes && maxVotes > 0;
       });
@@ -149,6 +151,13 @@ export class Result {
         candidates: candidates
       });
     });
+
+    // SORT positions based on org
+    if (orgName === 'ATLAS') {
+      positions.sort((a, b) => atlasOrder.indexOf(a.name) - atlasOrder.indexOf(b.name));
+    } else {
+      positions.sort((a, b) => otherOrder.indexOf(a.name) - otherOrder.indexOf(b.name));
+    }
 
     return positions;
   }
@@ -183,96 +192,96 @@ export class Result {
     const doc = new jsPDF();
 
     // ===== LOGOS =====
-  doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
-  doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
+    doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
+    doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
 
-  // ===== HEADER TEXT =====
-  doc.setFontSize(10);
-  doc.text('University of Science and Technology of Southern Philippines - Villanueva', 105, 10, { align: 'center' });
-  doc.text('ALLIANCE OF TECH-LEAD AND ASPIRING STUDENTS', 105, 15, { align: 'center' });
-  doc.text('USTP VILLANUEVA', 105, 20, { align: 'center' });
-  doc.text('Poblacion 1, Villanueva 9002 Misamis Oriental, Philippines', 105, 25, { align: 'center' });
+    // ===== HEADER TEXT =====
+    doc.setFontSize(10);
+    doc.text('University of Science and Technology of Southern Philippines - Villanueva', 105, 10, { align: 'center' });
+    doc.text('ALLIANCE OF TECH-LEAD AND ASPIRING STUDENTS', 105, 15, { align: 'center' });
+    doc.text('USTP VILLANUEVA', 105, 20, { align: 'center' });
+    doc.text('Poblacion 1, Villanueva 9002 Misamis Oriental, Philippines', 105, 25, { align: 'center' });
 
-  // LINE
-  doc.line(10, 30, 200, 30);
+    // LINE
+    doc.line(10, 30, 200, 30);
 
-  // ===== TITLE =====
-  doc.setFontSize(14);
-  doc.text('ONLINE ELECTION RESULT', 105, 38, { align: 'center' });
+    // ===== TITLE =====
+    doc.setFontSize(14);
+    doc.text('ONLINE ELECTION RESULT', 105, 38, { align: 'center' });
 
-  doc.line(10, 42, 200, 42);
+    doc.line(10, 42, 200, 42);
 
-  // ===== INFO =====
-  doc.setFontSize(10);
-  doc.text(`Election : ${org} ELECTION RESULT`, 14, 50);
-  doc.text(`Date : ${new Date().toDateString()}`, 14, 56);
-  doc.text(`Generated : ${new Date().toDateString()}`, 14, 62);
+    // ===== INFO =====
+    doc.setFontSize(10);
+    doc.text(`Election : ${org} ELECTION RESULT`, 14, 50);
+    doc.text(`Date : ${new Date().toDateString()}`, 14, 56);
+    doc.text(`Generated : ${new Date().toDateString()}`, 14, 62);
 
-  let startY = 70;
+    let startY = 70;
 
-  const winners: any[] = [];
+    const winners: any[] = [];
 
-  // ===== POSITIONS =====
-  positions.forEach(pos => {
+    // ===== POSITIONS =====
+    positions.forEach(pos => {
 
-    // POSITION TITLE
+      // POSITION TITLE
+      doc.setFontSize(12);
+      doc.text(pos.name, 105, startY, { align: 'center' });
+
+      startY += 5;
+      doc.line(20, startY, 190, startY);
+
+      startY += 5;
+
+      const tableData = pos.candidates.map(c => {
+        if (c.isWinner) {
+          winners.push({ position: pos.name, name: c.name });
+        }
+
+        return [
+          c.name,
+          c.votes,
+          c.isWinner ? 'Winner' : ''
+        ];
+      });
+
+      // TABLE
+      autotable(doc, {
+        head: [['Candidate', 'Votes', 'Status']],
+        body: tableData,
+        startY: startY,
+        theme: 'grid',
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [0, 102, 204] }
+      });
+
+      startY = (doc as any).lastAutoTable.finalY + 10;
+    });
+
+    // ===== SUMMARY =====
     doc.setFontSize(12);
-    doc.text(pos.name, 105, startY, { align: 'center' });
+    doc.text('SUMMARY OF WINNERS', 105, startY, { align: 'center' });
 
-    startY += 5;
-    doc.line(20, startY, 190, startY);
+    startY += 8;
 
-    startY += 5;
-
-    const tableData = pos.candidates.map(c => {
-      if (c.isWinner) {
-        winners.push({ position: pos.name, name: c.name });
-      }
-
-      return [
-        c.name,
-        c.votes,
-        c.isWinner ? 'Winner' : ''
-      ];
+    doc.setFontSize(10);
+    winners.forEach(w => {
+      doc.text(`${w.position}: ${w.name}`, 14, startY);
+      startY += 6;
     });
 
-    // TABLE
-    autotable(doc, {
-      head: [['Candidate', 'Votes', 'Status']],
-      body: tableData,
-      startY: startY,
-      theme: 'grid',
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [0, 102, 204] }
-    });
+    startY += 10;
 
-    startY = (doc as any).lastAutoTable.finalY + 10;
-  });
+    // ===== FOOTER =====
+    doc.text('Prepared by:', 14, startY);
+    doc.text('_____________________', 14, startY + 5);
+    doc.text('(Administrator)', 14, startY + 10);
 
-  // ===== SUMMARY =====
-  doc.setFontSize(12);
-  doc.text('SUMMARY OF WINNERS', 105, startY, { align: 'center' });
+    doc.text('Noted by:', 140, startY);
+    doc.text('_____________________', 140, startY + 5);
+    doc.text('(Election Committee)', 140, startY + 10);
 
-  startY += 8;
-
-  doc.setFontSize(10);
-  winners.forEach(w => {
-    doc.text(`${w.position}: ${w.name}`, 14, startY);
-    startY += 6;
-  });
-
-  startY += 10;
-
-  // ===== FOOTER =====
-  doc.text('Prepared by:', 14, startY);
-  doc.text('_____________________', 14, startY + 5);
-  doc.text('(Administrator)', 14, startY + 10);
-
-  doc.text('Noted by:', 140, startY);
-  doc.text('_____________________', 140, startY + 5);
-  doc.text('(Election Committee)', 140, startY + 10);
-
-  // ===== SAVE =====
-  doc.save(`${org}_Election_Results.pdf`);
-}
+    // ===== SAVE =====
+    doc.save(`${org}_Election_Results.pdf`);
+  }
 }

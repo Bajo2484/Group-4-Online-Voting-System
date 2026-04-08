@@ -1,83 +1,197 @@
-.admin-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+/* ================= Wrapper ================= */
+.settings-wrapper-vertical {
+  display: flex;
+  max-width: 1000px;
+  margin: 30px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 650px;
+  gap: 25px;
 }
 
-h2 {
-  margin-bottom: 20px;
+/* ================= Sidebar ================= */
+.sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px;
 }
 
-.card {
-  background: #ffffff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.form-group {
-  margin: 15px 0;
-}
-
-select, input[type="time"] {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-.btn {
-  margin-right: 10px;
-  padding: 8px 15px;
+.sidebar-tabs button {
+  padding: 12px 16px;
   border: none;
-  background-color: #2c5aa0;
-  color: white;
-  border-radius: 5px;
+  background: #ddd;
+  border-radius: 8px;
   cursor: pointer;
+  text-align: left;
+  font-weight: bold;
+  transition: all 0.3s;
 }
 
-.theme-buttons button {
-  margin-right: 10px;
-  padding: 8px 15px;
-  border: 1px solid #2c5aa0;
-  background: white;
+.sidebar-tabs button:hover { background: #c0c0c0; }
+.sidebar-tabs button.active { background: #4f46e5; color: #fff; }
+.sidebar-tabs .logout-btn { margin-top: auto; background: #ef4444; color: #fff; }
+
+/* ================= Tab Content ================= */
+.tab-content-vertical {
+  flex: 1;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+/* ================= Profile Photo ================= */
+.profile-photo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.profile-photo {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4f46e5;
+  margin-bottom: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.profile-photo:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+.upload-btn {
+  padding: 8px 18px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
   cursor: pointer;
-  border-radius: 5px;
+  transition: all 0.3s;
+}
+.upload-btn:hover { background: #3730a3; transform: translateY(-2px); }
+
+/* ================= Form Fields ================= */
+.form-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+.form-group label { font-weight: 600; margin-bottom: 6px; }
+.form-group input, .form-group select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: all 0.3s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 6px rgba(79,70,229,0.4);
 }
 
-.theme-buttons .active {
-  background: #2c5aa0;
-  color: white;
+/* ================= Buttons ================= */
+.btn-save {
+  padding: 10px 20px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-save:hover { background: #3730a3; transform: translateY(-1px); }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ================= Toggle Switch ================= */
+.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.switch input { display: none; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px;
+  left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #4f46e5; }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* ================= FAQ ================= */
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #ccc;
 }
 
-.action-buttons {
+.faq-item {
+  border-bottom: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.faq-question {
+  background: #f7f7f7;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  align-items: center;
+  transition: background 0.3s;
 }
 
-.save-btn {
-  background: #2c5aa0;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+.faq-question:hover { background: #e2e2e2; }
+
+.faq-answer {
+  padding: 12px 16px;
+  background: #fff;
+  border-left: 3px solid #4f46e5;
+  border-radius: 0 0 8px 8px;
+  animation: fadeIn 0.3s ease-in-out;
+  font-size: 0.95rem;
+  color: #333;
 }
 
-.logout-btn {
-  background: #c0392b;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+.arrow { font-size: 14px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.dark-mode {
-  background-color: #1e1e1e;
-  color: #ffffff;
+/* ================= Notifications Tab ================= */
+.notifications-tab .notif-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
-.dark-mode .card {
-  background-color: #2a2a2a;
+.notifications-tab .notif-group label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.notifications-tab .notif-group .switch { margin-left: 10px; }
+
+/* ================= Error ================= */
+.error { color: #ef4444; font-size: 0.85rem; margin-top: -8px; }
+
+/* ================= Responsive ================= */
+@media screen and (max-width: 1024px) {
+  .faq-question { font-size: 0.95rem; padding: 10px 14px; }
+  .faq-answer { font-size: 0.9rem; padding: 10px 14px; }
+}
+
+@media screen and (max-width: 768px) {
+  .settings-wrapper-vertical { flex-direction: column; }
+  .sidebar-tabs { flex-direction: row; width: 100%; overflow-x: auto; }
+  .sidebar-tabs button { flex: 1; text-align: center; }
+  .tab-content-vertical { margin-left: 0; margin-top: 20px; }
+
+  .faq-question { font-size: 0.9rem; padding: 8px 12px; }
+  .faq-answer { font-size: 0.85rem; padding: 8px 12px; }
+}
+
+@media screen and (max-width: 480px) {
+  .faq-question { font-size: 0.85rem; }
+  .faq-answer { font-size: 0.8rem; }
 }

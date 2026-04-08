@@ -1,7 +1,7 @@
 <div class="dashboard">
   <h2 class="page-title">Dashboard</h2>
 
-  <!-- Stats Grid -->
+  <!-- Stats Grid: Keep the 4 cards -->
   <section class="stats-grid">
     <article class="stat-card primary">
       <h3>Total Voters</h3>
@@ -28,70 +28,100 @@
     </article>
   </section>
 
-  <!-- Panels -->
+  <!-- Panels: Left = Upcoming + Completed Elections, Right = Recent Activity -->
   <section class="panels">
 
-    <!-- Upcoming Elections -->
-    <article class="panel ">
-      <div class="panel-header">
-        <h3>Upcoming Elections</h3>
-        <span class="panel-badge">{{ upcomingElections.length }}</span>
-      </div>
-      <ng-container *ngIf="upcomingElections.length; else noUpcoming">
-        <ul class="panel-list">
-          <li *ngFor="let election of upcomingElections" class="panel-item">
-            <div class="panel-item-main">
-              <span class="panel-item-title">{{ election.title }}</span>
-              <span class="panel-item-status">{{ election.status | titlecase }}</span>
-            </div>
-            <div class="panel-item-sub">
-              {{ election.startDate | date: 'MMM d, y, h:mm a' }}
-            </div>
-          </li>
-        </ul>
-      </ng-container>
-      <ng-template #noUpcoming>
-        <p class="panel-empty">
-          No upcoming elections yet. Create one from the <strong>Elections</strong> page.
-        </p>
-      </ng-template>
-    </article>
+    <!-- Left column -->
+    <div class="left-panels">
+      <!-- Upcoming Elections -->
+      <article class="panel">
+        <div class="panel-header">
+          <h3>Upcoming Elections</h3>
+          <span class="panel-badge">{{ upcomingElections.length }}</span>
+        </div>
+        <ng-container *ngIf="upcomingElections.length; else noUpcoming">
+          <ul class="panel-list">
+            <li *ngFor="let election of upcomingElections" class="panel-item">
+              <div class="panel-item-main">
+                <span class="panel-item-title">{{ election.title }}</span>
+                <span class="panel-item-status">{{ election.status | titlecase }}</span>
+              </div>
+              <div class="panel-item-sub">
+                Starts on: {{ election.startDate | date: 'MMM d, y, h:mm a' }}
+              </div>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #noUpcoming>
+          <p class="panel-empty">
+            No upcoming elections yet. Create one from the <strong>Elections</strong> page.
+          </p>
+        </ng-template>
+      </article>
 
-    <!-- Recent Activity -->
-    <article class="panel recent-activity-panel">
-      <div class="panel-header">
-        <h3>Recent Activity</h3>
-        <span class="panel-badge">{{ recentActivities.length }}</span>
-      </div>
-      <ng-container *ngIf="recentActivities.length; else noActivity">
-        <ul class="panel-list">
-          <li *ngFor="let activity of recentActivities" class="panel-item">
-            <div class="panel-item-main">
-              <span class="panel-item-title">{{ activity.title }}</span>
-              <!-- Type label -->
-              <span 
-                class="panel-item-type"
-                [ngClass]="{
-                  voter: activity.type === 'voter',
-                  candidate: activity.type === 'candidate',
-                  election: activity.type === 'election'
-                }">
-                {{ activity.type | titlecase }}
-              </span>
-            </div>
-            <div class="panel-item-sub">
-              {{ activity.description }} •
-              {{ activity.date | date: 'MMM d, y, h:mm a' }}
-            </div>
-          </li>
-        </ul>
-      </ng-container>
-      <ng-template #noActivity>
-        <p class="panel-empty">
-          System activity will appear here once users start interacting with the system.
-        </p>
-      </ng-template>
-    </article>
+      <!-- Completed Elections -->
+      <article class="panel">
+        <div class="panel-header">
+          <h3>Completed Elections</h3>
+          <span class="panel-badge">{{ completedElectionList.length }}</span>
+        </div>
+        <ng-container *ngIf="completedElectionList.length; else noCompleted">
+          <ul class="panel-list">
+            <li *ngFor="let election of completedElectionList" class="panel-item">
+              <div class="panel-item-main">
+                <span class="panel-item-title">{{ election.title }}</span>
+                <span class="panel-item-status">{{ election.status | titlecase }}</span>
+              </div>
+              <div class="panel-item-sub">
+                Ended on: {{ election.endDate | date: 'MMM d, y, h:mm a' }}
+              </div>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #noCompleted>
+          <p class="panel-empty">
+            No elections have been completed yet.
+          </p>
+        </ng-template>
+      </article>
+    </div>
+
+    <!-- Right column -->
+    <div class="right-panel">
+      <article class="panel recent-activity-panel">
+        <div class="panel-header">
+          <h3>Recent Activity</h3>
+          <span class="panel-badge">{{ recentActivities.length }}</span>
+        </div>
+        <ng-container *ngIf="recentActivities.length; else noActivity">
+          <ul class="panel-list">
+            <li *ngFor="let activity of recentActivities" class="panel-item">
+              <div class="panel-item-main">
+                <span class="panel-item-title">{{ activity.title }}</span>
+                <span 
+                  class="panel-item-type"
+                  [ngClass]="{
+                    voter: activity.type === 'voter',
+                    candidate: activity.type === 'candidate',
+                    election: activity.type === 'election'
+                  }">
+                  {{ activity.type | titlecase }}
+                </span>
+              </div>
+              <div class="panel-item-sub">
+                {{ activity.description }} •
+                {{ activity.date | date: 'MMM d, y, h:mm a' }}
+              </div>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #noActivity>
+          <p class="panel-empty">
+            System activity will appear here once users start interacting with the system.
+          </p>
+        </ng-template>
+      </article>
+    </div>
 
   </section>
 </div>

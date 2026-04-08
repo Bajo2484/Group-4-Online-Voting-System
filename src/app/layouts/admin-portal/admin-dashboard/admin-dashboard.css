@@ -8,7 +8,7 @@
   margin: 0;
   font-size: 1.4rem;
   font-weight: 600;
-  color: #111827;
+  color: #271411;
 }
 
 /* Stats Grid */
@@ -56,7 +56,7 @@
 
 /* Individual Card Colors */
 .stat-card.primary {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8); /* Blue */
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #f9fafb;
   border-color: transparent;
 }
@@ -66,31 +66,44 @@
 }
 
 .stat-card:nth-child(2) {
-  background: linear-gradient(135deg, #16a34a, #4ade80); /* Green */
+  background: linear-gradient(135deg, #16a34a, #4ade80);
   color: white;
 }
 
 .stat-card:nth-child(3) {
-  background: linear-gradient(135deg, #dc2626, #f87171); /* Red */
+  background: linear-gradient(135deg, #dc2626, #f87171);
   color: white;
 }
 
 .stat-card:nth-child(4) {
-  background: linear-gradient(135deg, #f59e0b, #fde68a); /* Yellow */
-  color: #111827;
+  background: linear-gradient(135deg, #f59e0b, #fde68a);
+  color: #ffffff;
 }
 
 .stat-card:nth-child(4) .stat-caption {
-  color: rgba(17, 24, 39, 0.75);
+  color: rgba(253, 253, 255, 0.75);
 }
 
-/* Panels */
+/* ----------------- Panels ----------------- */
 .panels {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
   gap: 16px;
 }
 
+/* Left column (Upcoming + Completed) */
+.left-panels {
+  flex: 2; /* wider */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Right column (Recent Activity) */
+.right-panel {
+  flex: 1; /* narrower */
+}
+
+/* Panel base styles */
 .panel {
   background: #ffffff;
   border-radius: 18px;
@@ -143,6 +156,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .panel-item {
@@ -210,7 +226,6 @@
   margin-left: 6px;
 }
 
-/* Type Colors */
 .panel-item-type.voter {
   background-color: #2563eb; /* Blue */
   color: #f9fafb;
@@ -233,7 +248,11 @@
   }
 
   .panels {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .left-panels, .right-panel {
+    flex: 1;
   }
 }
 
@@ -241,11 +260,4 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
-}
-
-
-.recent-activity-panel .panel-list {
-  max-height: 320px;  
-  overflow-y: auto;
-  padding-right: 6px;
 }

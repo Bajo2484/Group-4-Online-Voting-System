@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-student-notifications',
@@ -20,7 +21,10 @@ export class StudentNotifications implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     const studentId = this.auth.getCurrentUser()?.studentId;
+    console.log('Current studentId:', studentId); 
+    
     if (!studentId) return;
 
     // Subscribe to notifications from Firestore

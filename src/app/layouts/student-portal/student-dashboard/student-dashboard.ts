@@ -1,9 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { StudentCacheService } from '../../../services/student-cache.service';
+
+// Optional type safety
+interface Vote {
+  electionId: string;
+  isVoted: boolean;
+}
+
+interface Student {
+  uid: string;
+  fullName: string;
+  name?: string;
+  course: string;
+  votes: Vote[];
+}
 
 @Component({
   selector: 'app-student-dashboard',
@@ -14,7 +28,7 @@ import { StudentCacheService } from '../../../services/student-cache.service';
 })
 export class StudentDashboardComponent implements OnInit {
 
-  student: any = null;
+  student: Student | null = null;
   elections: any[] = [];
   loading: boolean = true; // show loader while fetching data
 
@@ -30,22 +44,25 @@ export class StudentDashboardComponent implements OnInit {
     private auth: Auth,
     private firestore: Firestore,
     private router: Router,
-    private studentCache: StudentCacheService
+    private studentCache: StudentCacheService,
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
     const currentUser = this.auth.currentUser;
 
     if (this.studentCache.currentStudent) {
-      // Cached student -> display immediately
-      this.student = this.studentCache.currentStudent;
-      this.setupElections();
-      this.loading = false;
+      // Use cached student
+      this.ngZone.run(() => {
+        this.student = this.studentCache.currentStudent;
+        this.setupElections();
+        this.loading = false;
+        this.cd.detectChanges();
+      });
     } else if (currentUser) {
-      // Load student if logged in
       this.loadStudentAndSetup(currentUser.uid);
     } else {
-      // Listen for auth state changes
       onAuthStateChanged(this.auth, user => {
         if (user) {
           this.loadStudentAndSetup(user.uid);
@@ -56,15 +73,13 @@ export class StudentDashboardComponent implements OnInit {
     }
   }
 
-  /** Helper: load student + setup elections + manage spinner */
+  /** Helper: load student + setup elections */
   private async loadStudentAndSetup(uid: string) {
-    this.loading = true;
     try {
       await this.loadStudent(uid);
     } catch (err) {
       console.error('Error loading student:', err);
-    } finally {
-      this.loading = false;
+      this.ngZone.run(() => { this.loading = false; });
     }
   }
 
@@ -74,28 +89,40 @@ export class StudentDashboardComponent implements OnInit {
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
-      this.student = snap.data();
-      // Ensure votes array exists
+      this.student = snap.data() as Student;
+      this.student.name = this.student.fullName;
+
+      // Normalize data
       this.student.votes = Array.isArray(this.student.votes) ? this.student.votes : [];
-      // Normalize course
-      this.student.course = this.student.course?.trim().toUpperCase();
-      // Cache the student
+      this.student.course = this.student.course?.trim().toUpperCase() || '';
       this.studentCache.currentStudent = this.student;
 
       console.log('Student data loaded:', this.student);
 
-      // Setup elections dynamically
+      // Setup elections
       this.setupElections();
+
+      // Stop spinner after everything is ready
+      this.ngZone.run(() => {
+        this.loading = false;
+        this.cd.detectChanges();
+      });
+
     } else {
       console.warn('Student document not found!');
+      this.ngZone.run(() => {
+        this.loading = false;
+      });
     }
   }
 
   /** Setup elections dynamically and mark voted ones */
   private setupElections() {
+    if (!this.student) return;
+
     const studentCourse = this.student.course;
 
-    this.elections = Object.keys(this.orgData)
+    const filtered = Object.keys(this.orgData)
       .filter(key =>
         this.orgData[key].allowedCourses
           .map((c: string) => c.trim().toUpperCase())
@@ -103,20 +130,25 @@ export class StudentDashboardComponent implements OnInit {
       )
       .map(key => {
         const electionId = key.toUpperCase() + '2026';
-        const voted = this.student.votes.some(
-          (v: any) => v.electionId.toUpperCase() === electionId && v.isVoted === true
+        const voted = this.student!.votes.some(
+          (v: Vote) => v.electionId.toUpperCase() === electionId && v.isVoted === true
         );
 
         return {
           name: this.orgData[key].title,
           logo: this.orgData[key].logo,
           org: key.toUpperCase(),
-          electionId: electionId,
+          electionId,
           isVoted: voted
         };
       });
 
-    console.log('Filtered elections:', this.elections.map(e => e.name));
+    this.ngZone.run(() => {
+      this.elections = filtered;
+      this.cd.detectChanges();
+    });
+
+    console.log('Filtered elections:', filtered.map(e => e.name));
   }
 
   // Count completed votes
@@ -131,6 +163,7 @@ export class StudentDashboardComponent implements OnInit {
       : 0;
   }
 
+  // Progress color indicator
   get progressColor(): string {
     const percent = this.progressPercentage;
     if (percent === 100) return 'green';
