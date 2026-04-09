@@ -3,7 +3,7 @@
   <h1 class="welcome-title">Welcome, Elecom!</h1>
   <p class="subtitle">Here’s the current voting summary.</p>
 
-  
+  <!-- ✅ STATS CARDS -->
   <div class="stats">
     <div class="card blue">
       <h3>Total Students</h3>
@@ -21,14 +21,69 @@
     </div>
   </div>
 
+  <!-- ✅ ELECTION STATUS + COUNTDOWN -->
+  <div class="election-status">
+    <span>⏱️</span>
+    <span>
+      All elections are currently 
+      <b [ngClass]="electionStatus">{{ electionStatus }}</b> |
+      Remaining Time: {{ remainingTime }}
+    </span>
+  </div>
 
+  <!-- ✅ VOTING OVERVIEW -->
   <div class="overview">
     <h2>Voting Overview</h2>
 
-    <div class="empty-state">
-      <p>No voting data available yet.</p>
-      <small>Data will appear here once elections start.</small>
-    </div>
+    <!-- TABLE (if naa data) -->
+    <table *ngIf="votingData.length > 0; else noData">
+      <thead>
+        <tr>
+          <th>Organization</th>
+          <th>Enrolled</th>
+          <th>Votes Cast</th>
+          <th>Turnout</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let org of votingData">
+          <td>{{ org.name }}</td>
+
+          <td>
+            <span class="badge">{{ org.enrolled }}</span>
+          </td>
+
+          <td>{{ org.votes }}</td>
+
+          <td>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill"
+                [style.width.%]="org.turnout">
+              </div>
+            </div>
+            <small>{{ org.turnout }}%</small>
+          </td>
+
+          <td>
+            <span class="status" [ngClass]="org.status">
+              {{ org.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <ng-template #noData>
+      <div class="empty-state">
+        <p>No voting data available yet.</p>
+        <small>Data will appear here once elections start.</small>
+      </div>
+    </ng-template>
+
   </div>
 
 </div>

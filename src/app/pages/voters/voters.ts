@@ -25,6 +25,12 @@ export class Voters implements OnInit, OnDestroy {
   statuses: string[] = ['UNDERGRADUATE', 'GRADUATE'];
   yearLevels: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
   newStudent: StudentAccount = this.getEmptyStudent();
+
+  totalBSIT = 0;
+  totalBSTCM = 0;
+  totalBSEMT = 0;
+  
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -40,6 +46,7 @@ export class Voters implements OnInit, OnDestroy {
       .subscribe((students) => {
         this.students = students;
         this.filterVoters();
+        this.countStudentsPerCourse();
         this.cdr.detectChanges();
       });
   }
@@ -173,4 +180,11 @@ export class Voters implements OnInit, OnDestroy {
       }
     });
   }
+
+    countStudentsPerCourse() {
+      this.totalBSIT = this.students.filter(s => s.course === 'BSIT').length;
+      this.totalBSTCM = this.students.filter(s => s.course === 'BSTCM').length;
+      this.totalBSEMT = this.students.filter(s => s.course === 'BSEMT').length;
+    }
+  
 }

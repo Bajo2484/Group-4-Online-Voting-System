@@ -6,6 +6,7 @@ export interface Election {
 [x: string]: any;
   id?: string;
   title: string;
+  
 
 
   electionId: string;
@@ -13,6 +14,7 @@ export interface Election {
   endDate: Date;
   status: 'upcoming' | 'active' | 'completed';
   candidates?: string[];
+ 
 }
 
 @Injectable({

@@ -1,11 +1,11 @@
-/* PAGE LAYOUT */
+/* ================= PAGE LAYOUT ================= */
 .page {
   padding: 20px;
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .header {
   display: flex;
   justify-content: space-between;
@@ -38,7 +38,7 @@
   background-color: #2b4a73;
 }
 
-/* SEARCH BAR */
+/* ================= SEARCH BAR ================= */
 .search-bar {
   margin-bottom: 15px;
 }
@@ -59,7 +59,7 @@
   box-shadow: 0 0 5px rgba(31,59,87,0.3);
 }
 
-/* TABLE STYLING */
+/* ================= TABLE STYLING ================= */
 .voter-table {
   width: 100%;
   border-collapse: collapse;
@@ -88,7 +88,7 @@
   background-color: #e6f0ff;
 }
 
-/* ACTION BUTTONS */
+/* ================= ACTION BUTTONS ================= */
 .voter-table button.edit-btn {
   background-color: #ffc107;
   color: white;
@@ -117,7 +117,7 @@
   background-color: #b52a2a;
 }
 
-/* CARD */
+/* ================= CARD ================= */
 .card {
   background-color: white;
   padding: 15px;
@@ -126,7 +126,7 @@
   margin-top: 20px;
 }
 
-/* MODAL STYLING */
+/* ================= MODAL STYLING ================= */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -250,7 +250,57 @@
   color: #888;
 }
 
-/* RESPONSIVE */
+/* ================= TOTALS CARDS ================= */
+.totals-cards {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: start;
+}
+
+.total-card {
+  flex: 1;
+  min-width: 120px;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.total-card h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.total-card p {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Individual Colors with Gradient */
+.total-card:nth-child(1) { /* BSIT */
+  background: linear-gradient(135deg, #1f3b57, #4a90e2);
+}
+
+.total-card:nth-child(2) { /* BSEMT */
+  background: linear-gradient(135deg, #000000, #555555);
+}
+
+.total-card:nth-child(3) { /* BSTCM */
+  background: linear-gradient(135deg, #a80000, #ff4d4d);
+}
+
+/* Hover Effect */
+.total-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
   .modal-card {
     width: 95%;
@@ -266,5 +316,9 @@
   .name-group input {
     flex: 1;
     min-width: 0;
+  }
+
+  .totals-cards {
+    flex-direction: column;
   }
 }

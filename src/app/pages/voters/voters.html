@@ -9,6 +9,22 @@
     <button class="btn-add" (click)="openModal()">+ Add Voter</button>
   </div>
 
+  <!-- TOTALS CARDS -->
+  <div class="totals-cards">
+    <div class="total-card">
+      <h4>BSIT Students</h4>
+      <p>{{ totalBSIT }}</p>
+    </div>
+    <div class="total-card">
+      <h4>BSEMT Students</h4>
+      <p>{{ totalBSEMT }}</p>
+    </div>
+    <div class="total-card">
+      <h4>BSTCM Students</h4>
+      <p>{{ totalBSTCM }}</p>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-card">
@@ -142,7 +158,7 @@
         <tr *ngIf="filteredStudents.length === 0">
          <td colspan="6" class="no-voters">
            No voters found.
-            </td>
+         </td>
         </tr>
       </tbody>
     </table>

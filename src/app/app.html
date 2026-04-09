@@ -108,12 +108,11 @@
               </div>
 
               <div class="profile-dropdown" (click)="toggleProfileMenu()">
-                <img src="/elecom.jpg" alt="Elecom Avatar" class="profile-avatar" />
                 <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Elecom User' }}</span>
                 <span class="dropdown-icon">▼</span>
 
                 <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
-                  <li (click)="goToElecomSetting($event)">Profile Settings</li>
+                  <li (click)="goToElecomSetting($event)"> Settings</li>
                   <li (click)="logout(); $event.stopPropagation()">Logout</li>
                 </ul>
               </div>
