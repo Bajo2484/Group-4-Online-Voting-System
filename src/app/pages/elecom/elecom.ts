@@ -21,8 +21,19 @@ export class ElecomComponent {
     name: '',
     email: '',
     password: '',
+    position: '',
     isActive: true,
   };
+
+  positions: string[] = [
+    'Chief Commissioner',
+    'EMT Commissioner',
+    'TCM Commissioner',
+    'IT Commissioner',
+    'EMT Electoral Rep.',
+    'TCM Electoral Rep.',
+    'IT Electoral Rep.'
+  ];
 
   constructor(private readonly elecomService: ElecomAccountService) {
     this.loadElecoms();
@@ -34,9 +45,9 @@ export class ElecomComponent {
   }
 
   async addElecom(): Promise<void> {
-    const { username, name, email, password } = this.newElecom;
+    const { username, name, email, password, position} = this.newElecom;
 
-    if (!username || !name || !email || !password) {
+    if (!username || !name || !email || !password || !position) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Required Fields',
@@ -48,7 +59,7 @@ export class ElecomComponent {
 
     try {
       await this.elecomService.add(
-        { username, name, email, isActive: true },
+        { username, name, email, position ,isActive: true },
         password
       );
 
@@ -59,7 +70,7 @@ export class ElecomComponent {
         confirmButtonColor: '#28a745'
       });
 
-      this.newElecom = { username: '', name: '', email: '', password: '', isActive: true };
+      this.newElecom = { username: '', name: '', email: '', password: '', position: '', isActive: true };
 
     } catch (error: any) {
       Swal.fire({

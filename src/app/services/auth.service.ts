@@ -34,9 +34,9 @@ export class AuthService {
     this.currentUser = this.loadFromStorage();
   }
 
-  // =========================
+
   // Admin creates a student (voter)
-  // =========================
+
   async registerStudent(
     studentId: string,
     name: string,
@@ -96,9 +96,9 @@ export class AuthService {
     }
   }
 
-  // =========================
+
   // Login (Admin, Elecom, Student)
-  // =========================
+ 
   async login(input: string, password: string): Promise<CurrentUser> {
     let email = input.trim();
 
@@ -168,9 +168,9 @@ export class AuthService {
     this.clear();
   }
 
-  // =========================
+
   // LocalStorage helpers
-  // =========================
+ 
   private loadFromStorage(): CurrentUser | undefined {
     const raw = localStorage.getItem(this.STORAGE_KEY);
     if (!raw) return undefined;

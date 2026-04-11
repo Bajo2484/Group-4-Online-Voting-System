@@ -42,7 +42,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadDashboardData() {
-    // ----------------- VOTERS -----------------
+    // VOTERS 
     const studentsRef = query(collection(this.firestore, 'students'));
     collectionData(studentsRef, { idField: 'id' }).subscribe((voters: any[]) => {
       this.totalVoters = voters.length;
@@ -71,7 +71,7 @@ export class AdminDashboardComponent implements OnInit {
         .slice(0, 50)
         .map(c => ({
           title: 'New Candidate Registered',
-          description: `${c.name} has been registered as a candidate.`,
+          description: `${c.fullName} has been registered as a candidate.`,
           date: this.timestampToDate(c.createdAt),
           type: 'candidate' as const
         }));

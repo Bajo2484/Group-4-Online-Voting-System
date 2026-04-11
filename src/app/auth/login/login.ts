@@ -59,22 +59,15 @@ export class LoginComponent {
         user = await this.auth.login(email, password);
       }
 
-      // Check conditions
-      if (user.role === 'student' && user.hasVoted) {
-        Swal.fire({
-          icon: 'info',
-          title: 'Vote Already Cast',
-          text: 'You have already voted. Thank you!',
-        });
-        return;
-      }
-
+      
       if (user.role === 'elecom' && !user.isActive) {
         Swal.fire({
           icon: 'warning',
           title: 'Account Inactive',
           text: 'This Elecom account is currently inactive.',
         });
+
+        this.loading = false;
         return;
       }
 

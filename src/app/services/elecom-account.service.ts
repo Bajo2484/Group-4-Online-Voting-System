@@ -9,6 +9,7 @@ export interface ElecomAccount {
   username: string;    
   name: string;
   email: string;
+  position: string;
   isActive: boolean;
   createdAt?: any;     // Timestamp
 }
@@ -38,17 +39,18 @@ export class ElecomAccountService {
       name: elecom.name,
       email: elecom.email,
       role: 'elecom',
+      position: elecom.position,
       isActive: elecom.isActive,
       createdAt: new Date()
     });
   }
 
-  // ✅ Delete Elecom account
+  // Delete Elecom account
   async delete(uid: string): Promise<void> {
     await deleteDoc(doc(this.firestore, this.collectionName, uid));
   }
 
-  // ✅ Update isActive status
+  //  Update isActive status
   async setActive(uid: string, isActive: boolean): Promise<void> {
     await setDoc(doc(this.firestore, this.collectionName, uid), { isActive }, { merge: true });
   }

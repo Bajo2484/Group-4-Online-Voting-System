@@ -4,7 +4,6 @@ import { NgIf } from '@angular/common';
 import { AuthService, CurrentUser } from './services/auth.service';
 import { NotificationService, Notification } from './services/notification.service';
 import { Subscription } from 'rxjs';
-import { AdminTopbarComponent } from './layouts/admin-portal/admin-topbar/admin-topbar';
 
 @Component({
   selector: 'app-root',
@@ -160,6 +159,6 @@ export class App implements OnInit {
     this.auth.clear();
     this.router.navigateByUrl('/');
     this.isProfileMenuOpen = false;
-    this.notifSub?.unsubscribe(); // cleanup subscription
+    this.notifSub?.unsubscribe(); 
   }
 }

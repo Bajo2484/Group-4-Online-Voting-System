@@ -1,11 +1,13 @@
 // src/app/pages/voters/voters.ts
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, DOCUMENT } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { StudentAccountService } from '../../services/student-account.service';
 import { StudentAccount } from '../../services/student-account.model';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
+import jsPDF  from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -186,5 +188,132 @@ export class Voters implements OnInit, OnDestroy {
       this.totalBSTCM = this.students.filter(s => s.course === 'BSTCM').length;
       this.totalBSEMT = this.students.filter(s => s.course === 'BSEMT').length;
     }
-  
+
+   exportStudentsPDF() {
+  const doc = new jsPDF();
+
+  const pageHeight = doc.internal.pageSize.height;
+  const pageWidth = doc.internal.pageSize.width;
+
+  let startY = 60;
+
+  const drawHeader = () => {
+    doc.setFontSize(10);
+
+    doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
+    doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
+
+    doc.text(
+      'University of Science and Technology of Southern Philippines - Villanueva',
+      pageWidth / 2,
+      10,
+      { align: 'center' }
+    );
+
+    doc.text('STUDENT VOTER MANAGEMENT REPORT', pageWidth / 2, 16, { align: 'center' });
+    doc.text('USTP VILLANUEVA CAMPUS', pageWidth / 2, 22, { align: 'center' });
+
+    doc.line(10, 30, 200, 30);
+
+    doc.setFontSize(14);
+    doc.text('ENROLLED STUDENTS REPORT', pageWidth / 2, 38, { align: 'center' });
+
+    doc.line(10, 42, 200, 42);
+
+    doc.setFontSize(10);
+    doc.text(`Date Generated: ${new Date().toDateString()}`, 14, 50);
+  };
+
+  const checkPage = (space: number) => {
+    if (startY + space >= pageHeight - 30) {
+      doc.addPage();
+      drawHeader(); // IMPORTANT: redraw header
+      startY = 60;  // RESET POSITION CLEANLY
+    }
+  };
+
+  // ================= INITIAL PAGE =================
+  drawHeader();
+  startY = 60;
+
+  const courses = ['BSIT', 'BSTCM', 'BSEMT'];
+
+  courses.forEach(course => {
+
+    const filtered = this.students
+      .filter(s => s.course === course)
+      .sort((a, b) =>
+        (a.yearLevel || '').localeCompare(b.yearLevel || '')
+      );
+
+    if (filtered.length === 0) return;
+
+    checkPage(30);
+
+    doc.setFontSize(12);
+    doc.text(`${course} STUDENTS`, pageWidth / 2, startY, { align: 'center' });
+
+    startY += 8;
+
+    autoTable(doc, {
+      head: [['Student ID', 'Full Name', 'Year Level', 'Section', 'Status']],
+      body: filtered.map(s => [
+        s.id,
+        s.name,
+        s.yearLevel,
+        s.section,
+        s.status
+      ]),
+      startY: startY,
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [0, 102, 204] },
+
+      pageBreak: 'auto',
+
+      didDrawPage: () => {
+        // optional: page number later
+      }
+    });
+
+    startY = (doc as any).lastAutoTable.finalY + 10;
+  });
+
+  // ================= SUMMARY =================
+  checkPage(60);
+
+  doc.setFontSize(12);
+  doc.text('SUMMARY OF STUDENTS', pageWidth / 2, startY, { align: 'center' });
+
+  startY += 10;
+
+  doc.setFontSize(10);
+  doc.text(`BSIT: ${this.totalBSIT}`, 14, startY);
+  startY += 6;
+
+  doc.text(`BSTCM: ${this.totalBSTCM}`, 14, startY);
+  startY += 6;
+
+  doc.text(`BSEMT: ${this.totalBSEMT}`, 14, startY);
+  startY += 10;
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`TOTAL STUDENTS: ${this.students.length}`, 14, startY);
+
+  // ================= FOOTER =================
+  checkPage(50);
+
+  startY += 20;
+
+  doc.setFont('helvetica', 'normal');
+  doc.text('Prepared by:', 14, startY);
+  doc.text('_____________________', 14, startY + 5);
+  doc.text('Administrator / Election Committee', 14, startY + 10);
+
+  doc.text('Noted by:', 140, startY);
+  doc.text('_____________________', 140, startY + 5);
+  doc.text('Campus Registrar', 140, startY + 10);
+
+  doc.save('Enrolled_Students_Report.pdf');
+}
 }

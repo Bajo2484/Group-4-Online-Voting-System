@@ -3,6 +3,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, getAuth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-voting-details',
@@ -16,6 +19,7 @@ export class VotingDetails implements OnInit {
   electionId: string = '';
   votes: any = {};
   loading: boolean = true;
+
   error: string = '';
 
   atlasOrder: string[] = [
@@ -37,7 +41,8 @@ export class VotingDetails implements OnInit {
     private route: ActivatedRoute,
     private firestore: Firestore,
     private cdr: ChangeDetectorRef,
-    private auth: Auth
+    private auth: Auth,
+    private router:Router
   ) {}
 
   ngOnInit() {
@@ -90,5 +95,22 @@ export class VotingDetails implements OnInit {
     return this.votes[position];
   }
 
+  gotoDashboard() {
+    this.router.navigate(['/student-dashboard']);
+  }
+
+  viewResults() {
+    Swal.fire({
+      title: 'View Results?',
+    text: 'Do you want to proceed?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.router.navigate(['/student-result']);
+    }
+    });
+  }
  
 }

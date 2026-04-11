@@ -1,10 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-vote-success',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './vote-success.html',
   styleUrl: './vote-success.css',
 })
@@ -15,4 +16,8 @@ export class VoteSuccess {
   goDashboard() {
   this.router.navigate(['/student-dashboard']);
 }
+
+  viewResults() {
+    this.router.navigate(['/student-result']);
+  }
 }

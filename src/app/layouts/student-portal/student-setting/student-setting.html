@@ -1,11 +1,16 @@
 <div class="settings-container">
 
-  <!-- ================= HEADER ================= -->
+  <!--  HEADER  -->
   <h2>Student Settings</h2>
   <p class="subtitle">Update your profile and password</p>
 
-  <!-- ================= PROFILE INFO ================= -->
-  <div class="card" *ngIf="student && student.studentId">
+   
+    <div *ngIf="loading" class="loading-box">
+      Loading setting...
+    </div>
+
+  <!-- PROFILE INFO  -->
+  <div class="card" *ngIf="!loading && student && student.studentId">
     <h3>Profile Information</h3>
     <form (ngSubmit)="saveProfile()">
       <div class="form-group">
@@ -42,8 +47,8 @@
     </form>
   </div>
 
-  <!-- ================= CHANGE PASSWORD ================= -->
-  <div class="card" *ngIf="student && student.studentId">
+  <!--  CHANGE PASSWORD -->
+  <div class="card" *ngIf="!loading && student && student.studentId">
     <h3>Change Password</h3>
     <form (ngSubmit)="changePassword()">
       <div class="form-group">
@@ -75,8 +80,8 @@
     </form>
   </div>
 
-  <!-- ================= TOGGLES ================= -->
-  <div class="card" *ngIf="student && student.studentId">
+  <!-- TOGGLES -->
+  <div class="card" *ngIf="!loading && student && student.studentId">
     <h3>Student Portal Options</h3>
 
     <div class="toggle">

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import jsPDF from 'jspdf';
 import autotable from 'jspdf-autotable';
@@ -33,23 +33,33 @@ export class Result {
   aemtPositions: Position[] = [];
   usgPositions: Position[] = [];
 
-  constructor(private firestore: Firestore) {
+ constructor(
+  private firestore: Firestore,
+  private cdr: ChangeDetectorRef
+) {
+  this.loadAllData();
+}
+
+  ngOnInit() {
     this.loadAllData();
   }
 
-  // ================= LOAD ALL =================
-  async loadAllData() {
-    this.isloading = true;
+  //  LOAD ALL
+async loadAllData() {
 
-    const candidates = await this.getCandidates();
-    const votes = await this.getVotes();
+  this.isloading = true;
 
-    this.processResults(candidates, votes);
+  const candidates = await this.getCandidates();
+  const votes = await this.getVotes();
 
-    this.isloading = false;
-  }
+  this.processResults(candidates, votes);
 
-  // ================= GET CANDIDATES =================
+  this.isloading = false;
+
+  this.cdr.detectChanges();
+}
+
+  //  GET CANDIDATE
   async getCandidates(): Promise<any[]> {
     const ref = collection(this.firestore, 'candidates');
     const q = query(ref, where('status', '==', 'approved'));
@@ -80,7 +90,7 @@ export class Result {
       USG: {}
     };
 
-    // STEP 1: Initialize candidates
+    // Initialize candidates
     candidates.forEach((c: any) => {
       const org = c.organization?.toUpperCase();
       const position = c.position?.toUpperCase();
@@ -98,7 +108,7 @@ export class Result {
       });
     });
 
-    // STEP 2: Count votes
+    //  Count votes
     votes.forEach((vote: any) => {
       const org = vote.org?.toUpperCase();
 
@@ -116,7 +126,7 @@ export class Result {
       });
     });
 
-    // STEP 3: Convert to UI format with sorted positions
+    //  Convert to UI format with sorted positions
     this.atlasPositions = this.convertToPositions(orgMap['ATLAS'], 'ATLAS');
     this.stcmPositions = this.convertToPositions(orgMap['STCM'], 'STCM');
     this.aemtPositions = this.convertToPositions(orgMap['AEMT'], 'AEMT');
@@ -125,7 +135,7 @@ export class Result {
     console.log(this.atlasPositions);
   }
 
-  // ================= CONVERT AND SORT =================
+  // ONVERT AND SORT
   convertToPositions(data: any, orgName: string): Position[] {
     const positions: Position[] = [];
 
@@ -162,7 +172,7 @@ export class Result {
     return positions;
   }
 
-  // ================= GET ACTIVE POSITIONS =================
+  //GET ACTIVE POSITIONS 
   getActivePositions(): Position[] {
     switch (this.activeOrg) {
       case 'ATLAS': return this.atlasPositions;
@@ -173,12 +183,12 @@ export class Result {
     }
   }
 
-  // ================= TAB =================
+  //  TAB
   setActiveOrg(org: string) {
     this.activeOrg = org;
   }
 
-  // ================= EXPORT PDF =================
+  //  EXPORT PDF
   exportPDF(org: string) {
     let positions: Position[] = [];
 
@@ -191,27 +201,26 @@ export class Result {
 
     const doc = new jsPDF();
 
-    // ===== LOGOS =====
+    // LOGOS 
     doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
     doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
 
-    // ===== HEADER TEXT =====
-    doc.setFontSize(10);
-    doc.text('University of Science and Technology of Southern Philippines - Villanueva', 105, 10, { align: 'center' });
-    doc.text('ALLIANCE OF TECH-LEAD AND ASPIRING STUDENTS', 105, 15, { align: 'center' });
-    doc.text('USTP VILLANUEVA', 105, 20, { align: 'center' });
-    doc.text('Poblacion 1, Villanueva 9002 Misamis Oriental, Philippines', 105, 25, { align: 'center' });
+    // HEADER TEXT 
+    doc.setFontSize(12);
+    doc.text('University of Science and Technology of Southern Philippines', 105, 10, { align: 'center' });
+    doc.text('USTP VILLANUEVA', 105, 15, { align: 'center' });
+    doc.text('Poblacion 1, Villanueva 9002 Misamis Oriental, Philippines', 105, 20, { align: 'center' });
 
     // LINE
     doc.line(10, 30, 200, 30);
 
-    // ===== TITLE =====
+    // TITLE 
     doc.setFontSize(14);
     doc.text('ONLINE ELECTION RESULT', 105, 38, { align: 'center' });
 
     doc.line(10, 42, 200, 42);
 
-    // ===== INFO =====
+    // INFO 
     doc.setFontSize(10);
     doc.text(`Election : ${org} ELECTION RESULT`, 14, 50);
     doc.text(`Date : ${new Date().toDateString()}`, 14, 56);
@@ -221,7 +230,7 @@ export class Result {
 
     const winners: any[] = [];
 
-    // ===== POSITIONS =====
+    // POSITIONS 
     positions.forEach(pos => {
 
       // POSITION TITLE

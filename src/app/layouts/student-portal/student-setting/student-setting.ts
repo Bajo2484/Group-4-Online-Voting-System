@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,7 @@ export class StudentSettingsComponent implements OnInit {
   private afs: Firestore = inject(Firestore);
   private auth: AuthService = inject(AuthService);
   private router: Router = inject(Router);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   student: any = {};
 
@@ -29,30 +30,40 @@ export class StudentSettingsComponent implements OnInit {
 
   firestoreDocId: string = '';
 
-  // =============================
+  loading: boolean = true;
+  
   // INIT
-  // =============================
+  
   ngOnInit() {
     const currentUser = this.auth.getCurrentUser();
     if (!currentUser) {
+      this.loading = false;
       alert('No student logged in!');
       this.router.navigate(['/login']);
       return;
     }
 
-    this.loadStudent();
+   setTimeout(() => {
+  this.loadStudent();
+});
   }
 
-  // =============================
   // LOAD STUDENT (USING STUDENT ID)
-  // =============================
   async loadStudent() {
     try {
-      const currentUser = this.auth.getCurrentUser();
-      if (!currentUser?.email) return;
+      this.loading =true;
 
-      // Extract student ID from email (before @)
+      this.student = {};
+      this.firestoreDocId = '';
+
+      const currentUser = this.auth.getCurrentUser();
+      if (!currentUser?.email) {
+        this.loading = false;
+         return;
+      }
+      
       const studentId = currentUser.email.split('@')[0].trim();
+
       console.log('Loading student with ID:', studentId);
 
       const studentsCol = collection(this.afs, 'students');
@@ -78,12 +89,17 @@ export class StudentSettingsComponent implements OnInit {
         };
 
       } else {
+        
         alert('Student record not found!');
+        this.loading = false;
       }
 
     } catch (err) {
       console.error('Error loading student:', err);
       alert('Failed to load student data.');
+    } finally {
+      this.loading = false; 
+      this.cdr.detectChanges();
     }
   }
 
@@ -107,7 +123,9 @@ export class StudentSettingsComponent implements OnInit {
       });
 
       alert('Profile updated successfully!');
-      this.loadStudent(); // reload updated data
+      setTimeout(() => {
+      this.loadStudent();
+});
 
     } catch (err) {
       console.error('Profile update failed:', err);
@@ -153,17 +171,15 @@ export class StudentSettingsComponent implements OnInit {
     }
   }
 
-  // =============================
+ 
   // LOGOUT
-  // =============================
   logout() {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
 
-  // =============================
+  
   // TOGGLE PASSWORD
-  // =============================
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }

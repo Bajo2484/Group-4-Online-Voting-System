@@ -52,7 +52,7 @@
 
             <div class="profile-dropdown" (click)="toggleProfileMenu()">
               <img src="/admin.jpg" alt="Admin Avatar" class="profile-avatar" />
-              <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Juwana Cutie' }}</span>
+              <span class="profile-name">{{ auth.getCurrentUser()?.name || 'System Admministrator' }}</span>
               <span class="dropdown-icon">▼</span>
 
               <ul class="dropdown-menu" [class.show]="isProfileMenuOpen">
@@ -97,7 +97,7 @@
             <button class="hamburger" (click)="toggleSidebar()">☰</button>
 
             <div class="header-left">
-              <h1 class="content-title">Elecom Panel</h1>
+              <h1 class="content-title">Elections Commissioner Panel</h1>
               <p class="content-subtitle">Manage elections and voters.</p>
             </div>
 

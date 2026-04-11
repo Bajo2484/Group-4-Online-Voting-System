@@ -5,6 +5,15 @@
     </svg>
     <h1>Vote Submitted!</h1>
     <p>Thank you for participating in the election.</p>
-    <button (click)="goDashboard()">Back to Dashboard</button>
+   
+    <div class="action-buttons">
+      <button class="btn dashboard-btn" (click)="goDashboard()">
+        ⬅ Back to Dashboard
+      </button>
+
+      <button class="btn result-btn" (click)="viewResults()">
+        📊 View Results
+      </button>
+    </div>
   </div>
 </div>

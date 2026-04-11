@@ -52,6 +52,19 @@
         </div>
 
         <div class="form-row">
+       <label>
+           Position
+        <select [(ngModel)]="newElecom.position" name="position" required>
+          <option value="" disabled>Select Position</option>
+
+        <option *ngFor="let pos of positions" [value]="pos">
+         {{ pos }}
+        </option>
+        </select>
+         </label>
+        </div>
+
+        <div class="form-row">
           <label>
             Password
             <input
@@ -85,6 +98,7 @@
               <tr>
                 <th>Username</th>
                 <th>Name</th>
+                <th>Position</th>
                 <th>Email</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -94,6 +108,7 @@
               <tr *ngFor="let elecom of elecoms">
                 <td>{{ elecom.username }}</td>
                 <td>{{ elecom.name }}</td>
+                <td>{{ elecom.position }}</td>
                 <td>{{ elecom.email }}</td>
                 <td>
                   <span

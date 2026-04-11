@@ -15,11 +15,23 @@
 
       <div class="candidate-card">
         <div class="candidate-details">
+          <span class="vote-badge">✔ Your Vote</span>
+          
           <p class="candidate-name">{{ getCandidate(pos).fullName }}</p>
           <p class="candidate-party">{{ getCandidate(pos).partyName }}</p>
         </div>
       </div>
     </div>
+    <div class="actions-container">
+      <button class="btn back-btn" (click)="gotoDashboard()">
+        ⬅ Back to Dashboard
+      </button>
+
+      <button class="btn result-btn" (click)="viewResults()">
+        📊 View Results
+      </button>
+    </div>
+
   </div>
 
 </div>

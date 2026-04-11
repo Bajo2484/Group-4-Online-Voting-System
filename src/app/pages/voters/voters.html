@@ -6,6 +6,7 @@
       <h2>Voters Management</h2>
       <p>Manage student voters and their accounts</p>
     </div>
+
     <button class="btn-add" (click)="openModal()">+ Add Voter</button>
   </div>
 
@@ -119,7 +120,15 @@
 
   <!-- Voters Table -->
   <div class="card">
+
+    <div class="export-container">
+    <button class="btn-export" (click)="exportStudentsPDF()">
+      Export PDF
+    </button>
+  </div>
+
     <h3>Voter List</h3>
+
 
     <!-- Search Bar -->
     <div class="search-bar">

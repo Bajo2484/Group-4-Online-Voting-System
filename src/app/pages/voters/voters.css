@@ -300,6 +300,25 @@
   box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
 
+.export-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.btn-export {
+  background-color: #c91d11;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-export:hover {
+  background-color: #e66e6e;
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
   .modal-card {
