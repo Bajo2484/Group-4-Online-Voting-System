@@ -135,6 +135,7 @@ export class ElecomDashboardComponent implements OnInit {
           name: org.name,
           enrolled,
           votes,
+          abstain: enrolled - votes,
           turnout,
           status: this.electionStatus
         };

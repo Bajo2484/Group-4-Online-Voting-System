@@ -8,12 +8,19 @@
     <button [class.active]="activeOrg==='USG'" (click)="setActiveOrg('USG')">USG</button>
   </div>
 
+   <p class="subtitle">
+  <span class="live-dot"></span>
+  LIVE • Partial and unofficial results (real-time vote tally)
+</p>
+
   <!-- Export PDF Button -->
   <div class="export-btn-container">
     <button class="btn-export" (click)="exportPDF(activeOrg)">
       Export {{ activeOrg }} PDF
     </button>
   </div>
+
+  
 
   <!-- DYNAMIC RESULT DISPLAY -->
   <div class="org-section">
@@ -28,8 +35,14 @@
       <h3>{{ pos.name }}</h3>
 
       <ul>
-        <li *ngFor="let candidate of pos.candidates">
+        <li *ngFor="let candidate of pos.candidates"
+          [class.abstain]="candidate.id === 'ABSTAIN'">
           {{ candidate.name }} - {{ candidate.votes }} votes
+
+          <span *ngIf="candidate.id === 'ABSTAIN' " class="abstain-tag">
+            Abstain
+          </span>
+
           <span *ngIf="candidate.isWinner" class="winner-badge">
             Winner
           </span>

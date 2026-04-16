@@ -9,18 +9,29 @@
 
   <!-- ================= PROGRESS SECTION ================= -->
   <h3>Your Elections Progress</h3>
+
   <div class="progress-section" *ngIf="elections.length > 0">
     <p>Completed: {{completedCount}} / {{elections.length}}</p>
+
     <div class="progress-bar">
-      <div class="progress-fill" 
-           [style.width.%]="progressPercentage" 
+      <div class="progress-fill"
+           [style.width.%]="progressPercentage"
            [style.background-color]="progressColor">
       </div>
     </div>
   </div>
 
+  <!-- ================= NO ELECTION STATE ================= -->
+  <div *ngIf="elections.length === 0" class="no-election">
+    <div class="empty-icon">🗳️</div>
+    <h2>No Election Yet</h2>
+    <p>Next election will be available soon.</p>
+    <small> Please wait for admin to active the election.</small>
+  </div>
+
   <!-- ================= ELECTION CARDS ================= -->
-  <div class="elections-container">
+  <div class="elections-container" *ngIf="elections.length > 0">
+
     <div *ngFor="let election of elections" class="election-card">
 
       <!-- VOTED / NOT VOTED BADGE -->
@@ -30,15 +41,15 @@
 
       <!-- ELECTION LOGO -->
       <div class="election-logo">
-        <img [src]="election.logo" 
-             [alt]="election.name || 'Election Logo'" 
+        <img [src]="election.logo"
+             [alt]="election.name || 'Election Logo'"
              [title]="election.name || 'Election Logo'">
       </div>
 
       <!-- ELECTION NAME -->
-      <h3>{{election.name}}</h3>
+      <h3>{{ election.name }}</h3>
 
-      <!-- VOTE / VIEW DETAILS BUTTON -->
+      <!-- BUTTON -->
       <button class="vote-btn"
               [ngClass]="{'voted-btn': election.isVoted}"
               (click)="handleElectionClick(election)">
@@ -46,6 +57,7 @@
       </button>
 
     </div>
+
   </div>
 
 </div>

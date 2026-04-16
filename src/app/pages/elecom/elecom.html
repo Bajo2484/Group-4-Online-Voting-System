@@ -12,18 +12,7 @@
       </p>
 
       <form (ngSubmit)="addElecom()" class="elecom-form">
-        <div class="form-row">
-          <label>
-            Username
-            <input
-              type="text"
-              [(ngModel)]="newElecom.username"
-              name="username"
-              required
-              placeholder="e.g. JuwanaCutie@gmail.com"
-            />
-          </label>
-        </div>
+        
 
         <div class="form-row">
           <label>
@@ -78,8 +67,14 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit">Save Account</button>
-        </div>
+         <button type="submit">
+        {{ isEditMode ? 'Update Account' : 'Save Account' }}
+     </button>
+
+        <button *ngIf="isEditMode" type="button" (click)="cancelEdit()">
+    Cancel
+  </button>
+</div>
       </form>
     </article>
 
@@ -96,7 +91,7 @@
           <table class="elecom-table">
             <thead>
               <tr>
-                <th>Username</th>
+                
                 <th>Name</th>
                 <th>Position</th>
                 <th>Email</th>
@@ -106,7 +101,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let elecom of elecoms">
-                <td>{{ elecom.username }}</td>
+                
                 <td>{{ elecom.name }}</td>
                 <td>{{ elecom.position }}</td>
                 <td>{{ elecom.email }}</td>
@@ -120,6 +115,13 @@
                   </span>
                 </td>
                 <td class="actions">
+
+                  
+                 <button
+                  type="button"
+                   class="btn-action btn-edit"
+                     (click)="editElecom(elecom)" >
+                     Edit</button>
                   <button
                     type="button"
                     class="btn-action btn-remove"

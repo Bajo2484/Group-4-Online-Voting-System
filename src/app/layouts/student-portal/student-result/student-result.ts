@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { Firestore, collection, getDocs, query, where } from '@angular/fire/firestore';
 
@@ -14,6 +14,7 @@ interface Candidate {
 interface Position {
   name: string;
   candidates: Candidate[];
+  abstain: Candidate;
 }
 
 @Component({
@@ -34,18 +35,54 @@ export class StudentResult {
   stcmPositions: Position[] = [];
   aemtPositions: Position[] = [];
 
-  constructor(private firestore: Firestore) {
+   private atlasOrder = [
+    'PRESIDENT',
+    'EXTERNAL VICE PRESIDENT',
+    'INTERNAL VICE PRESIDENT',
+    'GENERAL SECRETARY',
+    'ASSOCIATE SECRETARY',
+    'AUDITOR',
+    'TREASURER',
+    'EXTERNAL PRO',
+    'INTERNAL PRO',
+    '2ND YR GOV',
+    '3RD YR GOV',
+    '4TH YR GOV'
+  ];
+  private otherOrder = [
+    'PRESIDENT',
+    'VICE PRESIDENT',
+    'SECRETARY',
+    'TREASURER',
+    'AUDITOR',
+    'PRO'
+  ];
+
+  constructor(
+    private firestore: Firestore,
+    private cdr: ChangeDetectorRef
+  ) {
     this.loadAllData();
   }
 
+  // LOAD DATA
   async loadAllData() {
     this.isloading = true;
 
-    const candidates = await this.getCandidates();
-    const votes = await this.getVotes();
-    this.processResults(candidates, votes);
+    try {
+      const [candidates, votes] = await Promise.all([
+        this.getCandidates(),
+        this.getVotes()
+      ]);
 
-    this.isloading = false;
+      this.processResults(candidates, votes);
+
+    } catch (error) {
+      console.error('Error loading results:', error);
+    } finally {
+      this.isloading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   async getCandidates(): Promise<any[]> {
@@ -62,14 +99,22 @@ export class StudentResult {
   async getVotes(): Promise<any[]> {
     const ref = collection(this.firestore, 'votes');
     const snap = await getDocs(ref);
+
     return snap.docs.map(doc => doc.data());
   }
 
+ 
+  // PROCESS RESULTS
   processResults(candidates: any[], votes: any[]) {
 
-    const orgMap: any = { USG: {}, ATLAS: {}, STCM: {}, AEMT: {} };
+    const orgMap: any = {
+      USG: {},
+      ATLAS: {},
+      STCM: {},
+      AEMT: {}
+    };
 
-    // INIT
+    // INIT CANDIDATES
     candidates.forEach(c => {
       const org = c.organization?.toUpperCase();
       const position = c.position?.toUpperCase();
@@ -89,49 +134,126 @@ export class StudentResult {
     });
 
     // COUNT VOTES
-    votes.forEach(v => {
-      const org = v.org?.toUpperCase();
+    votes.forEach(vote => {
+      const org = vote.org?.toUpperCase();
 
-      Object.keys(v.votes || {}).forEach(pos => {
-        const candidateId = v.votes[pos]?.id;
+      Object.keys(vote.votes || {}).forEach(position => {
 
-        const list = orgMap[org]?.[pos.toUpperCase()];
+        const voteData = vote.votes[position];
+        if (!voteData) return;
+
+        const list = orgMap[org]?.[position.toUpperCase()];
         if (!list) return;
 
+       
+        // NORMALIZED ABSTAIN CHECK
+        const isAbstain =
+          voteData?.id?.toUpperCase() === 'ABSTAIN' ||
+          voteData?.ID?.toLowerCase() === 'abstain' ||
+          voteData?.fullName?.toUpperCase() === 'ABSTAIN';
+
+        if (isAbstain) {
+          let abstain = list.find((c: any) => c.id === 'ABSTAIN');
+
+          if (abstain) {
+            abstain.votes++;
+          } else {
+            abstain = {
+              id: 'ABSTAIN',
+              name: 'ABSTAIN',
+              photo: 'https://via.placeholder.com/40',
+              votes: 1,
+              isWinner: false
+            };
+            list.push(abstain);
+          }
+
+          return;
+        }
+
+        // NORMAL VOTE
+        const candidateId = voteData?.id;
         const found = list.find((c: Candidate) => c.id === candidateId);
-        if (found) found.votes++;
+
+        if (found) {
+          found.votes++;
+        }
       });
     });
 
-    this.usgPositions = this.convert(orgMap['USG']);
-    this.atlasPositions = this.convert(orgMap['ATLAS']);
-    this.stcmPositions = this.convert(orgMap['STCM']);
-    this.aemtPositions = this.convert(orgMap['AEMT']);
+    // BUILD FINAL RESULTS
+    this.usgPositions = this.buildPositions(orgMap['USG'] || {}, 'USG');
+    this.atlasPositions = this.buildPositions(orgMap['ATLAS'] || {}, 'ATLAS');
+    this.stcmPositions = this.buildPositions(orgMap['STCM'] || {}, 'STCM');
+    this.aemtPositions = this.buildPositions(orgMap['AEMT'] || {}, 'AEMT');
   }
 
-  convert(data: any): Position[] {
+
+  // BUILD POSITIONS
+  private buildPositions(data: any, orgName: string): Position[] {
     const positions: Position[] = [];
 
     Object.keys(data).forEach(pos => {
-      const candidates = data[pos];
 
-      const maxVotes = Math.max(...candidates.map((c: Candidate) => c.votes), 0);
+      const candidates = data[pos] || [];
 
-      candidates.forEach((c: Candidate) => {
+      const realCandidates = candidates.filter((c: any) => c.id !== 'ABSTAIN');
+
+      const abstainRaw = candidates.find((c: any) => c.id === 'ABSTAIN');
+
+      const abstain: Candidate = abstainRaw
+        ? { ...abstainRaw }
+        : {
+            id: 'ABSTAIN',
+            name: 'ABSTAIN',
+            photo: 'https://via.placeholder.com/40',
+            votes: 0,
+            isWinner: false
+          };
+
+      // SORT REAL CANDIDATES
+      const sortedReal = [...realCandidates].sort(
+        (a: Candidate, b: Candidate) => b.votes - a.votes
+      );
+
+      // WINNER LOGIC
+      const maxVotes = sortedReal.length
+        ? Math.max(...sortedReal.map(c => c.votes))
+        : 0;
+
+      sortedReal.forEach(c => {
         c.isWinner = c.votes === maxVotes && maxVotes > 0;
       });
 
+      abstain.isWinner = false;
+
       positions.push({
         name: pos,
-        candidates
+        candidates: [...sortedReal],
+        abstain: abstain
       });
     });
+
+    const order = orgName === 'ATLAS'
+  ? this.atlasOrder
+  : this.otherOrder;
+
+positions.sort((a, b) => {
+  const aIndex = order.indexOf(a.name.toUpperCase());
+  const bIndex = order.indexOf(b.name.toUpperCase());
+
+  return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+});
 
     return positions;
   }
 
+  // =========================
+  // UI HELPERS
+  // =========================
   setActiveOrg(org: string) {
     this.activeOrg = org;
+    this.cdr.detectChanges();
   }
 
   getPositions(org: string): Position[] {
@@ -145,7 +267,9 @@ export class StudentResult {
   }
 
   getTotalVotes(position: Position): number {
-    return position.candidates.reduce((sum: number, c: Candidate) => sum + c.votes, 0);
+    const candidatesVotes = position.candidates.reduce((sum, c) => sum + c.votes, 0);
+    const abstainVotes = position.abstain?.votes || 0;
+    return candidatesVotes + abstainVotes;
   }
 
   getPercentage(candidate: Candidate, position: Position): number {
@@ -155,8 +279,8 @@ export class StudentResult {
 
   getRankedCandidates(position: Position): Candidate[] {
     return [...position.candidates]
-      .sort((a: Candidate, b: Candidate) => b.votes - a.votes)
-      .map((c: Candidate, index: number) => ({
+      .sort((a, b) => b.votes - a.votes)
+      .map((c, index) => ({
         ...c,
         rank: index + 1
       }));

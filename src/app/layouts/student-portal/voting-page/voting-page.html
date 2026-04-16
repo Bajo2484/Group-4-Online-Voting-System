@@ -68,6 +68,39 @@
 
       </div>
 
+      
+           <div class="card abstain-card"
+              [class.selected]="isSelected(position.name, 'ABSTAIN')">
+
+              <div class="card-top"
+                (click)="selectCandidate(position.name, 'ABSTAIN')">
+              
+                <div class="left">
+                  <div class="avatar abstain-avatar">
+                    ✖
+                  </div>
+
+                  <div class="candidate-info">
+
+                    <div class="candiadte-name">
+                      Abstain
+                    </div>
+
+                    <span class="party neutral">
+                      No Candidate
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="radio-side">
+                  <div class="radio-circle"
+                    [class.active]="isSelected(position.name, 'ABSTAIN')">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
     </div>
 
   </div>

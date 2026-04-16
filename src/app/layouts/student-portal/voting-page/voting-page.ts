@@ -166,7 +166,12 @@ export class VotingPage implements OnInit, OnDestroy {
   }
 
   isSelected(position: string, candidate: any): boolean {
-    return this.selectedVotes[position] === candidate;
+    const selected = this.selectedVotes[position];
+
+    if (candidate === 'ABSTAIN'){
+      return selected === 'ABSTAIN';
+    }
+    return selected?.id === candidate.id;
   }
 
   togglePlatform(position: string, candidate: any) {
@@ -201,19 +206,35 @@ export class VotingPage implements OnInit, OnDestroy {
         studentId: currentUser.uid,
         org: this.org,
         electionId: this.electionId,
+        createdAt: serverTimestamp(),
+      
+        
+        
         votes: Object.keys(this.selectedVotes).reduce((acc, position) => {
           const candidate = this.selectedVotes[position];
+
+          if (candidate === 'ABSTAIN') {
+            acc[position] = {
+              id: null,
+              fullName: 'ABSTAIN',
+              partyName: null,
+              photo: null,
+              isAbstain: true
+            };
+          }else {
           acc[position] = {
             id: candidate.id,
             fullName: candidate.fullName,
             partyName: candidate.partyName,
-            photo: candidate.photo || null
+            photo: candidate.photo || null,
+            isAbstain: false
           };
+        }
           return acc;
         }, {} as any),
-        createdAt: serverTimestamp()
+        
       };
-
+    
       const voteRef = doc(this.firestore, `votes/${currentUser.uid}_${this.electionId}`);
       await setDoc(voteRef, voteData);
 

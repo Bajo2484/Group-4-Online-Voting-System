@@ -5,175 +5,245 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* =========================
-   PAGE LAYOUT
+   PAGE BACKGROUND
 ========================= */
 .elecom-page {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background: #f9f9f9;
+  min-height: 100vh;
+  padding: 25px;
+  background: #f4f6fb;
 }
 
 .page-title {
-  margin-bottom: 15px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f3b57;
+  margin-bottom: 20px;
 }
 
-/*  MAIN LAYOUT */
+/* =========================
+   LAYOUT
+========================= */
 .elecom-layout {
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  flex-wrap: wrap;
 }
 
-/* CARDS */
-.elecom-form-card,
+/* =========================
+   CARDS
+========================= */
+.elecom-form-card{
+  width: 100%;
+  height: 400;
+
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 22px;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
 .elecom-list-card {
-  flex: 1 1 400px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  width: 100%;
+  flex: none;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 22px;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+
+  transition: 0.2s ease;
 }
 
-/*  FORM */
+.elecom-form-card:hover,
+.elecom-list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+/* =========================
+   FORM
+========================= */
 .form-row {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.form-row label {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
 }
 
 .form-row input,
 .form-row select {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  margin-top: 6px;
+  padding: 10px 12px;
+
+  border-radius: 10px;
+  border: 1px solid #dbe2ea;
+
+  outline: none;
+  transition: 0.2s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* =========================
+   FORM BUTTONS
+========================= */
+.form-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .form-actions button {
-  width: 100%;
-  background: #1e90ff;
-  color: #fff;
-  padding: 10px;
+  flex: 1;
+  padding: 11px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
+
+  font-weight: 600;
   cursor: pointer;
+
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+
+  transition: 0.25s ease;
 }
 
-/* EMPTY STATE */
-.empty-state {
-  text-align: center;
-  padding: 20px;
-  color: #777;
+.form-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(99,102,241,0.25);
 }
 
-/* TABLE WRAPPER (IMPORTANT) */
+/* =========================
+   TABLE
+========================= */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-  display: block;
 }
-/*TABLE DESIGN */
+
 .elecom-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px !important; 
+  min-width: 700px;
 }
 
-/* HEADER */
 .elecom-table thead {
-  background: #f0f0f0;
+  background: #f1f5f9;
 }
 
 .elecom-table th {
-  padding: 12px;
+  padding: 14px;
   text-align: left;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-  white-space: nowrap;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
 }
 
-/* ROWS */
 .elecom-table td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
-  white-space: nowrap;
+  padding: 14px;
+  border-bottom: 1px solid #eef2f7;
+  color: #475569;
 }
 
-/* STRIPED EFFECT */
-.elecom-table tbody tr:nth-child(even) {
-  background: #fafafa;
+.elecom-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+.table-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* EDIT BUTTON */
+.btn-edit {
+  background: #fbbf24;
+  color: #1f2937;
+
+  border: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-edit:hover {
+  background: #f59e0b;
+  transform: translateY(-2px);
+}
+
+/* REMOVE BUTTON */
+.btn-remove {
+  background: #ef4444;
+  color: white;
+
+  border: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
 }
 
 /* =========================
    STATUS BADGE
 ========================= */
 .status-pill {
-  padding: 4px 10px;
-  border-radius: 12px;
-  color: #fff;
+  padding: 5px 10px;
+  border-radius: 999px;
   font-size: 12px;
+  font-weight: 600;
 }
 
 .status-pill.active {
-  background: #28a745;
+  background: #dcfce7;
+  color: #16a34a;
 }
 
 .status-pill.inactive {
-  background: #dc3545;
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 /* =========================
-   BUTTONS
+   RESPONSIVE
 ========================= */
-.btn-action {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #ff4d4d;
-  color: #fff;
-  transition: 0.2s;
-}
-
-.btn-action:hover {
-  background: #e60000;
-}
-
-/* =========================
-   TABLET VIEW
-========================= */
-@media (max-width: 900px) {
-  .elecom-layout {
-    flex-direction: column;
-  }
-
-  .elecom-table {
-    min-width: 700px;
-  }
-}
-
-
-
-/* =========================
-   MOBILE VIEW (SCROLL ONLY)
-====================== */
 @media (max-width: 768px) {
-  .table-wrapper {
-    overflow-x: scroll !important;
-  }
-
-  .elecom-table {
-    min-width: 900px !important;
-  }
-}
-
   .elecom-form-card,
   .elecom-list-card {
-    padding: 15px;
+    padding: 16px;
   }
 
-
+  .form-actions {
+    flex-direction: column;
+  }
+}

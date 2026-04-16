@@ -28,21 +28,23 @@
           </span>
         </div>
 
+        <!-- ABSTAIN -->
+     <div class="abstain-info">
+      Abstain Votes: {{ position.abstain.votes }}
+      </div>
+
         <div class="candidate-card"
              *ngFor="let candidate of getRankedCandidates(position)"
              [ngClass]="{'winner': candidate.isWinner}">
 
-          <!-- IMAGE -->
           <img class="candidate-thumb"
                [src]="candidate.photo"
                (error)="candidate.photo='https://via.placeholder.com/40'">
 
-          <!-- INFO -->
           <div class="info">
 
             <div class="name">
               #{{ candidate.rank }} {{ candidate.name }}
-              <span *ngIf="candidate.rank === 1"></span>
             </div>
 
             <div class="votes">

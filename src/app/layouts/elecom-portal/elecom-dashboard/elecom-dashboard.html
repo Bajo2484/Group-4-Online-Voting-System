@@ -3,7 +3,7 @@
   <h1 class="welcome-title">Welcome, Elecom!</h1>
   <p class="subtitle">Here’s the current voting summary.</p>
 
-  <!-- ✅ STATS CARDS -->
+  <!-- STATS CARDS -->
   <div class="stats">
     <div class="card blue">
       <h3>Total Students</h3>
@@ -31,7 +31,7 @@
     </span>
   </div>
 
-  <!-- ✅ VOTING OVERVIEW -->
+  <!-- VOTING OVERVIEW -->
   <div class="overview">
     <h2>Voting Overview</h2>
 
@@ -42,6 +42,7 @@
           <th>Organization</th>
           <th>Enrolled</th>
           <th>Votes Cast</th>
+          <th>Abstain</th>
           <th>Turnout</th>
           <th>Status</th>
         </tr>
@@ -56,6 +57,12 @@
           </td>
 
           <td>{{ org.votes }}</td>
+
+          <td>
+  <span class="badge abstain">
+    {{ org.abstain }}
+  </span>
+</td>
 
           <td>
             <div class="progress-bar">

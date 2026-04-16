@@ -1,122 +1,207 @@
-/* PAGE LAYOUT */
+/* ================= PAGE LAYOUT ================= */
 .result-page {
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f9;
+  padding: 24px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #f3f4f6;
+  min-height: 100vh;
+  color: #111827;
 }
 
-/* ORGANIZATION TABS */
+.subtitle {
+  margin: 5px 0 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ================= ORGANIZATION TABS ================= */
 .org-tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .org-tabs button {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 50px;
-  padding: 8px 20px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 8px 18px;
   cursor: pointer;
-  transition: 0.3s;
   font-weight: 500;
-  color: #555;
+  color: #374151;
+  transition: all 0.2s ease;
 }
 
 .org-tabs button:hover {
-  background-color: #e6f0ff;
+  background: #e6f0ff;
   border-color: #1f3b57;
+  transform: translateY(-1px);
 }
 
 .org-tabs button.active {
-  background-color: #1f3b57;
-  color: #fff;
+  background: #1f3b57;
+  color: #ffffff;
   border-color: #1f3b57;
+  box-shadow: 0 4px 12px rgba(31, 59, 87, 0.25);
 }
 
-/* EXPORT PDF BUTTON */
+/* ================= EXPORT BUTTON ================= */
 .export-btn-container {
   margin-bottom: 20px;
 }
 
 .btn-export {
-  background-color: #1f3b57;
+  background: linear-gradient(135deg, #1f3b57, #2b4a73);
   color: #fff;
-  padding: 8px 18px;
-  border-radius: 50px;
+  padding: 10px 18px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
 .btn-export:hover {
-  background-color: #2b4a73;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(31, 59, 87, 0.25);
 }
 
-/* ORGANIZATION SECTION */
+/* ================= SECTION TITLE ================= */
 .org-section h2 {
-  margin-bottom: 15px;
+  font-size: 18px;
   color: #1f3b57;
-  font-size: 20px;
-  border-bottom: 2px solid #1f3b57;
-  padding-bottom: 5px;
+  margin-bottom: 15px;
+  border-left: 4px solid #1f3b57;
+  padding-left: 10px;
 }
 
-/* POSITION CARD */
+/* ================= POSITION CARD ================= */
 .position-card {
-  background-color: #fff;
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  margin-bottom: 15px;
+  background: #ffffff;
+  padding: 16px 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
   transition: 0.2s;
 }
 
 .position-card:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
 
 .position-card h3 {
-  margin: 0 0 10px 0;
-  font-size: 16px;
+  font-size: 15px;
   color: #1f3b57;
+  margin-bottom: 10px;
 }
 
-/* CANDIDATE LIST */
+/* ================= CANDIDATE LIST ================= */
 .position-card ul {
-  list-style-type: none;
-  padding-left: 0;
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
 .position-card li {
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f9f9f9;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-bottom: 6px;
   transition: 0.2s;
 }
 
 .position-card li:hover {
-  background-color: #e6f0ff;
+  background: #eef4ff;
 }
 
-/* WINNER BADGE */
+/* ================= WINNER BADGE ================= */
 .winner-badge {
-  background-color: #28a745;
+  background: #16a34a;
   color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
 }
 
-/* RESPONSIVE DESIGN */
+/* ================= ABSTAIN ================= */
+.abstain-tag {
+  background: #f59e0b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* highlight abstain row (optional pro look) */
+.position-card li.abstain {
+  background: #fff7ed;
+  border-left: 3px solid #f59e0b;
+}
+
+/* ================= LIVE INDICATOR ================= */
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Red blinking live dot */
+.live-dot {
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+/* pulse effect */
+.live-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 1.2s infinite;
+  opacity: 0.6;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ================= LOADING ================= */
+.loading-spinner {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   .org-tabs button {
     flex: 1 1 calc(50% - 10px);
@@ -130,7 +215,5 @@
 
   .btn-export {
     width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
   }
 }
