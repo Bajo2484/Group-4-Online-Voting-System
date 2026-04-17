@@ -36,6 +36,14 @@ export class VotingDetails implements OnInit {
     '3RD YR GOV',
     '4TH YR GOV'
   ];
+  otherOrder: string[] = [
+  'PRESIDENT',
+  'VICE PRESIDENT',
+  'SECRETARY',
+  'TREASURER',
+  'AUDITOR',
+  'PRO'
+];
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +52,16 @@ export class VotingDetails implements OnInit {
     private auth: Auth,
     private router:Router
   ) {}
+
+  private getOrderList(): string[]{
+    const id = (this.electionId || '').toUpperCase();
+
+    if (id) return this.otherOrder;
+      
+    return id.includes('ATLAS')
+    ? this.atlasOrder
+    : this.otherOrder;
+  }
 
   ngOnInit() {
     const params = this.route.snapshot.paramMap;
@@ -84,12 +102,17 @@ export class VotingDetails implements OnInit {
 
   getPositions(): string[] {
     const positions = Object.keys(this.votes);
+    const orderList = this.getOrderList();
+
     return positions.sort((a, b) => {
-      const indexA = this.atlasOrder.indexOf(a.toUpperCase());
-      const indexB = this.atlasOrder.indexOf(b.toUpperCase());
+      const indexA = orderList.indexOf(a.toUpperCase());
+      const indexB = orderList.indexOf(b.toUpperCase());
+
       return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
     });
   }
+
+
 
   getCandidate(position: string) {
     return this.votes[position];

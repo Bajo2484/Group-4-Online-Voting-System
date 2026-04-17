@@ -9,7 +9,7 @@
 }
 
 /* =========================
-   PAGE BACKGROUND
+   PAGE
 ========================= */
 .elecom-page {
   min-height: 100vh;
@@ -25,120 +25,52 @@
 }
 
 /* =========================
-   LAYOUT
+   OPEN BUTTON
 ========================= */
-.elecom-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* =========================
-   CARDS
-========================= */
-.elecom-form-card{
-  width: 100%;
-  height: 400;
-
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px;
-
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
-}
-
-.elecom-list-card {
-  width: 100%;
-  flex: none;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px;
-
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
-
+.open-modal-btn {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 15px;
   transition: 0.2s ease;
 }
 
-.elecom-form-card:hover,
-.elecom-list-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-}
-
-/* =========================
-   FORM
-========================= */
-.form-row {
-  margin-bottom: 14px;
-}
-
-.form-row label {
-  font-size: 13px;
-  color: #475569;
-  font-weight: 500;
-}
-
-.form-row input,
-.form-row select {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px 12px;
-
-  border-radius: 10px;
-  border: 1px solid #dbe2ea;
-
-  outline: none;
-  transition: 0.2s;
-}
-
-.form-row input:focus,
-.form-row select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
-}
-
-/* =========================
-   FORM BUTTONS
-========================= */
-.form-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.form-actions button {
-  flex: 1;
-  padding: 11px;
-  border: none;
-  border-radius: 10px;
-
-  font-weight: 600;
-  cursor: pointer;
-
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: white;
-
-  transition: 0.25s ease;
-}
-
-.form-actions button:hover {
+.open-modal-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(99,102,241,0.25);
 }
 
 /* =========================
-   TABLE
+   CARD
+========================= */
+.elecom-list-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+/* =========================
+   TABLE WRAPPER (IMPORTANT)
 ========================= */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* =========================
+   TABLE (ONLY ONCE - FIXED)
+========================= */
 .elecom-table {
   width: 100%;
-  border-collapse: collapse;
   min-width: 700px;
+  border-collapse: collapse;
 }
 
 .elecom-table thead {
@@ -150,13 +82,11 @@
   text-align: left;
   font-size: 13px;
   color: #334155;
-  font-weight: 600;
 }
 
 .elecom-table td {
   padding: 14px;
   border-bottom: 1px solid #eef2f7;
-  color: #475569;
 }
 
 .elecom-table tbody tr:hover {
@@ -168,54 +98,47 @@
 ========================= */
 .table-actions {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-/* EDIT BUTTON */
-.btn-edit {
+/* EDIT */
+.table-actions .btn-edit {
   background: #fbbf24;
   color: #1f2937;
-
   border: none;
   padding: 6px 14px;
   border-radius: 999px;
-
   font-size: 12px;
   font-weight: 600;
-
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
-.btn-edit:hover {
+.table-actions .btn-edit:hover {
   background: #f59e0b;
-  transform: translateY(-2px);
+  transform: scale(1.05);
 }
 
-/* REMOVE BUTTON */
-.btn-remove {
+/* DELETE */
+.table-actions .btn-remove {
   background: #ef4444;
   color: white;
-
   border: none;
   padding: 6px 14px;
   border-radius: 999px;
-
   font-size: 12px;
   font-weight: 600;
-
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
-.btn-remove:hover {
+.table-actions .btn-remove:hover {
   background: #dc2626;
-  transform: translateY(-2px);
+  transform: scale(1.05);
 }
 
 /* =========================
-   STATUS BADGE
+   STATUS
 ========================= */
 .status-pill {
   padding: 5px 10px;
@@ -235,15 +158,89 @@
 }
 
 /* =========================
-   RESPONSIVE
+   MODAL BACKDROP
 ========================= */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* =========================
+   MODAL BOX
+========================= */
+.modal-container {
+  width: 420px;
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  animation: pop 0.2s ease-in-out;
+}
+
+/* FORM */
+.modal-container input,
+.modal-container select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  outline: none;
+}
+
+.modal-container input:focus,
+.modal-container select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* MODAL ACTIONS */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+  background: #3b82f6;
+  color: white;
+}
+
+.modal-actions button[type="button"] {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+/* ANIMATION */
+@keyframes pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .elecom-form-card,
-  .elecom-list-card {
-    padding: 16px;
+  .modal-container {
+    width: 90%;
   }
 
-  .form-actions {
-    flex-direction: column;
+  .elecom-table {
+    min-width: 600px;
   }
 }

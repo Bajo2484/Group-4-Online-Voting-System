@@ -16,20 +16,23 @@ export class ElecomComponent {
 
   elecoms$!: Observable<ElecomAccount[]>;
 
-  //  EDIT MODE STATE
+  // MODAL STATE
+  showModal: boolean = false;
+
+  // EDIT MODE
   isEditMode: boolean = false;
   editId: string = '';
 
-  //  FORM MODEL
+  // FORM MODEL (🔥 ADDED username)
   newElecom = {
     name: '',
+    username: '',   // ✅ ADDED
     email: '',
     password: '',
     position: '',
     isActive: true,
   };
 
-  //  POSITIONS
   positions: string[] = [
     'Chief Commissioner',
     'EMT Commissioner',
@@ -44,32 +47,28 @@ export class ElecomComponent {
     this.loadElecoms();
   }
 
-  //  LOAD DATA
   loadElecoms(): void {
     this.elecoms$ = this.elecomService.getAll();
   }
 
-  //  CLICK EDIT
-  editElecom(elecom: ElecomAccount): void {
-    this.isEditMode = true;
-    this.editId = elecom.uid ?? '';
-
-    this.newElecom = {
-      name: elecom.name,
-      email: elecom.email,
-      password: '',
-      position: elecom.position,
-      isActive: elecom.isActive ?? true,
-    };
-  }
-
-  // CANCEL EDIT
-  cancelEdit(): void {
+  openModal(): void {
     this.isEditMode = false;
     this.editId = '';
+    this.resetForm();
+    this.showModal = true;
+  }
 
+  closeModal(): void {
+    this.showModal = false;
+    this.isEditMode = false;
+    this.editId = '';
+    this.resetForm();
+  }
+
+  resetForm(): void {
     this.newElecom = {
       name: '',
+      username: '',   // ✅ ADDED
       email: '',
       password: '',
       position: '',
@@ -77,28 +76,42 @@ export class ElecomComponent {
     };
   }
 
-  // CREATE + UPDATE (COMBINED)
-  async addElecom(): Promise<void> {
-    const { name, email, password, position } = this.newElecom;
+  editElecom(elecom: ElecomAccount): void {
+    this.isEditMode = true;
+    this.editId = elecom.uid ?? '';
 
-    // VALIDATION
-    if (!name || !email || !position) {
+    this.newElecom = {
+      name: elecom.name,
+      username: (elecom as any).username || '', // ✅ SAFE FALLBACK
+      email: elecom.email,
+      password: '',
+      position: elecom.position,
+      isActive: elecom.isActive ?? true,
+    };
+
+    this.showModal = true;
+  }
+
+  async addElecom(): Promise<void> {
+    const { name, username, email, password, position } = this.newElecom;
+
+    if (!name || !username || !email || !position) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Required Fields',
-        text: 'Full Name, Email, and Position are required.',
-        confirmButtonColor: '#3085d6'
+        text: 'Full Name, Username, Email, and Position are required.',
       });
       return;
     }
 
     try {
-      //  UPDATE MODE
-    
+
+      // UPDATE
       if (this.isEditMode) {
 
         await this.elecomService.update(this.editId, {
           name,
+          username,   // ✅ ADDED
           email,
           position,
           isActive: this.newElecom.isActive
@@ -108,25 +121,24 @@ export class ElecomComponent {
           icon: 'success',
           title: 'Updated!',
           text: 'Elecom account updated successfully.',
-          confirmButtonColor: '#28a745'
         });
 
-        this.cancelEdit();
+        this.closeModal();
         return;
       }
-      // CREATE MODE
+
+      // CREATE
       if (!password) {
         Swal.fire({
           icon: 'warning',
           title: 'Missing Password',
           text: 'Password is required for new accounts.',
-          confirmButtonColor: '#3085d6'
         });
         return;
       }
 
       await this.elecomService.add(
-        { name, email, position, isActive: true },
+        { name, username, email, position, isActive: true }, // ✅ ADDED
         password
       );
 
@@ -134,38 +146,25 @@ export class ElecomComponent {
         icon: 'success',
         title: 'Account Created!',
         text: 'Elecom account created successfully.',
-        confirmButtonColor: '#28a745'
       });
 
-      // RESET FORM
-      this.newElecom = {
-        name: '',
-        email: '',
-        password: '',
-        position: '',
-        isActive: true
-      };
+      this.closeModal();
 
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: error.message || 'Operation failed.',
-        confirmButtonColor: '#d33'
       });
     }
   }
 
-  // DELETE
   async deleteElecom(uid: string): Promise<void> {
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: 'This Elecom account will be permanently removed!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!'
     });
 
     if (result.isConfirmed) {
@@ -176,7 +175,6 @@ export class ElecomComponent {
           icon: 'success',
           title: 'Deleted!',
           text: 'Elecom account has been removed.',
-          confirmButtonColor: '#28a745'
         });
 
       } catch (error: any) {
@@ -184,7 +182,6 @@ export class ElecomComponent {
           icon: 'error',
           title: 'Error',
           text: error.message || 'Unable to delete Elecom account.',
-          confirmButtonColor: '#d33'
         });
       }
     }

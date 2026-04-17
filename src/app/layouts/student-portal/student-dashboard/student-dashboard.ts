@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, collection, getDocs } from '@angular/fire/firestore';
 import { StudentCacheService } from '../../../services/student-cache.service';
 
 // Optional type safety
@@ -30,7 +30,7 @@ export class StudentDashboardComponent implements OnInit {
 
   student: Student | null = null;
   elections: any[] = [];
-  loading: boolean = true; // show loader while fetching data
+  loading: boolean = true;
 
   // Hardcoded organization data
   orgData: any = {
@@ -53,15 +53,17 @@ export class StudentDashboardComponent implements OnInit {
     const currentUser = this.auth.currentUser;
 
     if (this.studentCache.currentStudent) {
-      // Use cached student
-      this.ngZone.run(() => {
+      // ✅ FIXED: await async function
+      this.ngZone.run(async () => {
         this.student = this.studentCache.currentStudent;
-        this.setupElections();
+        await this.setupElections(); // 🔥 important fix
         this.loading = false;
         this.cd.detectChanges();
       });
+
     } else if (currentUser) {
       this.loadStudentAndSetup(currentUser.uid);
+
     } else {
       onAuthStateChanged(this.auth, user => {
         if (user) {
@@ -73,7 +75,7 @@ export class StudentDashboardComponent implements OnInit {
     }
   }
 
-  /** Helper: load student + setup elections */
+  /** Load student then setup elections */
   private async loadStudentAndSetup(uid: string) {
     try {
       await this.loadStudent(uid);
@@ -99,10 +101,9 @@ export class StudentDashboardComponent implements OnInit {
 
       console.log('Student data loaded:', this.student);
 
-      // Setup elections
-      this.setupElections();
+      // ✅ already correct (with await)
+      await this.setupElections();
 
-      // Stop spinner after everything is ready
       this.ngZone.run(() => {
         this.loading = false;
         this.cd.detectChanges();
@@ -116,39 +117,70 @@ export class StudentDashboardComponent implements OnInit {
     }
   }
 
-  /** Setup elections dynamically and mark voted ones */
-  private setupElections() {
+  /** Setup elections based on ACTIVE status */
+  private async setupElections() {
     if (!this.student) return;
 
     const studentCourse = this.student.course;
 
-    const filtered = Object.keys(this.orgData)
-      .filter(key =>
-        this.orgData[key].allowedCourses
-          .map((c: string) => c.trim().toUpperCase())
-          .includes(studentCourse)
-      )
-      .map(key => {
-        const electionId = key.toUpperCase() + '2026';
-        const voted = this.student!.votes.some(
-          (v: Vote) => v.electionId.toUpperCase() === electionId && v.isVoted === true
-        );
+    try {
+      // 🔍 CHECK ACTIVE ELECTION
+      const electionsRef = collection(this.firestore, 'elections');
+      const snapshot = await getDocs(electionsRef);
 
-        return {
-          name: this.orgData[key].title,
-          logo: this.orgData[key].logo,
-          org: key.toUpperCase(),
-          electionId,
-          isVoted: voted
-        };
+      let hasActive = false;
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+
+        if (data['status']?.toLowerCase() === 'active') {
+          hasActive = true;
+        }
       });
 
-    this.ngZone.run(() => {
-      this.elections = filtered;
-      this.cd.detectChanges();
-    });
+      console.log('Has Active Election:', hasActive);
 
-    console.log('Filtered elections:', filtered.map(e => e.name));
+      // 🔥 EXISTING LOGIC (UNCHANGED)
+      const filtered = Object.keys(this.orgData)
+        .filter(key =>
+          this.orgData[key].allowedCourses
+            .map((c: string) => c.trim().toUpperCase())
+            .includes(studentCourse)
+        )
+        .map(key => {
+          const electionId = key.toUpperCase() + '2026';
+
+          const voted = this.student!.votes.some(
+            (v: Vote) =>
+              v.electionId.toUpperCase() === electionId &&
+              v.isVoted === true
+          );
+
+          return {
+            name: this.orgData[key].title,
+            logo: this.orgData[key].logo,
+            org: key.toUpperCase(),
+            electionId,
+            isVoted: voted
+          };
+        });
+
+      // ✅ FINAL CONTROL (ACTIVE ONLY)
+      this.ngZone.run(() => {
+        this.elections = hasActive ? filtered : [];
+        this.cd.detectChanges();
+      });
+
+      console.log('Visible Elections:', this.elections.map(e => e.name));
+
+    } catch (error) {
+      console.error('Error checking elections:', error);
+
+      this.ngZone.run(() => {
+        this.elections = [];
+        this.cd.detectChanges();
+      });
+    }
   }
 
   // Count completed votes

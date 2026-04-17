@@ -148,7 +148,7 @@ export class Voters implements OnInit, OnDestroy {
             mobile: this.newStudent.mobile,
           }
         );
-        Swal.fire('Created!', 'Voter added to Firebase successfully.', 'success');
+        Swal.fire('Created!', 'Voter added successfully.', 'success');
       }
 
       this.closeModal();
@@ -175,7 +175,7 @@ export class Voters implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         try {
           await this.studentService.delete(id);
-          Swal.fire('Deleted!', 'Voter has been removed from Firebase.', 'success');
+          Swal.fire('Deleted!', 'Voter has been removed.', 'success');
         } catch (err: any) {
           Swal.fire('Error', err.message || 'Failed to delete voter.', 'error');
         }
