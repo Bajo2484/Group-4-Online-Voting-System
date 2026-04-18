@@ -1,18 +1,26 @@
 <div class="notifications-container">
   <h2>Notifications</h2>
 
+    <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading notifications...</p>
+  </div> 
+
+  <ng-container *ngIf="!loading">
+
   <!-- Unseen Count -->
   <div *ngIf="unseenCount > 0" class="unseen-count">
     You have {{ unseenCount }} new notification{{ unseenCount > 1 ? 's' : '' }}.
   </div>
 
+
   <!-- No notifications message -->
-  <div *ngIf="notifications.length === 0" class="no-notifications">
+  <div *ngIf="!loading && notifications.length === 0" class="no-notifications">
     No notifications yet.
   </div>
 
   <!-- Notification List -->
-  <ul *ngIf="notifications.length > 0" class="notification-list">
+  <ul *ngIf="!loading && notifications.length > 0" class="notification-list">
     <li 
       *ngFor="let n of notifications" 
       [class.unseen]="!n.seen" 
@@ -29,4 +37,5 @@
       </div>
     </li>
   </ul>
+  </ng-container>
 </div>

@@ -60,15 +60,17 @@
       </div>
 
       <form (ngSubmit)="registerCandidate()" class="form-grid">
+        
         <!-- PHOTO UPLOAD -->
         <div class="form-group">
-          <label>Upload Photo</label>
-          <input type="file" (change)="onPhotoSelected($event)">
-          <small>JPG or PNG. Max 2MB</small>
-          <div *ngIf="photoPreview" class="photo-preview">
-            <img [src]="photoPreview" alt="Preview">
-          </div>
-        </div>
+  <label for="photoUpload">Upload Photo</label>
+
+  <input id="photoUpload"
+         type="file"
+         (change)="onPhotoSelected($event)">
+
+  <small>JPG or PNG. Max 2MB</small>
+</div>
 
         <!-- FULL NAME -->
         <div class="form-group">
@@ -78,31 +80,46 @@
         </div>
 
         <!-- ORGANIZATION -->
-        <div class="form-group">
-          <label>Organization</label>
-          <select [(ngModel)]="course" [name]="'course'" (change)="onCourseChange()" required>
-            <option value="" disabled hidden>Select organization</option>
-            <option *ngFor="let c of courses" [value]="c">{{ c }}</option>
-          </select>
-        </div>
+       <div class="form-group">
+  <label for="courseSelect">Organization</label>
+
+  <select id="courseSelect"
+          [(ngModel)]="course"
+          name="course"
+          (change)="onCourseChange()"
+          required>
+    <option value="" disabled hidden>Select organization</option>
+    <option *ngFor="let c of courses" [value]="c">{{ c }}</option>
+  </select>
+</div>
 
         <!-- POSITION -->
         <div class="form-group">
-          <label>Position</label>
-          <select [(ngModel)]="position" [name]="'position'" required>
-            <option value="" disabled hidden>Select position</option>
-            <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
-          </select>
-        </div>
+  <label for="positionSelect">Position</label>
+
+  <select id="positionSelect"
+          [(ngModel)]="position"
+          name="position"
+          required>
+    <option value="" disabled hidden>Select position</option>
+    <option *ngFor="let p of positions" [value]="p">{{ p }}</option>
+  </select>
+</div>
 
         <!-- ELECTION -->
         <div class="form-group">
-          <label>Election</label>
-          <select [(ngModel)]="selectedElectionId" [name]="'selectedElectionId'" required>
-            <option value="" disabled hidden>Select election</option>
-            <option *ngFor="let e of elections" [value]="e.id">{{ e.title }}</option>
-          </select>
-        </div>
+  <label for="electionSelect">Election</label>
+
+  <select id="electionSelect"
+          [(ngModel)]="selectedElectionId"
+          name="selectedElectionId"
+          required>
+    <option value="" disabled hidden>Select election</option>
+    <option *ngFor="let e of elections" [value]="e.id">
+      {{ e.title }}
+    </option>
+  </select>
+</div>
 
         <!-- PARTY -->
         <div class="form-group">

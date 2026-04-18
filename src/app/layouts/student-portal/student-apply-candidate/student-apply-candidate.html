@@ -42,16 +42,22 @@
         </div>
 
         <div class="form-group">
-          <label>Organization:</label>
-          <select [(ngModel)]="organization" (change)="onOrganizationChange()">
+          <label for="org">Organization:</label>
+          <select
+            id="org"
+            [(ngModel)]="organization"
+            (change)="onOrganizationChange()">
             <option value="">Select Organization</option>
             <option *ngFor="let org of organizations" [value]="org">{{ org }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Position:</label>
-          <select [(ngModel)]="position" [disabled]="!organization">
+          <label for="position">Position:</label>
+          <select
+            id="position"
+            [(ngModel)]="position"
+            [disabled]="!organization">
             <option value="">Select Position</option>
             <option *ngFor="let pos of filteredPositions" [value]="pos">{{ pos }}</option>
           </select>

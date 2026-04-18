@@ -7,11 +7,7 @@
 }
 
 /* DASHBOARD  */
-.dashboard-container {
-  min-height: 100vh;
-  padding: 25px;
-  background: radial-gradient(circle at top, #e0e7ff, #f8fafc);
-}
+
 
 /*  STUDENT INFO  */
 .student-info {

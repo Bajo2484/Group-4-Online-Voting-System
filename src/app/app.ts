@@ -1,8 +1,16 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+  Router,
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+  NavigationEnd
+} from '@angular/router';
 import { NgIf } from '@angular/common';
+
 import { AuthService, CurrentUser } from './services/auth.service';
 import { NotificationService, Notification } from './services/notification.service';
+
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,30 +18,29 @@ import { Subscription } from 'rxjs';
   standalone: true,
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf,]
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf]
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
 
   protected readonly title = signal('e-voting');
-  protected isLoginRoute = false;
 
+  isLoginRoute = false;
   isProfileMenuOpen = false;
-  notifications: Notification[] = []; // holds notifications
-  unseenCount = 0;
-
   sidebarOpen = false;
+
+  notifications: Notification[] = [];
+  unseenCount = 0;
 
   private notifSub?: Subscription;
 
   constructor(
     private readonly router: Router,
     public readonly auth: AuthService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {
-    // Initial route check
     this.checkRedirect(this.router.url);
 
-    // Update route state on navigation
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateRouteState(event.urlAfterRedirects);
@@ -43,47 +50,62 @@ export class App implements OnInit {
   }
 
   ngOnInit(): void {
-    // Subscribe to notifications based on role
     this.subscribeNotifications();
   }
 
+  ngOnDestroy(): void {
+    this.notifSub?.unsubscribe();
+  }
+
+  // =========================
+  // NOTIFICATION SUBSCRIPTION
+  // =========================
   private subscribeNotifications(): void {
-    if (this.notifSub) {
-      this.notifSub.unsubscribe();
+    this.notifSub?.unsubscribe();
+
+    const user = this.auth.getCurrentUser();
+
+    // ADMIN
+    if (this.auth.isAdmin()) {
+      this.notifSub = this.notificationService
+        .getAdminNotifications()
+        .subscribe((data) => {
+          this.notifications = data;
+          this.unseenCount = data.filter(n => !n.seen).length;
+
+          this.cdr.markForCheck();
+        });
     }
 
-    if (this.auth.isAdmin()) {
-      this.notifSub = this.notificationService.getAdminNotifications().subscribe((data) => {
-        this.notifications = data;
-        this.unseenCount = data.filter(n => !n.seen).length;
+    // ELECOM
+    else if (this.auth.isElecom()) {
+      this.notifSub = this.notificationService
+        .getElecomNotifications()
+        .subscribe((data) => {
+          this.notifications = data;
+          this.unseenCount = data.filter(n => !n.seen).length;
 
-        const badge = document.querySelector('.notification-icon .badge');
-        if(badge) {
-          badge.classList.add('animate');
-          setTimeout(() => badge.classList.remove('animate'), 400);
-        }
-      });
-    } else if (this.auth.isElecom()) {
-      this.notifSub = this.notificationService.getElecomNotifications().subscribe((data) => {
-        this.notifications = data;
-        this.unseenCount = data.filter(n => !n.seen).length;
-      });
-    } else if (this.auth.isStudent()) {
-      const userId = this.auth.getCurrentUser()?.uid || ''; // ✅ fixed here
-      this.notifSub = this.notificationService.getStudentNotifications(userId).subscribe((data) => {
-        this.notifications = data;
-        this.unseenCount = data.filter(n => !n.seen).length;
+          this.cdr.markForCheck();
+        });
+    }
 
-        const badge = document.querySelector('.notification-icon .badge');
-        if(badge) {
-          badge.classList.add('animate');
-          setTimeout(() => badge.classList.remove('animate'), 400);
-        }
-      });
+    // STUDENT
+    else if (this.auth.isStudent()) {
+      if (!user?.uid) return;
+
+      this.notifSub = this.notificationService
+        .getStudentNotifications(user.uid)
+        .subscribe((data) => {
+          this.notifications = data;
+          this.unseenCount = data.filter(n => !n.seen).length;
+
+          this.cdr.markForCheck();
+        });
     }
   }
 
-  // Detect login route
+  
+  // ROUTE HANDLING
   private updateRouteState(url: string): void {
     const cleaned = url.split('?')[0];
     this.isLoginRoute =
@@ -92,15 +114,16 @@ export class App implements OnInit {
       cleaned.startsWith('/login');
   }
 
-  // Auto-redirect if logged in and trying to access login page
   private checkRedirect(url: string): void {
     const cleaned = url.split('?')[0];
 
-    if ((cleaned === '' || cleaned === '/' || cleaned.startsWith('/login')) && this.auth.isLoggedIn()) {
+    if (
+      (cleaned === '' || cleaned === '/' || cleaned.startsWith('/login')) &&
+      this.auth.isLoggedIn()
+    ) {
       const user: CurrentUser | undefined = this.auth.getCurrentUser();
       if (!user) return;
 
-      // Redirect based on role
       if (user.role === 'admin') {
         this.router.navigate(['/dashboard']);
       } else if (user.role === 'student') {
@@ -111,7 +134,9 @@ export class App implements OnInit {
     }
   }
 
-  // Toggle profile dropdown
+  // =========================
+  // UI CONTROLS
+  // =========================
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
   }
@@ -120,7 +145,9 @@ export class App implements OnInit {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
-  // Navigate to profile
+  // =========================
+  // NAVIGATION
+  // =========================
   goToSetting(): void {
     if (this.auth.isAdmin()) {
       this.router.navigate(['/myprofile']);
@@ -131,19 +158,17 @@ export class App implements OnInit {
   }
 
   goToElecomSetting(event?: MouseEvent): void {
-    event?.stopPropagation(); 
+    event?.stopPropagation();
     this.router.navigate(['/elecom-settings']);
     this.isProfileMenuOpen = false;
   }
 
-  // Navigate to admin settings
   goToAdminSettings(event?: MouseEvent): void {
-    event?.stopPropagation(); // prevent parent toggle
+    event?.stopPropagation();
     this.router.navigate(['/admin-settings']);
     this.isProfileMenuOpen = false;
   }
 
-  // Navigate to role-specific notifications page
   goToNotifications(): void {
     if (this.auth.isStudent()) {
       this.router.navigate(['/student-notifications']);
@@ -154,11 +179,13 @@ export class App implements OnInit {
     }
   }
 
-  // Logout
+  // =========================
+  // LOGOUT
+  // =========================
   logout(): void {
     this.auth.clear();
     this.router.navigateByUrl('/');
     this.isProfileMenuOpen = false;
-    this.notifSub?.unsubscribe(); 
+    this.notifSub?.unsubscribe();
   }
 }

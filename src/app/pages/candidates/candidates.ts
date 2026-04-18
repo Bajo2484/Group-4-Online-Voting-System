@@ -2,10 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+
 import { CandidateService } from '../../services/candidate.service';
 import { Candidate } from '../../services/candidate.model';
 import { Election, ElectionService } from '../../services/election.service';
-import { Timestamp } from '@angular/fire/firestore'; // <-- Import Timestamp
+import { Timestamp } from '@angular/fire/firestore';
+import { NotificationService } from '@app/services/notification.service';
 
 @Component({
   selector: 'app-candidates',
@@ -16,19 +18,23 @@ import { Timestamp } from '@angular/fire/firestore'; // <-- Import Timestamp
 })
 export class CandidatesComponent implements OnInit {
 
-  allCandidates: Candidate[] = [];  // Full list from Firestore
-  currentCandidates: Candidate[] = []; // Candidates shown in current page
+  allCandidates: Candidate[] = [];
+  currentCandidates: Candidate[] = [];
 
   elections: Election[] = [];
-  selectedElectionId: string = '';
+  selectedElectionId = '';
 
-  // FORM FIELDS
+  torFile: File | null = null;
+  photoFile: File | null = null;
+
+  isUploading = false;
+
   fullName = '';
   position = '';
   course = '';
   partyName = '';
   platform = '';
-  electionId: string = '';
+
   selectedFile: File | null = null;
   photoPreview: string | ArrayBuffer | null = null;
 
@@ -36,42 +42,52 @@ export class CandidatesComponent implements OnInit {
   isEditMode = false;
   showModal = false;
 
-  // ORGANIZATIONS & POSITIONS
   courses: string[] = ['ATLAS', 'USG', 'STCM', 'AEMT'];
   positions: string[] = [];
-  atlasPositions: string[] = [
-    'PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY','ASSOCIATE SECRETARY',
-    'AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO','2ND YR GOV','3RD YR GOV','4TH YR GOV'
+
+  atlasPositions = [
+    'PRESIDENT','EXTERNAL VICE PRESIDENT','INTERNAL VICE PRESIDENT','GENERAL SECRETARY',
+    'ASSOCIATE SECRETARY','AUDITOR','TREASURER','EXTERNAL PRO','INTERNAL PRO',
+    '2ND YR GOV','3RD YR GOV','4TH YR GOV'
   ];
-  regularPositions: string[] = ['PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'];
 
-  // SEARCH & PAGINATION
-  searchTerm: string = '';
-  pageSize: number = 10;
-  currentPage: number = 1;
+  regularPositions = [
+    'PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'
+  ];
 
-  // SORT OPTIONS
-  sortOption: string = 'dateAsc';
+  searchTerm = '';
+  pageSize = 10;
+  currentPage = 1;
+
+  sortOption = 'dateAsc';
 
   constructor(
     private candidateService: CandidateService,
-    private cdr: ChangeDetectorRef,
-    private electionService: ElectionService
+    private electionService: ElectionService,
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Load candidates
+    this.loadCandidates();
+    this.loadElections();
+  }
+
+  // ================= LOAD =================
+  loadCandidates() {
     this.candidateService.getAllCandidates().subscribe(data => {
       this.allCandidates = data.map(c => ({
         ...c,
         createdAt: c.createdAt || Date.now()
       }));
+
       this.applySort();
       this.updateCurrentCandidates();
       this.cdr.detectChanges();
     });
+  }
 
-    // Load elections
+  loadElections() {
     this.electionService.getElections().subscribe(data => {
       this.elections = data.map(e => ({
         ...e,
@@ -81,67 +97,55 @@ export class CandidatesComponent implements OnInit {
     });
   }
 
-  // SEARCH
+  // ================= UI FUNCTIONS =================
   filterCandidates() {
-    const term = this.searchTerm.toLowerCase().trim();
-    this.allCandidates = this.allCandidates.filter(c =>
+    const term = this.searchTerm.toLowerCase();
+
+    const filtered = this.allCandidates.filter(c =>
       c.fullName.toLowerCase().includes(term) ||
       c.position.toLowerCase().includes(term) ||
       c.organization.toLowerCase().includes(term)
     );
-    this.currentPage = 1;
-    this.updateCurrentCandidates();
+
+    this.currentCandidates = filtered.slice(0, this.pageSize);
   }
 
-  // PAGINATION
-  totalPages(): number {
+  paginatedCandidates() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.allCandidates.slice(start, start + this.pageSize);
+  }
+
+  totalPages() {
     return Math.ceil(this.allCandidates.length / this.pageSize);
   }
 
-  paginatedCandidates(): Candidate[] {
-    return this.currentCandidates;
-  }
-
   updateCurrentCandidates() {
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.currentCandidates = this.allCandidates.slice(start, end);
-  }
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+  this.currentCandidates = this.allCandidates.slice(start, end);
+}
 
   nextPage() {
     if (this.currentPage < this.totalPages()) {
       this.currentPage++;
-      this.updateCurrentCandidates();
     }
   }
 
   prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updateCurrentCandidates();
     }
   }
 
-  // SORT
   applySort() {
-    switch (this.sortOption) {
-      case 'dateAsc':
-        this.allCandidates.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
-        break;
-      case 'dateDesc':
-        this.allCandidates.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
-        break;
-      case 'positionAsc':
-        this.allCandidates.sort((a, b) => a.position.localeCompare(b.position));
-        break;
-      case 'positionDesc':
-        this.allCandidates.sort((a, b) => b.position.localeCompare(a.position));
-        break;
+    if (this.sortOption === 'dateAsc') {
+      this.allCandidates.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    } else if (this.sortOption === 'dateDesc') {
+      this.allCandidates.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
     }
-    this.updateCurrentCandidates();
   }
 
-  // MODAL HANDLING
+  // ================= MODAL =================
   openModal() {
     this.showModal = true;
     this.isEditMode = false;
@@ -154,57 +158,103 @@ export class CandidatesComponent implements OnInit {
   }
 
   onCourseChange() {
-    if (this.course === 'ATLAS') this.positions = [...this.atlasPositions];
-    else if (['USG','STCM','AEMT'].includes(this.course)) this.positions = [...this.regularPositions];
-    else this.positions = [];
-    this.position = '';
+    this.positions =
+      this.course === 'ATLAS'
+        ? this.atlasPositions
+        : this.regularPositions;
   }
 
-  onPhotoSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    this.selectedFile = input.files[0];
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.photoFile = file;
+
     const reader = new FileReader();
-    reader.onload = () => this.photoPreview = reader.result;
-    reader.readAsDataURL(this.selectedFile);
+    reader.onload = () => {
+      this.photoPreview = reader.result;
+    };
+    reader.readAsDataURL(file);
   }
 
-  // REGISTER OR UPDATE CANDIDATE
+  onTORSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.torFile = file;
+  }
+
+  // ================= UPLOAD TOR =================
+  uploadTOR(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!this.torFile) return reject('No TOR file');
+
+      const formData = new FormData();
+      formData.append('file', this.torFile);
+      formData.append('upload_preset', 'unsigned_upload');
+
+      fetch('https://api.cloudinary.com/v1_1/dmjemocb2/upload', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => resolve(data.secure_url))
+        .catch(err => reject(err));
+    });
+  }
+
+  // ================= SAVE =================
   async registerCandidate() {
+
     if (!this.fullName || !this.position || !this.course) {
-      Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Please fill all required fields!' });
+      Swal.fire('Missing Fields', 'Please complete all required fields', 'warning');
       return;
     }
 
-    this.electionId = this.selectedElectionId;
+    let torUrl = '';
+
+    if (this.torFile) {
+      this.isUploading = true;
+      try {
+        torUrl = await this.uploadTOR();
+      } catch (err) {
+        Swal.fire('Error', 'TOR upload failed', 'error');
+        this.isUploading = false;
+        return;
+      }
+      this.isUploading = false;
+    }
+
     const candidate: Candidate = {
       fullName: this.fullName,
       organization: this.course,
       position: this.position,
       partyName: this.partyName,
       platform: this.platform,
-      electionId: this.electionId,
+      electionId: this.selectedElectionId,
       status: 'pending',
-      photoUrl: (this.photoPreview as string) || '',
-      createdAt: Date.now()
+      photoUrl: this.photoPreview as string || '',
+      createdAt: Date.now(),
+      torUrl: torUrl
     };
 
     try {
       if (this.isEditMode && this.editingId) {
         await this.candidateService.updateCandidate(this.editingId, candidate);
-        Swal.fire({ icon: 'success', title: 'Updated!', text: 'Candidate updated!' });
+        Swal.fire('Updated', 'Candidate updated successfully', 'success');
       } else {
         await this.candidateService.addCandidate(candidate);
-        Swal.fire({ icon: 'success', title: 'Registered!', text: 'Candidate added!' });
+        Swal.fire('Success', 'Candidate added successfully', 'success');
       }
+
       this.closeModal();
+      this.loadCandidates();
     } catch (err) {
-      console.error(err);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to save candidate.' });
+      Swal.fire('Error', 'Something went wrong', 'error');
     }
   }
 
-  // EDIT / DELETE / APPROVE / REJECT
+  // ================= ACTIONS =================
   editCandidate(c: Candidate) {
     this.fullName = c.fullName;
     this.course = c.organization;
@@ -212,26 +262,62 @@ export class CandidatesComponent implements OnInit {
     this.position = c.position;
     this.partyName = c.partyName || '';
     this.platform = c.platform || '';
-    this.electionId = c.electionId || '';
+    this.selectedElectionId = c.electionId || '';
+
     this.editingId = c.id || null;
     this.isEditMode = true;
+
     this.photoPreview = c.photoUrl || null;
+
     this.showModal = true;
   }
 
   async deleteCandidate(id: string) {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'This candidate will be permanently deleted!',
+    const res = await Swal.fire({
+      title: 'Delete candidate?',
       icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!'
+      showCancelButton: true
     });
-    if (result.isConfirmed) await this.candidateService.deleteCandidate(id);
+
+    if (res.isConfirmed) {
+      await this.candidateService.deleteCandidate(id);
+      this.loadCandidates();
+    }
   }
 
-  approveCandidate(c: Candidate) { if (c.id) this.candidateService.approveCandidate(c.id); }
-  rejectCandidate(c: Candidate) { if (c.id) this.candidateService.rejectCandidate(c.id); }
+  async approveCandidate(c: Candidate) {
+    if (!c.id) return;
+
+    await this.candidateService.approveCandidate(c.id);
+
+    await this.notificationService.addNotification({
+      studentId: c.studentId,
+      target: 'student',
+      message: `Approved: ${c.position}`,
+      date: new Date(),
+      type: 'approved',
+      seen: false
+    });
+
+    this.loadCandidates();
+  }
+
+  async rejectCandidate(c: Candidate) {
+    if (!c.id) return;
+
+    await this.candidateService.rejectCandidate(c.id);
+
+    await this.notificationService.addNotification({
+      studentId: c.studentId,
+      target: 'student',
+      message: `Rejected: ${c.position}`,
+      date: new Date(),
+      type: 'general',
+      seen: false
+    });
+
+    this.loadCandidates();
+  }
 
   resetForm() {
     this.fullName = '';
@@ -239,15 +325,16 @@ export class CandidatesComponent implements OnInit {
     this.course = '';
     this.partyName = '';
     this.platform = '';
-    this.electionId = '';
-    this.positions = [];
-    this.editingId = null;
-    this.isEditMode = false;
-    this.selectedFile = null;
+    this.selectedElectionId = '';
+
     this.photoPreview = null;
+    this.torFile = null;
+
+    this.isEditMode = false;
+    this.editingId = null;
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(status: string) {
     return {
       approved: 'status-approved',
       pending: 'status-pending',
