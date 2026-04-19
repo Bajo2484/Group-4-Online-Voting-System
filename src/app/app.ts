@@ -39,8 +39,8 @@ export class App implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {
-    this.checkRedirect(this.router.url);
 
+    // route handling (NO setTimeout, stable)
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateRouteState(event.urlAfterRedirects);
@@ -50,6 +50,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // safe single initialization
     this.subscribeNotifications();
   }
 
@@ -58,54 +59,44 @@ export class App implements OnInit, OnDestroy {
   }
 
   // =========================
-  // NOTIFICATION SUBSCRIPTION
+  // NOTIFICATIONS (FIXED CORE)
   // =========================
   private subscribeNotifications(): void {
     this.notifSub?.unsubscribe();
 
     const user = this.auth.getCurrentUser();
+    if (!user) return;
 
-    // ADMIN
-    if (this.auth.isAdmin()) {
-      this.notifSub = this.notificationService
-        .getAdminNotifications()
+    if (user.role === 'admin') {
+      this.notifSub = this.notificationService.getAdminNotifications()
         .subscribe((data) => {
-          this.notifications = data;
-          this.unseenCount = data.filter(n => !n.seen).length;
-
+          this.notifications = data || [];
+          this.unseenCount = (data || []).filter(n => !n.seen).length;
           this.cdr.markForCheck();
         });
     }
 
-    // ELECOM
-    else if (this.auth.isElecom()) {
-      this.notifSub = this.notificationService
-        .getElecomNotifications()
+    else if (user.role === 'elecom') {
+      this.notifSub = this.notificationService.getElecomNotifications()
         .subscribe((data) => {
-          this.notifications = data;
-          this.unseenCount = data.filter(n => !n.seen).length;
-
+          this.notifications = data || [];
+          this.unseenCount = (data || []).filter(n => !n.seen).length;
           this.cdr.markForCheck();
         });
     }
 
-    // STUDENT
-    else if (this.auth.isStudent()) {
-      if (!user?.uid) return;
-
-      this.notifSub = this.notificationService
-        .getStudentNotifications(user.uid)
+    else if (user.role === 'student' && user.uid) {
+      this.notifSub = this.notificationService.getStudentNotifications(user.uid)
         .subscribe((data) => {
-          this.notifications = data;
-          this.unseenCount = data.filter(n => !n.seen).length;
-
+          this.notifications = data || [];
+          this.unseenCount = (data || []).filter(n => !n.seen).length;
           this.cdr.markForCheck();
         });
     }
   }
 
-  
-  // ROUTE HANDLING
+
+  // ROUTING
   private updateRouteState(url: string): void {
     const cleaned = url.split('?')[0];
     this.isLoginRoute =
@@ -170,15 +161,38 @@ export class App implements OnInit, OnDestroy {
   }
 
   goToNotifications(): void {
-    if (this.auth.isStudent()) {
-      this.router.navigate(['/student-notifications']);
-    } else if (this.auth.isElecom()) {
-      this.router.navigate(['/elecom-notifications']);
-    } else if (this.auth.isAdmin()) {
-      this.router.navigate(['/admin-notifications']);
-    }
+
+  const user = this.auth.getCurrentUser();
+
+  if (user?.role === 'student') {
+    this.router.navigate(['/student-notifications']);
+  } else if (user?.role === 'elecom') {
+    this.router.navigate(['/elecom-notifications']);
+  } else if (user?.role === 'admin') {
+    this.router.navigate(['/admin-notifications']);
   }
 
+  this.markAllAsSeen();
+}
+
+private markAllAsSeen(): void {
+  const user = this.auth.getCurrentUser();
+  if (!user) return;
+
+  // instant UI update
+  this.notifications = this.notifications.map(n => ({
+    ...n,
+    seen: true
+  }));
+  this.unseenCount = 0;
+
+  // update Firestore
+  this.notifications.forEach(n => {
+    if (!n.seen && n.id) {
+      this.notificationService.markAsSeen(n.id).catch(() => {});
+    }
+  });
+}
   // =========================
   // LOGOUT
   // =========================
@@ -186,6 +200,10 @@ export class App implements OnInit, OnDestroy {
     this.auth.clear();
     this.router.navigateByUrl('/');
     this.isProfileMenuOpen = false;
+
     this.notifSub?.unsubscribe();
+
+    this.notifications = [];
+    this.unseenCount = 0;
   }
 }

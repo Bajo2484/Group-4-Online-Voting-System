@@ -16,6 +16,10 @@ export class AdminDashboardComponent implements OnInit {
   private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
 
+  //loading state 
+  loading: boolean= true;
+  dataLoadedCount = 0;
+
   // Dashboard numbers
   totalVoters = 0;
   registeredCandidates = 0;
@@ -42,6 +46,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadDashboardData() {
+
+    this.loading = true;
+    this.dataLoadedCount = 0;
+
     // VOTERS 
     const studentsRef = query(collection(this.firestore, 'students'));
     collectionData(studentsRef, { idField: 'id' }).subscribe((voters: any[]) => {
@@ -59,6 +67,8 @@ export class AdminDashboardComponent implements OnInit {
 
       this.recentActivities = voterActivities;
       this.cdr.detectChanges();
+
+      this.checkIfLoaded();
     });
 
     // ----------------- CANDIDATES -----------------
@@ -139,6 +149,8 @@ export class AdminDashboardComponent implements OnInit {
         .slice(0, 50);
 
       this.cdr.detectChanges();
+
+      this.checkIfLoaded();
     });
   }
 
@@ -148,5 +160,15 @@ export class AdminDashboardComponent implements OnInit {
     if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
     if (value instanceof Date) return value;
     return new Date(value);
+  }
+
+  //check if humana na ang loading
+  private checkIfLoaded() {
+    this.dataLoadedCount++;
+
+    if (this.dataLoadedCount >=3) {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 }

@@ -1,4 +1,4 @@
-<div class="dashboard-container" *ngIf="student; else loading">
+<div class="dashboard-container" *ngIf="student && !electionsLoading; else loading">
 
   <!-- ================= STUDENT INFO ================= -->
   <div class="student-info">
@@ -10,7 +10,7 @@
   <!-- ================= PROGRESS SECTION ================= -->
   <h3>Your Elections Progress</h3>
 
-  <div class="progress-section" *ngIf="elections.length > 0">
+  <div class="progress-section" *ngIf="!electionsLoading && elections.length > 0">
     <p>Completed: {{completedCount}} / {{elections.length}}</p>
 
     <div class="progress-bar">
@@ -22,7 +22,7 @@
   </div>
 
   <!-- ================= NO ELECTION STATE ================= -->
-  <div *ngIf="elections.length === 0" class="no-election">
+  <div *ngIf="!electionsLoading && elections.length === 0" class="no-election">
     <div class="empty-icon">🗳️</div>
     <h2>No Election Yet</h2>
     <p>Next election will be available soon.</p>
@@ -30,7 +30,7 @@
   </div>
 
   <!-- ================= ELECTION CARDS ================= -->
-  <div class="elections-container" *ngIf="elections.length > 0">
+  <div class="elections-container" *ngIf="!electionsLoading && elections.length > 0">
 
     <div *ngFor="let election of elections" class="election-card">
 

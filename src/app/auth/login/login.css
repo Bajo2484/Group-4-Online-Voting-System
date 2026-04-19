@@ -13,11 +13,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url('/bg.jpg');
+  background-image: url('/bg.jpg') ;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  filter: blur(6px);          
+           
   transform: scale(1.05);    
   z-index: -2;
 }
@@ -26,7 +26,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.25); 
+  background: rgba(0,0,0,0.35); 
   z-index: -1;
 }
 
@@ -35,49 +35,64 @@
   z-index: 1;
   width: 420px;
   max-width: 90%;
-  background: #ffffff;
+  background: rgba(255,255,255,0.12);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+
   border-radius: 18px;
-  padding: 36px 38px 36px;
+  padding: 36px 38px;
   text-align: center;
-  box-shadow: 0 18px 45px rgba(0,0,0,0.30);
-  border: 1px solid rgba(255,255,255,0.8);
+  color: #ffffff;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
 }
 
 .logo-circle {
-  width: 96px;
+  width: 96x;
   height: 96px;
   border-radius: 50%;
   overflow: hidden;
   margin: 0 auto 15px auto;
-  border: 3px solid #eee;
+  border: 2px solid rgba(255,255,255,0.3);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.2);
 }
 
 .logo-circle img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
+}
+.logo-circle {
+  aspect-ratio: 1 / 1;
 }
 
 h1 {
   margin: 8px 0 2px;
   font-size: 28px;
-  color:#161614
+  color:#ffffff
 }
 
 .subtitle {
-  color: #7b8a8b;
+  color: rgba(255,255,255,0.75);
   margin-bottom: 18px;
   font-size: 14px;
 }
 
 .card h3 {
   text-align: center;
-  color: #000000; 
+  color: #ffffff; 
   margin-bottom: 8px; 
 }
+
 .hint {
   font-size: 13px;
-  color: #7f8c8d;
+  color: rgba(255,255,255,0.7);
   margin-bottom: 20px;
 }
 
@@ -87,18 +102,25 @@ input {
   box-sizing: border-box;
   padding: 0 13px;
   margin-bottom: 12px;
-  border-radius: 6px;
-  border: 1px solid #dcdde1;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.25);
   font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  background: rgba(255,255,255,0.25);
+  color: #131313;
   outline: none;
-  background-color: #fafafa;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(5px);
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.7);
 }
 
 input:focus {
-  border-color: #f1c40f;
-  box-shadow: 0 0 0 3px rgba(241,196,15,0.25);
-  background-color: #ffffff;
+  border-color: rgba(255,255,255,0.6);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.2);
 }
 
 .password-field {
@@ -110,27 +132,27 @@ input:focus {
   right: 10px;
   top: 11px;
   cursor: pointer;
+  opacity: 0.7;
 }
 
 button {
   width: 100%;
   height: 44px;
   box-sizing: border-box;
-  padding: 0 13px;
-  background: linear-gradient(135deg,#f1c40f,#f39c12);
+ 
+  background: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: bold;
   margin-top: 16px;
   cursor: pointer;
-  color: #1f2d3d;
+  color: #333;
   font-size: 15px;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+  transition: all 0.2s ease
 }
 
 button:hover {
-  filter: brightness(1.03);
-  box-shadow: 0 8px 18px rgba(243,156,18,0.45);
+  background: #f1f1f1;
   transform: translateY(-1px);
 }
 
@@ -148,28 +170,20 @@ button:active {
 }
 
 .links a {
-  color: #2980b9;
+  color: #ffffff;
+  opacity: 0.85;
   text-decoration: none;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(41,128,185,0.2);
-  background-color: rgba(255,255,255,0.7);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  font-size: 13px;
 }
 
 .links a:hover {
-  color: #1b4f72;
-  background-color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-  transform: translateY(-1px);
+  opacity: 1;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 3px solid white;
+  border: 3px solid rgb(0, 0, 0);
   border-top: 3px solid transparent;
   border-radius: 50%;
   display: inline-block;
@@ -181,6 +195,14 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  display: block;
+  letter-spacing: 0.5px;
 }
 
 @keyframes spin {
@@ -201,5 +223,15 @@ button:active {
 
   .subtitle {
     font-size: 13px;
+  }
+}
+
+@media (max-width: 480) {
+  .card {
+    padding: 28px 22px;
+    border-radius: 14px;
+  }
+  h1 {
+    font-size: 22px;
   }
 }
