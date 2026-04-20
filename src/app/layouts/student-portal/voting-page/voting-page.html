@@ -1,5 +1,13 @@
 <div class="main-content">
 
+  <!--SPINNER-->
+  <div *ngIf="loadingCandidates" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading candidates.......</p>
+  </div>
+
+  <div *ngIf="!loadingCandidates">
+
   <!-- Title -->
   <div class="title">{{ electionName }}</div>
 
@@ -82,7 +90,7 @@
 
                   <div class="candidate-info">
 
-                    <div class="candiadte-name">
+                    <div class="candidate-name">
                       Abstain
                     </div>
 
@@ -116,9 +124,16 @@
   <!-- Final Submit Button -->
   <div class="submit-container">
     <button class="submit-btn"
-            [disabled]="!isConfirmed"
+            [disabled]="!isConfirmed || submittingVote"
             (click)="submitVotes()">
+      <span *ngIf="!submittingVote">
       Submit Vote
+      </span>
+
+    <span *ngIf="submittingVote">
+      <div class="mini-spinner"></div>
+        <span>Submitting Vote...</span>
+    </span>
     </button>
   </div>
 

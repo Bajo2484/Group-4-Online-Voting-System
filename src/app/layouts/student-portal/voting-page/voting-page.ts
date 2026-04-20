@@ -2,19 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Firestore,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  doc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  serverTimestamp,
-  getDoc
-} from '@angular/fire/firestore';
+import {Firestore,collection,query,where,onSnapshot,doc,setDoc,updateDoc,arrayUnion,serverTimestamp,getDoc} from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { getAuth } from 'firebase/auth';
 import { StudentCacheService } from '../../../services/student-cache.service';
@@ -32,6 +20,9 @@ export class VotingPage implements OnInit, OnDestroy {
   electionName: string = '';
   org: string = '';
   positions: any[] = [];
+
+  loadingCandidates: boolean = true;
+  submittingVote: boolean = false;
 
   selectedVotes: { [position: string]: any } = {};
   expandedCandidate: { [position: string]: any | null } = {};
@@ -117,6 +108,8 @@ export class VotingPage implements OnInit, OnDestroy {
   }
 
   loadCandidates(org: string, electionId: string) {
+
+    this.loadingCandidates = true;
     const candidatesRef = collection(this.firestore, 'candidates');
 
     const q = query(
@@ -157,6 +150,7 @@ export class VotingPage implements OnInit, OnDestroy {
           candidates: grouped[position]
         }));
 
+        this.loadingCandidates = false;
       this.cdr.detectChanges();
     });
   }
@@ -183,6 +177,8 @@ export class VotingPage implements OnInit, OnDestroy {
   }
 
   async submitVotes() {
+    this.submittingVote = true;
+
     try {
       for (let pos of this.positions) {
         if (!this.selectedVotes[pos.name]) {
@@ -254,6 +250,7 @@ export class VotingPage implements OnInit, OnDestroy {
 
       this.router.navigate(['/vote-success']);
     } catch (error) {
+      this.submittingVote = false;
       console.error(error);
       alert('Error submitting votes. Please try again.');
     }
