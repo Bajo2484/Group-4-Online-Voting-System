@@ -233,6 +233,10 @@
 
 .btn-save {
   background-color: #1f3b57;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -317,6 +321,27 @@
 
 .btn-export:hover {
   background-color: #e66e6e;
+}
+
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
 }
 
 /* ================= RESPONSIVE ================= */

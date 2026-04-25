@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./voters.css'],
 })
 export class Voters implements OnInit, OnDestroy {
+
   searchText: string = '';
   filteredStudents: StudentAccount[] = [];
   showModal = false;
@@ -26,11 +27,34 @@ export class Voters implements OnInit, OnDestroy {
   programs: string[] = ['BSIT', 'BSTCM', 'BSEMT'];
   statuses: string[] = ['UNDERGRADUATE', 'GRADUATE'];
   yearLevels: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+  courseOrder: string[] = ['BSIT', 'BSTCM', 'BSEMT'];
+  yearOrder: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
   newStudent: StudentAccount = this.getEmptyStudent();
 
   totalBSIT = 0;
   totalBSTCM = 0;
   totalBSEMT = 0;
+
+  isLoading = false;
+
+  sortStudents(students: StudentAccount[]): StudentAccount[] {
+    return students.sort((a,b) => {
+
+      const courseDiff = 
+        this.courseOrder.indexOf(a.course) 
+        - this.courseOrder.indexOf(b.course);
+
+        if (courseDiff !==0) return courseDiff;
+
+        const yearDiff = 
+          this.yearOrder.indexOf(a.yearLevel) -
+          this.yearOrder.indexOf(b.yearLevel);
+
+        if (yearDiff !==0) return yearDiff;
+        return (a.name || '').localeCompare(b.name || '');
+    });
+  }
   
 
   private destroy$ = new Subject<void>();
@@ -46,7 +70,7 @@ export class Voters implements OnInit, OnDestroy {
       .getAll$()
       .pipe(takeUntil(this.destroy$))
       .subscribe((students) => {
-        this.students = students;
+        this.students = this.sortStudents(students);
         this.filterVoters();
         this.countStudentsPerCourse();
         this.cdr.detectChanges();
@@ -81,12 +105,13 @@ export class Voters implements OnInit, OnDestroy {
   /** Filter students for search bar */
   filterVoters() {
     const text = this.searchText.toLowerCase();
-    this.filteredStudents = this.students.filter(
+    const filtered = this.students.filter(
       s =>
         s.id.toLowerCase().includes(text) ||
         s.name.toLowerCase().includes(text) ||
         s.course.toLowerCase().includes(text)
     );
+    this.filteredStudents = this.sortStudents(filtered);
   }
 
   /** Modal controls */
@@ -121,6 +146,8 @@ export class Voters implements OnInit, OnDestroy {
       return;
     }
 
+    this.isLoading = true;
+
     // Combine full name
     this.newStudent.name = [this.newStudent.firstName, this.newStudent.middleName, this.newStudent.lastName]
       .filter(n => n && n.trim() !== '')
@@ -148,12 +175,19 @@ export class Voters implements OnInit, OnDestroy {
             mobile: this.newStudent.mobile,
           }
         );
-        Swal.fire('Created!', 'Voter added successfully.', 'success');
-      }
+        await Swal.fire('Created!', 'Voter added successfully.', 'success');
+      } 
 
-      this.closeModal();
+      this.showModal = false;
+      this.newStudent = this.getEmptyStudent();
+      this.isEditMode = false;
+
+      this.cdr.detectChanges();
+      
     } catch (err: any) {
       Swal.fire('Error', err.message || 'An unexpected error occurred', 'error');
+    }finally {
+      this.isLoading = false;
     }
   }
 

@@ -1,8 +1,10 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import jsPDF from 'jspdf';
-import autotable from 'jspdf-autotable';
 import { Firestore, collection, getDocs, query, where } from '@angular/fire/firestore';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { StudentAccountService } from '@app/services/student-account.service';
+
 
 interface Candidate {
   id: string;
@@ -28,6 +30,8 @@ export class Result {
   activeOrg: string = 'ATLAS';
   isloading: boolean = false;
 
+  students: any[] = [];
+  votes: any[] =[];
   atlasPositions: Position[] = [];
   stcmPositions: Position[] = [];
   aemtPositions: Position[] = [];
@@ -35,7 +39,8 @@ export class Result {
 
   constructor(
     private firestore: Firestore,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private studentService: StudentAccountService
   ) {
     this.loadAllData();
   }
@@ -52,6 +57,14 @@ export class Result {
     const votes = await this.getVotes();
 
     this.processResults(candidates, votes);
+
+    this.studentService.getAll$().subscribe((students) => {
+      this.students = students;
+    });
+
+    this.getVotes().then(votes => {
+      this.votes = votes;
+    });
 
     setTimeout(() => {
       this.isloading = false;
@@ -281,36 +294,78 @@ exportPDF(org: string) {
 
   const doc = new jsPDF();
 
-  // ===== HEADER LOGO =====
-  doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
-  doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
+  const pageHeight = doc.internal.pageSize.height;
+  const pageWidth = doc.internal.pageSize.width;
 
-  doc.setFontSize(12);
-  doc.text('University of Science and Technology of Southern Philippines', 105, 10, { align: 'center' });
-  doc.text('USTP VILLANUEVA', 105, 15, { align: 'center' });
-  doc.text('Poblacion 1, Villanueva 9002 Misamis Oriental, Philippines', 105, 20, { align: 'center' });
+  let startY = 60;
+  const marginBottom = 20;
 
-  doc.line(10, 30, 200, 30);
+  
 
-  // ===== TITLE =====
-  doc.setFontSize(14);
-  doc.text('ONLINE ELECTION RESULT', 105, 38, { align: 'center' });
+  const electionMap: any = {
+    ATLAS: 'ATLAS2026',
+    STCM: 'STCM2026',
+    AEMT: 'AEMT2026',
+    USG: 'USG2026'
+  };
 
-  doc.line(10, 42, 200, 42);
+  const electionId = electionMap[org];
+  
 
-  // ===== INFO =====
-  doc.setFontSize(10);
-  doc.text(`Election: ${org} ELECTION RESULT`, 14, 50);
-  doc.text(`Date: ${new Date().toDateString()}`, 14, 56);
-
-  let startY = 70;
   const winners: any[] = [];
 
-  // ===== CONTENT =====
+  // ================= HEADER =================
+  const drawHeader = () => {
+
+    doc.setFontSize(10);
+
+    doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
+    doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
+
+    doc.text(
+      'University of Science and Technology of Southern Philippines',
+      pageWidth / 2,
+      10,
+      { align: 'center' }
+    );
+
+    doc.text('USTP VILLANUEVA', pageWidth / 2, 16, { align: 'center' });
+    doc.text('Poblacion 1, Misamis Oriental, Philippines', pageWidth / 2, 22, { align: 'center' });
+
+    doc.line(10, 30, 200, 30);
+
+    doc.setFontSize(14);
+    doc.text('ONLINE ELECTION RESULT', pageWidth / 2, 38, { align: 'center' });
+
+    doc.line(10, 42, 200, 42);
+
+    doc.setFontSize(10);
+    doc.text(`Election: ${org} ELECTION RESULT`, 14, 50);
+    doc.text(`Date: ${new Date().toDateString()}`, 14, 56);
+
+    
+  };
+
+  // ================= PAGE BREAK =================
+  const checkPageBreak = (y: number) => {
+    if (y >= pageHeight - marginBottom) {
+      doc.addPage();
+      drawHeader();
+      return 60;
+    }
+    return y;
+  };
+
+  // FIRST PAGE HEADER
+  drawHeader();
+
+  // ================= CONTENT =================
   positions.forEach(pos => {
 
+    startY = checkPageBreak(startY);
+
     doc.setFontSize(12);
-    doc.text(pos.name, 105, startY, { align: 'center' });
+    doc.text(pos.name, pageWidth / 2, startY, { align: 'center' });
 
     startY += 5;
     doc.line(20, startY, 190, startY);
@@ -329,7 +384,7 @@ exportPDF(org: string) {
       ];
     });
 
-    autotable(doc, {
+    autoTable(doc, {
       head: [['Candidate', 'Votes', 'Status']],
       body: tableData,
       startY: startY,
@@ -339,11 +394,10 @@ exportPDF(org: string) {
     });
 
     startY = (doc as any).lastAutoTable.finalY + 8;
+    startY = checkPageBreak(startY);
 
-    // ===== ABSTAIN =====
-    const abstainVotes = pos.candidates
-      .filter(c => c.id === 'ABSTAIN')
-      .reduce((sum, c) => sum + c.votes, 0);
+    const abstain = pos.candidates.find(c => c.id === 'ABSTAIN');
+    const abstainVotes = abstain ? abstain.votes : 0;
 
     doc.setFontSize(10);
     doc.text(`Abstain Votes: ${abstainVotes}`, 14, startY);
@@ -351,24 +405,25 @@ exportPDF(org: string) {
     startY += 12;
   });
 
-  // ===== SUMMARY =====
-  doc.setFontSize(12);
-  doc.text('SUMMARY OF WINNERS', 105, startY, { align: 'center' });
+  // ================= SUMMARY =================
+  startY = checkPageBreak(startY + 10);
 
-  startY += 8;
+  doc.setFontSize(12);
+  doc.text('SUMMARY OF WINNERS', pageWidth / 2, startY, { align: 'center' });
+
+  startY += 10;
 
   doc.setFontSize(10);
   winners.forEach(w => {
+
+    startY = checkPageBreak(startY);
+
     doc.text(`${w.position}: ${w.name}`, 14, startY);
     startY += 6;
   });
 
-  
-
-  // ===== FOOTER =====
-  startY += 15;
-
-  doc.setFont('helvetica', 'normal');
+  // ================= FOOTER =================
+  startY = checkPageBreak(startY + 20);
 
   doc.text('Prepared by:', 14, startY);
   doc.text('_____________________', 14, startY + 5);

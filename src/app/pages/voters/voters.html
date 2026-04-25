@@ -29,11 +29,16 @@
   <!-- Modal -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-card">
+
+    
+
+      <!-- HEADER -->
       <div class="modal-header">
         <h3>{{ isEditMode ? 'Edit Voter' : 'Add Voter' }}</h3>
         <button class="close-btn" (click)="closeModal()">×</button>
       </div>
 
+      <!-- FORM -->
       <form (ngSubmit)="saveStudent()" class="form-grid">
 
         <!-- ID & Password -->
@@ -47,7 +52,7 @@
           <input type="password" [(ngModel)]="newStudent.password" name="password" placeholder="Enter Password" required>
         </div>
 
-        <!-- Name Group Horizontal -->
+        <!-- Name Group -->
         <div class="form-group name-group">
           <input type="text" [(ngModel)]="newStudent.firstName" name="firstName" placeholder="First Name" required>
           <input type="text" [(ngModel)]="newStudent.middleName" name="middleName" placeholder="Middle Name">
@@ -56,61 +61,69 @@
 
         <!-- Gender -->
         <div class="form-group">
-          <label>Gender</label>
-          <select [(ngModel)]="newStudent.gender" name="gender" required>
+          <label for="gender">Gender</label>
+          <select id="gender" [(ngModel)]="newStudent.gender" name="gender" required>
             <option value="">Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
-        <!-- Program / Course -->
+        <!-- Program -->
         <div class="form-group">
-          <label>Program</label>
-          <select [(ngModel)]="newStudent.course" name="course" required>
+          <label for="course">Program</label>
+          <select id="course" [(ngModel)]="newStudent.course" name="course" required>
             <option value="">Select Program</option>
-            <option *ngFor="let p of programs">{{ p }}</option>
+            <option *ngFor="let p of programs" [value]="p">{{ p }}</option>
           </select>
         </div>
 
-        <!-- Year & Status -->
+        <!-- Year Level -->
         <div class="form-group">
-          <label>Year Level</label>
-          <select [(ngModel)]="newStudent.yearLevel" name="yearLevel" required>
+          <label for="yearlevel">Year Level</label>
+          <select id="yearlevel" [(ngModel)]="newStudent.yearLevel" name="yearLevel" required>
             <option value="">Select Year Level</option>
-            <option *ngFor="let y of yearLevels">{{ y }}</option>
+            <option *ngFor="let y of yearLevels" [value]="y">{{ y }}</option>
           </select>
         </div>
 
+        <!-- Status -->
         <div class="form-group">
-          <label>Status</label>
-          <select [(ngModel)]="newStudent.status" name="status" required>
+          <label for="status">Status</label>
+          <select id="status" [(ngModel)]="newStudent.status" name="status" required>
             <option value="">Select Status</option>
-            <option *ngFor="let s of statuses">{{ s }}</option>
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
           </select>
         </div>
 
-        <!-- Section, Email, Mobile -->
+        <!-- Section -->
         <div class="form-group">
           <label>Section</label>
           <input type="text" [(ngModel)]="newStudent.section" name="section" placeholder="Enter Section" required>
         </div>
 
+        <!-- Email -->
         <div class="form-group">
           <label>Email</label>
           <input type="email" [(ngModel)]="newStudent.email" name="email" placeholder="Enter Email" required>
         </div>
 
+        <!-- Mobile -->
         <div class="form-group">
           <label>Mobile Number</label>
           <input type="text" [(ngModel)]="newStudent.mobile" name="mobile" placeholder="Enter Mobile Number" required>
         </div>
 
-        <!-- Modal Actions -->
+        <!-- ACTIONS -->
         <div class="modal-actions">
           <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="btn-save">
+         
+          <button type="submit" class="btn-save" [disabled]="isLoading">
+           <span *ngIf="isLoading" class="btn-spinner"></span>
+
+           <span>
             {{ isEditMode ? 'Update Voter' : 'Save Voter' }}
+            </span>
           </button>
         </div>
 
@@ -118,19 +131,18 @@
     </div>
   </div>
 
-  <!-- Voters Table -->
+  <!-- TABLE -->
   <div class="card">
 
     <div class="export-container">
-    <button class="btn-export" (click)="exportStudentsPDF()">
-      Export PDF
-    </button>
-  </div>
+      <button class="btn-export" (click)="exportStudentsPDF()">
+        Export PDF
+      </button>
+    </div>
 
     <h3>Voter List</h3>
 
-
-    <!-- Search Bar -->
+    <!-- SEARCH -->
     <div class="search-bar">
       <input 
         type="text" 
@@ -151,6 +163,7 @@
           <th>Actions</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let student of filteredStudents">
           <td>{{ student.id }}</td>
@@ -163,14 +176,14 @@
             <button class="delete-btn" (click)="deleteStudent(student.id)">Delete</button>
           </td>
         </tr>
-        
+
         <tr *ngIf="filteredStudents.length === 0">
-         <td colspan="6" class="no-voters">
-           No voters found.
-         </td>
+          <td colspan="6" class="no-voters">
+            No voters found.
+          </td>
         </tr>
       </tbody>
     </table>
-  </div>
 
+  </div>
 </div>

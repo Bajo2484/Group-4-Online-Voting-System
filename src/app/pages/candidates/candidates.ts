@@ -18,31 +18,42 @@ import { NotificationService } from '@app/services/notification.service';
 })
 export class CandidatesComponent implements OnInit {
 
+  // ================= LOADING =================
+  isSaving = false;
+  isUploading = false;
+
+  // ================= DATA =================
   allCandidates: Candidate[] = [];
   currentCandidates: Candidate[] = [];
-
   elections: Election[] = [];
   selectedElectionId = '';
 
+  // ================= FILES =================
   torFile: File | null = null;
   photoFile: File | null = null;
+  photoPreview: string | ArrayBuffer | null = null;
 
-  isUploading = false;
-
+  // ================= FORM =================
   fullName = '';
   position = '';
   course = '';
   partyName = '';
   platform = '';
 
-  selectedFile: File | null = null;
-  photoPreview: string | ArrayBuffer | null = null;
-
-  editingId: string | null = null;
-  isEditMode = false;
+  // ================= MODAL =================
   showModal = false;
+  isEditMode = false;
+  editingId: string | null = null;
 
+  // ================= FILTER =================
+  searchTerm = '';
+  pageSize = 10;
+  currentPage = 1;
+  sortOption = 'dateAsc';
+
+  // ================= OPTIONS =================
   courses: string[] = ['ATLAS', 'USG', 'STCM', 'AEMT'];
+
   positions: string[] = [];
 
   atlasPositions = [
@@ -54,12 +65,6 @@ export class CandidatesComponent implements OnInit {
   regularPositions = [
     'PRESIDENT','VICE PRESIDENT','SECRETARY','TREASURER','AUDITOR','PRO'
   ];
-
-  searchTerm = '';
-  pageSize = 10;
-  currentPage = 1;
-
-  sortOption = 'dateAsc';
 
   constructor(
     private candidateService: CandidateService,
@@ -97,7 +102,7 @@ export class CandidatesComponent implements OnInit {
     });
   }
 
-  // ================= UI FUNCTIONS =================
+  // ================= FILTER =================
   filterCandidates() {
     const term = this.searchTerm.toLowerCase();
 
@@ -110,6 +115,7 @@ export class CandidatesComponent implements OnInit {
     this.currentCandidates = filtered.slice(0, this.pageSize);
   }
 
+  // ================= PAGINATION =================
   paginatedCandidates() {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.allCandidates.slice(start, start + this.pageSize);
@@ -120,27 +126,23 @@ export class CandidatesComponent implements OnInit {
   }
 
   updateCurrentCandidates() {
-  const start = (this.currentPage - 1) * this.pageSize;
-  const end = start + this.pageSize;
-  this.currentCandidates = this.allCandidates.slice(start, end);
-}
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.currentCandidates = this.allCandidates.slice(start, start + this.pageSize);
+  }
 
   nextPage() {
-    if (this.currentPage < this.totalPages()) {
-      this.currentPage++;
-    }
+    if (this.currentPage < this.totalPages()) this.currentPage++;
   }
 
   prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
+    if (this.currentPage > 1) this.currentPage--;
   }
 
+  // ================= SORT =================
   applySort() {
     if (this.sortOption === 'dateAsc') {
       this.allCandidates.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
-    } else if (this.sortOption === 'dateDesc') {
+    } else {
       this.allCandidates.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
     }
   }
@@ -159,9 +161,7 @@ export class CandidatesComponent implements OnInit {
 
   onCourseChange() {
     this.positions =
-      this.course === 'ATLAS'
-        ? this.atlasPositions
-        : this.regularPositions;
+      this.course === 'ATLAS' ? this.atlasPositions : this.regularPositions;
   }
 
   onPhotoSelected(event: any) {
@@ -177,14 +177,7 @@ export class CandidatesComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  onTORSelected(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    this.torFile = file;
-  }
-
-  // ================= UPLOAD TOR =================
+  // ================= TOR UPLOAD =================
   uploadTOR(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!this.torFile) return reject('No TOR file');
@@ -198,12 +191,15 @@ export class CandidatesComponent implements OnInit {
         body: formData
       })
         .then(res => res.json())
-        .then(data => resolve(data.secure_url))
+        .then(data => {
+          if (!data.secure_url) reject('Upload failed');
+          else resolve(data.secure_url);
+        })
         .catch(err => reject(err));
     });
   }
 
-  // ================= SAVE =================
+  // ================= SAVE (FIXED) =================
   async registerCandidate() {
 
     if (!this.fullName || !this.position || !this.course) {
@@ -211,34 +207,32 @@ export class CandidatesComponent implements OnInit {
       return;
     }
 
-    let torUrl = '';
-
-    if (this.torFile) {
-      this.isUploading = true;
-      try {
-        torUrl = await this.uploadTOR();
-      } catch (err) {
-        Swal.fire('Error', 'TOR upload failed', 'error');
-        this.isUploading = false;
-        return;
-      }
-      this.isUploading = false;
-    }
-
-    const candidate: Candidate = {
-      fullName: this.fullName,
-      organization: this.course,
-      position: this.position,
-      partyName: this.partyName,
-      platform: this.platform,
-      electionId: this.selectedElectionId,
-      status: 'pending',
-      photoUrl: this.photoPreview as string || '',
-      createdAt: Date.now(),
-      torUrl: torUrl
-    };
+    this.isSaving = true;
 
     try {
+      let torUrl = '';
+
+      // ================= UPLOAD =================
+      if (this.torFile) {
+        this.isUploading = true;
+        torUrl = await this.uploadTOR();
+      }
+
+      // ================= DATA =================
+      const candidate: Candidate = {
+        fullName: this.fullName,
+        organization: this.course,
+        position: this.position,
+        partyName: this.partyName,
+        platform: this.platform,
+        electionId: this.selectedElectionId,
+        status: 'pending',
+        photoUrl: this.photoPreview as string || '',
+        createdAt: Date.now(),
+        torUrl: torUrl
+      };
+
+      // ================= SAVE =================
       if (this.isEditMode && this.editingId) {
         await this.candidateService.updateCandidate(this.editingId, candidate);
         Swal.fire('Updated', 'Candidate updated successfully', 'success');
@@ -249,8 +243,15 @@ export class CandidatesComponent implements OnInit {
 
       this.closeModal();
       this.loadCandidates();
+
     } catch (err) {
+      console.error(err);
       Swal.fire('Error', 'Something went wrong', 'error');
+
+    } finally {
+      // 🔥 ALWAYS STOP LOADING
+      this.isSaving = false;
+      this.isUploading = false;
     }
   }
 
@@ -319,6 +320,7 @@ export class CandidatesComponent implements OnInit {
     this.loadCandidates();
   }
 
+  // ================= RESET =================
   resetForm() {
     this.fullName = '';
     this.position = '';
@@ -334,6 +336,7 @@ export class CandidatesComponent implements OnInit {
     this.editingId = null;
   }
 
+  // ================= STATUS =================
   getStatusClass(status: string) {
     return {
       approved: 'status-approved',

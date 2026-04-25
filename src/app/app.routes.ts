@@ -27,6 +27,7 @@ import { VotingPage } from './layouts/student-portal/voting-page/voting-page';
 import { VoteSuccess } from './layouts/student-portal/vote-success/vote-success';
 import { VotingDetails } from './layouts/student-portal/voting-details/voting-details';
 import { StudentNotifications } from './layouts/student-portal/student-notifications/student-notifications';
+import { StudentFaq } from './layouts/student-portal/student-faq/student-faq';
 
 // Auth Guard
 import { authGuard } from './guards/auth.guard';
@@ -59,9 +60,9 @@ export const routes: Routes = [
   { path: 'elecom-results', component: Result, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-notifications', component: ElecomNotifications, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-settings', component: ElecomSettingsComponent, canActivate: [authGuard], data: { role: 'elecom' } },
-  // =========================
+ 
+
   // Student Routes
-  // =========================
   { path: 'student-dashboard', component: StudentDashboardComponent, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-result', component: StudentResult, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-setting', component: StudentSettingsComponent, canActivate: [authGuard], data: { role: 'student' } },
@@ -70,6 +71,8 @@ export const routes: Routes = [
   { path: 'vote-success', component: VoteSuccess, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'view-details/:org/:electionId', component: VotingDetails, canActivate: [authGuard], data: { role: 'student' } },
   { path: 'student-notifications', component: StudentNotifications, canActivate: [authGuard], data: { role: 'student' } },
+  { path: 'student-faq', component: StudentFaq, canActivate: [authGuard], data: {role: 'student'}},
+
 
   // Catch all unknown routes
   { path: '**', redirectTo: '' }
