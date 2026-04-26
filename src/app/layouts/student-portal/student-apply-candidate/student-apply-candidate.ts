@@ -29,6 +29,7 @@ export class ApplyCandidateComponent {
 
   // CHECKBOXES
   agreeInstructions = false;
+  agreeRequirements = false;
   confirm = false;
 
   // ORGANIZATION & POSITIONS
@@ -71,6 +72,11 @@ export class ApplyCandidateComponent {
 
   async submitApplication() {
     if (!this.fullName || !this.organization || !this.position || !this.party || !this.platform || !this.photoPreview) {
+      Swal.fire('Notice','Please acknowledge the guidelines before submitting your application.','warning');
+      return;
+    }
+
+    if (!this.fullName || !this.organization || !this.position || !this.party || !this.platform) {
       Swal.fire('Incomplete','Please fill all required fields and upload a photo.','warning');
       return;
     }
@@ -87,20 +93,20 @@ export class ApplyCandidateComponent {
     };
 
     try {
-      // 1️⃣ Add candidate to Firestore
+      //  Add candidate to Firestore
       await this.candidateService.addCandidate(candidate);
 
-      // 2️⃣ Send notification to admin
+      // Send notification to admin
       await this.notificationService.addNotification({
-        studentId: 'admin', // special ID for admin notifications
+        studentId: 'admin', 
         target: 'admin',
-        message: `${this.fullName} has requested to become a candidate.`,
+        message: `NEW CANDIDATE APPLICATION: ${this.fullName} applied for ${this.position} under ${this.organization}. Peding ELECOM approval`,
         date: new Date(),
         type: 'request',
         seen: false
       });
 
-      // 3️⃣ Show success to student
+      // Show success to student
       Swal.fire('Success','Your application has been submitted for admin approval!','success');
       this.resetForm();
     } catch (err) {

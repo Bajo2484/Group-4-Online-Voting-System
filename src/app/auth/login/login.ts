@@ -5,6 +5,17 @@ import { AuthService, CurrentUser } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 
+const swalUI = {
+  background: '#ffffff',
+  color: '#333',
+  confirmButtonColor: '#4f46e5',
+  buttonsStyling: false,
+  customClass: {
+    popup: 'custom-swal',
+    confirmButton: 'swal-confirm-btn'
+  }
+};
+
 @Component({
   selector: 'app-auth-login',
   standalone: true,
@@ -32,9 +43,11 @@ export class LoginComponent {
       this.loading = false;
 
       Swal.fire({
+        ...swalUI,
         icon: 'warning',
         title: 'Missing Information',
         text: 'Please enter username and password',
+        confirmButtonText: 'OK',
       });
       return;
     }
@@ -44,10 +57,12 @@ export class LoginComponent {
 
       // Check if input is admin username
       if (!input.includes('@')) {
-        // try admin login by username
+        
         user = await this.auth.login(input, password); 
+
         // Your AuthService.login now handles admin username internally
       } else {
+
         // For Elecom and Student
         let email = input;
 
@@ -62,9 +77,11 @@ export class LoginComponent {
       
       if (user.role === 'elecom' && !user.isActive) {
         Swal.fire({
+          ...swalUI,
           icon: 'warning',
           title: 'Account Inactive',
           text: 'This Elecom account is currently inactive.',
+          confirmButtonText: 'Got it',
         });
 
         this.loading = false;
@@ -73,11 +90,18 @@ export class LoginComponent {
 
       // Success alert
       await Swal.fire({
+        ...swalUI,
         icon: 'success',
         title: `Welcome ${user.name || user.role}!`,
         text: 'Login successful',
+        width: '360px',
+        backdrop: 'rgba(15, 23, 42, 0.4)',
         timer: 1500,
         showConfirmButton: false,
+
+        customClass: {
+          popup: 'swal-popup-success'
+        }
       });
 
       this.loading = false;
@@ -91,9 +115,11 @@ export class LoginComponent {
        this.loading = false;
 
       Swal.fire({
+        ...swalUI,
         icon: 'error',
         title: 'Login Failed',
         text: error.message || 'Invalid username or password',
+        confirmButtonText: 'Try Again',
       });
     }
   }

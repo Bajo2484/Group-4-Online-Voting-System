@@ -84,7 +84,7 @@
              name="name"
              required />
 
-      <!-- ✅ USERNAME INPUT ADDED -->
+      <!--  USERNAME INPUT ADDED -->
       <input type="text"
              placeholder="Username"
              [(ngModel)]="newElecom.username"
@@ -97,12 +97,16 @@
              name="email"
              required />
 
-      <select [(ngModel)]="newElecom.position" name="position" required>
+      <div class="form-group">
+        <label for="position">Position</label>
+
+      <select id="position" [(ngModel)]="newElecom.position" name="position" required>
         <option value="" disabled>Select Position</option>
         <option *ngFor="let pos of positions" [value]="pos">
           {{ pos }}
         </option>
       </select>
+      </div>
 
       <input *ngIf="!isEditMode"
              type="password"

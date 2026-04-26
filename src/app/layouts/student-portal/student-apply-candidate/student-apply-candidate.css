@@ -29,16 +29,44 @@
 
 /* ================= INSTRUCTIONS ================= */
 .instructions-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 20px;
   background-color: #eef6fb;
   padding: 12px;
   border-radius: 8px;
+  align-items: stretch;
+}
+
+/* ================= RULES BOX (GLOBAL FIX) ================= */
+.rules-box {
+  background-color: #fff3cd;
+  border-left: 6px solid #fd7e14;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* ================= CHECKBOX ================= */
+.instruction-checkbox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
 .instruction-checkbox input {
-  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.instruction-checkbox label {
+  line-height: 1.4;
 }
 
 /* ================= FORM CARD ================= */
@@ -55,6 +83,7 @@
   flex-direction: row;
 }
 
+/* ================= PHOTO ================= */
 .photo-section {
   flex: 1;
   display: flex;
@@ -69,7 +98,8 @@
   margin-bottom: 10px;
 }
 
-.avatar img, .default-avatar {
+.avatar img,
+.default-avatar {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -141,21 +171,6 @@ textarea {
   margin-top: 2px;
 }
 
-/* ================= DROPDOWN FIX ================= */
-.form-group select {
-  width: 100%; /* full width */
-  max-width: 100%;
-  font-size: clamp(12px, 2.5vw, 14px); /* responsive text */
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.form-group select option {
-  font-size: clamp(12px, 2.5vw, 14px);
-  padding: 6px 8px;
-}
-
 /* ================= CONFIRM SECTION ================= */
 .confirm-section {
   display: flex;
@@ -208,6 +223,7 @@ textarea {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
+
   .page-wrapper {
     max-width: 95%;
     margin: 15px auto;
@@ -215,47 +231,15 @@ textarea {
   }
 
   .form-container .card {
-    flex-direction: column; /* stack photo + fields */
+    flex-direction: column;
     gap: 15px;
     width: 100%;
     padding: 15px;
     box-sizing: border-box;
   }
 
-  .form-group select {
-  width: 100%;
-  max-width: 100%;
-  font-size: clamp(12px, 2.5vw, 14px);
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-.form-group select {
-  width: 100%;
-  max-width: 100%;
-  font-size: clamp(12px, 2.5vw, 14px);
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-.form-group select option {
-  font-size: clamp(12px, 2.5vw, 14px);
-  padding: 6px 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-  .photo-section {
-    flex: none;
-    width: 100%;
-    text-align: center;
-  }
-
+  .photo-section,
   .form-fields {
-    flex: none;
     width: 100%;
   }
 
@@ -271,7 +255,7 @@ textarea {
   }
 
   .buttons {
-    flex-direction: column; /* stack buttons */
+    flex-direction: column;
     gap: 10px;
   }
 
@@ -280,19 +264,25 @@ textarea {
   }
 
   .form-group select {
-    font-size: 14px; /* slightly bigger for touch */
+    font-size: 14px;
     padding: 10px;
   }
 
   .form-group select option {
     font-size: 14px;
   }
+
+  .instruction-checkbox {
+    font-size: 13px;
+  }
 }
 
-/* Extra small screens */
+/* ================= SMALL SCREENS ================= */
 @media (max-width: 480px) {
   .header h1 { font-size: 22px; }
   .header p { font-size: 12px; }
   .form-group label { font-size: 13px; }
-  .form-group input, select, textarea { font-size: 13px; }
+  .form-group input,
+  select,
+  textarea { font-size: 13px; }
 }

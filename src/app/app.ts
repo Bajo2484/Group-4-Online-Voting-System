@@ -40,7 +40,7 @@ export class App implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
 
-    // route handling (NO setTimeout, stable)
+    // ✅ SAFE ROUTE HANDLING (NO WARNING)
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateRouteState(event.urlAfterRedirects);
@@ -50,7 +50,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // safe single initialization
+    // ✅ ONLY INITIALIZE (NO AUTO REDIRECT HERE)
     this.subscribeNotifications();
   }
 
@@ -59,7 +59,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   // =========================
-  // NOTIFICATIONS (FIXED CORE)
+  // NOTIFICATIONS
   // =========================
   private subscribeNotifications(): void {
     this.notifSub?.unsubscribe();
@@ -95,8 +95,9 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
-
+  // =========================
   // ROUTING
+  // =========================
   private updateRouteState(url: string): void {
     const cleaned = url.split('?')[0];
     this.isLoginRoute =
@@ -117,9 +118,11 @@ export class App implements OnInit, OnDestroy {
 
       if (user.role === 'admin') {
         this.router.navigate(['/dashboard']);
-      } else if (user.role === 'student') {
+      } 
+      else if (user.role === 'student') {
         this.router.navigate(['/student-dashboard']);
-      } else if (user.role === 'elecom') {
+      } 
+      else if (user.role === 'elecom') {
         this.router.navigate(['/elecom-dashboard']);
       }
     }
@@ -161,38 +164,38 @@ export class App implements OnInit, OnDestroy {
   }
 
   goToNotifications(): void {
+    const user = this.auth.getCurrentUser();
 
-  const user = this.auth.getCurrentUser();
+    if (user?.role === 'student') {
+      this.router.navigate(['/student-notifications']);
+    } else if (user?.role === 'elecom') {
+      this.router.navigate(['/elecom-notifications']);
+    } else if (user?.role === 'admin') {
+      this.router.navigate(['/admin-notifications']);
+    }
 
-  if (user?.role === 'student') {
-    this.router.navigate(['/student-notifications']);
-  } else if (user?.role === 'elecom') {
-    this.router.navigate(['/elecom-notifications']);
-  } else if (user?.role === 'admin') {
-    this.router.navigate(['/admin-notifications']);
+    this.markAllAsSeen();
   }
 
-  this.markAllAsSeen();
-}
+  private markAllAsSeen(): void {
+    const user = this.auth.getCurrentUser();
+    if (!user) return;
 
-private markAllAsSeen(): void {
-  const user = this.auth.getCurrentUser();
-  if (!user) return;
+    // UI update
+    this.notifications = this.notifications.map(n => ({
+      ...n,
+      seen: true
+    }));
+    this.unseenCount = 0;
 
-  // instant UI update
-  this.notifications = this.notifications.map(n => ({
-    ...n,
-    seen: true
-  }));
-  this.unseenCount = 0;
+    // Firestore update
+    this.notifications.forEach(n => {
+      if (!n.seen && n.id) {
+        this.notificationService.markAsSeen(n.id).catch(() => {});
+      }
+    });
+  }
 
-  // update Firestore
-  this.notifications.forEach(n => {
-    if (!n.seen && n.id) {
-      this.notificationService.markAsSeen(n.id).catch(() => {});
-    }
-  });
-}
   // =========================
   // LOGOUT
   // =========================

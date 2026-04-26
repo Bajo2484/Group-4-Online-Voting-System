@@ -22,38 +22,55 @@
         <input type="file" #fileInput (change)="onFileSelected($event)" hidden>
       </div>
 
-      <form #profileForm="ngForm" (ngSubmit)="updateProfile()">
+      <form #profileForm="ngForm" (ngSubmit)="updateProfile()" autocomplete="on">
 
         <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" [(ngModel)]="admin.fullName" name="fullName" required>
+          <label for="fullname">Full Name</label>
+          <input id="fullname" type="text"
+            [(ngModel)]="admin.fullName"
+            name="fullName"
+            required
+            autocomplete="name">
         </div>
 
         <div class="form-group">
-          <label>Contact Number</label>
-          <input type="text" [(ngModel)]="admin.contactNo" name="contactNo">
+          <label for="contactNo">Contact Number</label>
+          <input id="contactNo" type="text"
+            [(ngModel)]="admin.contactNo"
+            name="contactNo"
+            autocomplete="tel">
         </div>
 
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" [(ngModel)]="admin.email" name="email" required>
+          <label for="email">Email</label>
+          <input id="email" type="email"
+            [(ngModel)]="admin.email"
+            name="email"
+            required
+            autocomplete="email">
         </div>
 
         <div class="form-group">
-          <label>Language</label>
-          <select [(ngModel)]="admin.language" name="language">
+          <label for="language">Language</label>
+          <select id="language"
+            [(ngModel)]="admin.language"
+            name="language"
+            aria-label="Language selection">
             <option value="en">English</option>
             <option value="tl">Tagalog</option>
           </select>
         </div>
 
-        <!-- THEME -->
         <div class="form-group">
-          <label>Theme</label>
-          <select [(ngModel)]="admin.theme" name="theme" (change)="setTheme(admin.theme)">
-  <option value="light">Light</option>
-  <option value="dark">Dark</option>
-</select>
+          <label for="theme">Theme</label>
+          <select id="theme"
+            [(ngModel)]="admin.theme"
+            name="theme"
+            (change)="setTheme(admin.theme)"
+            aria-label="Theme selection">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
         </div>
 
         <button type="submit" class="btn-save">Save Profile</button>
@@ -62,46 +79,73 @@
 
     <!-- NOTIFICATIONS -->
     <div *ngIf="activeTab==='notifications'" class="tab-panel notifications-tab">
-
       <h2>Notification Settings</h2>
 
-      <label class="switch">
-        <input type="checkbox" [(ngModel)]="admin.receiveNotifications" name="receiveNotifications">
-        <span class="slider round"></span>
-      </label>
+      <div class="form-group switch-group">
+        <label for="receiveNotifications">Receive Notifications</label>
+        <label class="switch">
+          <input id="receiveNotifications"
+            type="checkbox"
+            [(ngModel)]="admin.receiveNotifications"
+            name="receiveNotifications"
+            aria-label="Receive Notifications">
+          <span class="slider round"></span>
+        </label>
+      </div>
 
       <p>Receive notifications: {{ admin.receiveNotifications ? 'Yes' : 'No' }}</p>
 
       <hr>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifElectionUpdates" name="notifElectionUpdates"> Election Updates</label>
+      <div class="form-group checkbox-group">
+        <input id="notifElectionUpdates" type="checkbox"
+          [(ngModel)]="admin.notifElectionUpdates"
+          name="notifElectionUpdates">
+        <label for="notifElectionUpdates">Election Updates</label>
       </div>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifVotingReminders" name="notifVotingReminders"> Voting Reminders</label>
+      <div class="form-group checkbox-group">
+        <input id="notifVotingReminders" type="checkbox"
+          [(ngModel)]="admin.notifVotingReminders"
+          name="notifVotingReminders">
+        <label for="notifVotingReminders">Voting Reminders</label>
       </div>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifResults" name="notifResults"> Results</label>
+      <div class="form-group checkbox-group">
+        <input id="notifResults" type="checkbox"
+          [(ngModel)]="admin.notifResults"
+          name="notifResults">
+        <label for="notifResults">Results</label>
       </div>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifSystemAlerts" name="notifSystemAlerts"> System Alerts</label>
+      <div class="form-group checkbox-group">
+        <input id="notifSystemAlerts" type="checkbox"
+          [(ngModel)]="admin.notifSystemAlerts"
+          name="notifSystemAlerts">
+        <label for="notifSystemAlerts">System Alerts</label>
       </div>
 
       <hr>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifEmail" name="notifEmail"> Email</label>
+      <div class="form-group checkbox-group">
+        <input id="notifEmail" type="checkbox"
+          [(ngModel)]="admin.notifEmail"
+          name="notifEmail">
+        <label for="notifEmail">Email</label>
       </div>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifSMS" name="notifSMS"> SMS</label>
+      <div class="form-group checkbox-group">
+        <input id="notifSMS" type="checkbox"
+          [(ngModel)]="admin.notifSMS"
+          name="notifSMS">
+        <label for="notifSMS">SMS</label>
       </div>
 
-      <div class="form-group">
-        <label><input type="checkbox" [(ngModel)]="admin.notifInApp" name="notifInApp"> In-App</label>
+      <div class="form-group checkbox-group">
+        <input id="notifInApp" type="checkbox"
+          [(ngModel)]="admin.notifInApp"
+          name="notifInApp">
+        <label for="notifInApp">In-App</label>
       </div>
 
       <button type="button" class="btn-save" (click)="saveNotifications()">Save Notifications</button>
@@ -109,24 +153,35 @@
 
     <!-- SECURITY -->
     <div *ngIf="activeTab==='security'" class="tab-panel security-tab">
-
       <h2>Security Settings</h2>
 
-      <form (ngSubmit)="updatePassword()">
+      <form (ngSubmit)="updatePassword()" autocomplete="on">
 
         <div class="form-group">
-          <label>Current Password</label>
-          <input type="password" [(ngModel)]="password.current" name="currentPassword" required>
+          <label for="currentPassword">Current Password</label>
+          <input id="currentPassword" type="password"
+            [(ngModel)]="password.current"
+            name="currentPassword"
+            required
+            autocomplete="current-password">
         </div>
 
         <div class="form-group">
-          <label>New Password</label>
-          <input type="password" [(ngModel)]="password.new" name="newPassword" required>
+          <label for="newPassword">New Password</label>
+          <input id="newPassword" type="password"
+            [(ngModel)]="password.new"
+            name="newPassword"
+            required
+            autocomplete="new-password">
         </div>
 
         <div class="form-group">
-          <label>Confirm Password</label>
-          <input type="password" [(ngModel)]="password.confirm" name="confirmPassword" required>
+          <label for="confirmPassword">Confirm Password</label>
+          <input id="confirmPassword" type="password"
+            [(ngModel)]="password.confirm"
+            name="confirmPassword"
+            required
+            autocomplete="new-password">
         </div>
 
         <div class="error" *ngIf="password.new && password.confirm && password.new !== password.confirm">
@@ -140,32 +195,28 @@
 
       <hr>
 
-      <div class="form-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="admin.enable2FA" name="enable2FA">
-          Enable 2FA
-        </label>
+      <div class="form-group checkbox-group">
+        <input id="enable2FA" type="checkbox"
+          [(ngModel)]="admin.enable2FA"
+          name="enable2FA">
+        <label for="enable2FA">Enable 2FA</label>
         <button type="button" class="btn-save" (click)="toggle2FA()">Toggle 2FA</button>
       </div>
 
-      <div class="form-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="admin.loginAlerts" name="loginAlerts">
-          Login Alerts
-        </label>
+      <div class="form-group checkbox-group">
+        <input id="loginAlerts" type="checkbox"
+          [(ngModel)]="admin.loginAlerts"
+          name="loginAlerts">
+        <label for="loginAlerts">Login Alerts</label>
       </div>
-
-      
 
     </div>
 
     <!-- FAQ -->
     <div *ngIf="activeTab==='faq'" class="tab-panel faq-tab">
-
       <h2>Frequently Asked Questions</h2>
 
       <div class="faq-accordion">
-
         <div class="faq-item" *ngFor="let faq of faqs; let i = index">
           <button type="button" class="faq-question" (click)="toggleFAQ(i)">
             {{ faq.q }}
@@ -176,7 +227,6 @@
             {{ faq.a }}
           </div>
         </div>
-
       </div>
 
     </div>

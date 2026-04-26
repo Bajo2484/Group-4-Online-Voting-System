@@ -15,28 +15,32 @@
     <!-- PROFILE TAB -->
     <ng-container *ngSwitchCase="'profile'">
       <form #profileForm="ngForm" (ngSubmit)="updateProfile()" class="active-tab">
+        
         <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" [(ngModel)]="admin.fullName" name="fullName" required>
+          <label for="fullname">Full Name</label>
+          <input id="fullname" type="text" [(ngModel)]="admin.fullName" name="fullName" required>
         </div>
+
         <div class="form-group">
-          <label>Contact Number</label>
-          <input type="text" [(ngModel)]="admin.contactNo" name="contactNo">
+          <label for="contactNo">Contact Number</label>
+          <input id="contactNo" type="text" [(ngModel)]="admin.contactNo" name="contactNo">
         </div>
+
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" [(ngModel)]="admin.email" name="email" required>
+          <label for="email">Email</label>
+          <input id="email" type="email" [(ngModel)]="admin.email" name="email" required>
         </div>
+
         <div class="form-group">
-          <label>Language Preference</label>
-          <select [(ngModel)]="admin.language" name="language">
+          <label for="language">Language Preference</label>
+          <select id="language" [(ngModel)]="admin.language" name="language">
             <option value="en">English</option>
             <option value="tl">Tagalog</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Theme</label>
-          <select [(ngModel)]="admin.theme" name="theme">
+          <label for="theme">Theme</label>
+          <select id="theme" [(ngModel)]="admin.theme" name="theme">
             <option value="light">Light</option>
             <option value="dark">Dark</option>
             <option value="system">System Default</option>
@@ -51,10 +55,25 @@
       <div class="notifications-tab active-tab">
         <h2>Notification Settings</h2>
 
-        <label class="switch">
-          <input type="checkbox" [(ngModel)]="admin.receiveNotifications" name="receiveNotifications">
-          <span class="slider round"></span>
-        </label>
+        <div class="form-group">
+  
+       <input
+      type="checkbox"
+      id="receiveNotifications"
+      [(ngModel)]="admin.receiveNotifications"
+      name="receiveNotifications"
+    >
+
+      <label for="receiveNotifications" class="switch">
+        <span class="slider round"></span>
+      </label>
+
+      <label for="receiveNotifications" class="switch-text">
+        Receive Notifications
+      </label>
+
+    </div>
+        
         <p>Receive notifications: {{ admin.receiveNotifications ? 'Yes' : 'No' }}</p>
 
         <hr>
@@ -65,18 +84,21 @@
             Election Updates
           </label>
         </div>
+
         <div class="form-group">
           <label>
             <input type="checkbox" [(ngModel)]="admin.notifVotingReminders" name="notifVotingReminders">
             Voting Reminders
           </label>
         </div>
+
         <div class="form-group">
           <label>
             <input type="checkbox" [(ngModel)]="admin.notifResults" name="notifResults">
             Election Results
           </label>
         </div>
+
         <div class="form-group">
           <label>
             <input type="checkbox" [(ngModel)]="admin.notifSystemAlerts" name="notifSystemAlerts">
@@ -92,6 +114,7 @@
             Email
           </label>
         </div>
+
         <div class="form-group">
           <label>
             <input type="checkbox" [(ngModel)]="admin.notifSMS" name="notifSMS">
@@ -116,17 +139,18 @@
 
         <form #passwordForm="ngForm" (ngSubmit)="updatePassword()">
           <div class="form-group">
-            <label>Current Password</label>
-            <input type="password" [(ngModel)]="password.current" name="currentPassword" placeholder="Enter current password" required>
+            <label for="currentPassword">Current Password</label>
+            <input id="currentPassword" type="password" [(ngModel)]="password.current" name="currentPassword" placeholder="Enter current password" required>
           </div>
           <div class="form-group">
-            <label>New Password</label>
-            <input type="password" [(ngModel)]="password.new" name="newPassword" placeholder="Enter new password" required>
+            <label for="newPassword">New Password</label>
+            <input id="newPassword" type="password" [(ngModel)]="password.new" name="newPassword" placeholder="Enter new password" required>
           </div>
           <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" [(ngModel)]="password.confirm" name="confirmPassword" placeholder="Confirm new password" required>
+            <label for="confirmPassword">Confirm Password</label>
+            <input id="confirmPassword" type="password" [(ngModel)]="password.confirm" name="confirmPassword" placeholder="Confirm new password" required>
           </div>
+
           <div class="error" *ngIf="password.new && password.confirm && password.new !== password.confirm">
             Passwords do not match
           </div>

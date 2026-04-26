@@ -63,12 +63,24 @@
            required>
 
     <!-- Start Date & Time -->
-    <input type="date" [(ngModel)]="startDateInput" required>
-    <input type="time" [(ngModel)]="startTimeInput" required>
+     <div class="form-group">
+      <label for="startDate">Start Date</label>
+      <input id="startDate" type="date" [(ngModel)]="startDateInput" required>
+    </div>
+    <div class="form-group">
+      <label for="startTime">Start Time</label>
+      <input id="startTime" type="time" [(ngModel)]="startTimeInput" required>
+    </div>
 
     <!-- End Date & Time -->
-    <input type="date" [(ngModel)]="endDateInput" required>
-    <input type="time" [(ngModel)]="endTimeInput" required>
+    <div class="form-group">
+      <label for="endDate">End Date</label>
+      <input id="endDate" type="date" [(ngModel)]="endDateInput" required>
+    </div>
+    <div class="form-group">
+      <label for="endTime">End Time</label>
+      <input id="endTime" type="time" [(ngModel)]="endTimeInput" required>
+    </div>
 
     <!-- Modal Actions -->
     <div class="modal-actions">

@@ -11,12 +11,14 @@
     <h3>Login to Your Account</h3>
     <p class="hint">Please enter your credentials to continue.</p>
 
-    <form (ngSubmit)="login()">
+    <form (ngSubmit)="login()" autocomplete="on">
+
       <input
         type="text"
         placeholder="Username / Student ID"
         [(ngModel)]="username"
         name="username"
+        autocomplete="name"
         [disabled]="loading"
       />
 
@@ -26,6 +28,7 @@
           placeholder="Password"
           [(ngModel)]="password"
           name="password"
+          autocomplete="current-password"
           [disabled]="loading"
         />
         <span class="eye"></span>
@@ -34,7 +37,7 @@
      <button type="submit" [disabled]="loading">
 
       <span *ngIf="!loading">
-         Login
+         Sign In
       </span>
 
     <span *ngIf="loading" class="loading-text">
