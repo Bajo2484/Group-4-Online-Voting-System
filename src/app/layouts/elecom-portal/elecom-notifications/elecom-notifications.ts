@@ -25,7 +25,7 @@ export class ElecomNotifications implements OnInit {
       // Convert Firebase Timestamp to JS Date if needed
       this.notifications = data.map(n => ({
         ...n,
-        date: (n.date && (n.date as any)?.toDate) ? (n.date as any).toDate() : n.date
+        createdAt: (n.createdAt && (n.createdAt as any)?.toDate) ? (n.createdAt as any).toDate() : n.createdAt
       }));
 
       this.unreadCount = this.notifications.filter(n => !n.seen).length;

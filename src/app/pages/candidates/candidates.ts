@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AuthService } from '@app/services/auth.service';
 
 import { CandidateService } from '../../services/candidate.service';
 import { Candidate } from '../../services/candidate.model';
@@ -70,7 +71,8 @@ export class CandidatesComponent implements OnInit {
     private candidateService: CandidateService,
     private electionService: ElectionService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService  
   ) {}
 
   ngOnInit() {
@@ -83,7 +85,7 @@ export class CandidatesComponent implements OnInit {
     this.candidateService.getAllCandidates().subscribe(data => {
       this.allCandidates = data.map(c => ({
         ...c,
-        createdAt: c.createdAt || Date.now()
+        createdAt: c.createdAt ?? Date.now()
       }));
 
       this.applySort();
@@ -202,6 +204,14 @@ export class CandidatesComponent implements OnInit {
   // ================= SAVE (FIXED) =================
   async registerCandidate() {
 
+    const user = this.authService.getCurrentUser();
+    const studentId = user?.uid;
+
+    if (!studentId) {
+      Swal.fire('Error', 'User not logged in or session expired', 'error');
+      return;
+    }
+
     if (!this.fullName || !this.position || !this.course) {
       Swal.fire('Missing Fields', 'Please complete all required fields', 'warning');
       return;
@@ -220,6 +230,7 @@ export class CandidatesComponent implements OnInit {
 
       // ================= DATA =================
       const candidate: Candidate = {
+        studentId: studentId,
         fullName: this.fullName,
         organization: this.course,
         position: this.position,
@@ -289,13 +300,19 @@ export class CandidatesComponent implements OnInit {
   async approveCandidate(c: Candidate) {
     if (!c.id) return;
 
+    if (!c.studentId) {
+      console.error('Candidate missing studentId');
+      Swal.fire('Error', 'this candidate has no student ID', 'error');
+      return;
+    }
+
     await this.candidateService.approveCandidate(c.id);
 
     await this.notificationService.addNotification({
       studentId: c.studentId,
       target: 'student',
-      message: `Approved: ${c.position}`,
-      date: new Date(),
+      message: `Congratulations! Your application for ${c.position} has been approved.`,
+      createdAt: Date.now(),
       type: 'approved',
       seen: false
     });
@@ -306,14 +323,20 @@ export class CandidatesComponent implements OnInit {
   async rejectCandidate(c: Candidate) {
     if (!c.id) return;
 
+    if (!c.studentId) {
+      console.error('Candidate missing studentId');
+      Swal.fire('Error', 'this candidate has no student ID', 'error');
+      return;
+    }
+
     await this.candidateService.rejectCandidate(c.id);
 
     await this.notificationService.addNotification({
       studentId: c.studentId,
       target: 'student',
-      message: `Rejected: ${c.position}`,
-      date: new Date(),
-      type: 'general',
+      message: `Sorry, your application for ${c.position} has been rejected.`,
+      createdAt: Date.now(),
+      type: 'rejected',
       seen: false
     });
 

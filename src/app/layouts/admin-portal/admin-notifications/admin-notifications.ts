@@ -23,10 +23,11 @@ export class AdminNotifications implements OnInit {
 
   ngOnInit(): void {
     this.notificationService.getAdminNotifications().subscribe((data) => {
-      // Convert Firebase Timestamp to JS Date if needed
+      
+
       this.notifications = data.map(n => ({
         ...n,
-        date: (n.date && (n.date as any)?.toDate) ? (n.date as any).toDate() : n.date
+        createdAt: n.createdAt?.toDate ? n.createdAt.toDate() : n.createdAt
       }));
 
       this.unreadCount = this.notifications.filter(n => !n.seen).length;
@@ -64,22 +65,25 @@ export class AdminNotifications implements OnInit {
       }
     });
   }
- async approveStudentRequest(student: any) {
+  async approvedStudentRequest(student: any) {
     try {
-      const requestRef = doc(this.firestore, `candidateRequests/${student.requestId}`);
-      await updateDoc(requestRef, { status: 'approved' });
+
+      await updateDoc(
+        doc(this.firestore, `candidateRequests/${student.requestId}`),
+        { status: 'approved' }
+      );
+
       await this.notificationService.addNotification({
         target: 'student',
-        studentId: student.studentId,
-        message: `Your candidacy has been approved!`,
-        date: new Date(),
+        studentId: student.id,
+        message: 'Your candidacy request has been approved.',
         type: 'approved',
-        seen: false
+        seen: false,
       });
-      console.log('student notified succesfully!');
-    }catch (error){
-      console.error('error approving student !', error);
+
+      console.log('Student request approved and notification sent.');
+    } catch (error) {
+      console.error('Error approving student request:', error);
     }
-    
   }
 }

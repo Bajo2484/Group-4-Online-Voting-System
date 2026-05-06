@@ -39,7 +39,12 @@ export class StudentNotifications implements OnInit {
   .subscribe({
     next: (notifs) => {
       this.ngZone.run(() => {
-      this.notifications = notifs || [];
+      this.notifications = (Array.isArray(notifs) ? notifs : []).map(n => ({
+        ...n,
+        createdAt: (n.createdAt && (n.createdAt as any).toDate)
+          ? (n.createdAt as any).toDate()
+          : n.createdAt
+      }));
       this.loading = false; 
 
       this.cdr.detectChanges();
@@ -55,12 +60,16 @@ export class StudentNotifications implements OnInit {
   });
   }
 
-  markAsSeen(notification: Notification) {
-    if (!notification.seen && notification.id) {
-      this.notificationService.markAsSeen(notification.id);
-      notification.seen = true;
-    }
+markAsSeen(notification: Notification) {
+  if (!notification.seen && notification.id) {
+    this.notificationService.markAsSeen(notification.id)
+      .then(() => {
+        notification.seen = true;
+        this.cdr.detectChanges();
+      })
+      .catch(err => console.error(err));
   }
+}
 
   get unseenCount(): number {
     return this.notifications.filter(n => !n.seen).length;
@@ -68,7 +77,7 @@ export class StudentNotifications implements OnInit {
 
   getRemainingDays(date: any): number {
     const today = new Date();
-    const target = new Date(date);
+    const target = date?.toDate ? date.toDate() : new Date(date);
 
     return Math.max(
       Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),

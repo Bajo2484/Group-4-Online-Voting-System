@@ -1,4 +1,5 @@
 <ng-container *ngIf="isLoginRoute; else mainLayout">
+
   <!-- LOGIN PAGE -->
    <div class="login-wrapper">
   <router-outlet></router-outlet>
@@ -10,6 +11,7 @@
   <!-- ================= ADMIN LAYOUT ================= -->
   <ng-container *ngIf="auth.isAdmin(); else elecomLayout">
     <div class="app-layout">
+
       <!-- Sidebar -->
       <aside class="sidebar" [class.active]="sidebarOpen">
         <div class="logo-section">
@@ -17,6 +19,8 @@
           <h2>Admin Panel</h2>
           <p class="logo-subtitle">Online Voting System</p>
         </div>
+
+        <!--SIDE BAR NAVIGATION LINKS-->
         <nav class="nav-menu">
           <ul class="menu">
             <li routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
@@ -44,6 +48,8 @@
             <p class="content-subtitle">Manage elections, voters, and results.</p>
           </div>
 
+
+          <!--TOPBAR-->
           <div class="topbar-right">
             <div class="notification-icon" (click)="goToNotifications()">
               <span class="bell">🔔</span>
@@ -70,10 +76,13 @@
     </div>
   </ng-container>
 
+
   <!-- ================= ELECOM LAYOUT ================= -->
   <ng-template #elecomLayout>
+
     <ng-container *ngIf="auth.isElecom(); else studentLayout">
       <div class="app-layout elecom-layout">
+
         <!-- Sidebar -->
        <aside class="sidebar" [class.active]="sidebarOpen">
           <div class="logo-section">
@@ -81,6 +90,8 @@
             <h2>Elecom Panel</h2>
             <p class="logo-subtitle">Election Committee Portal</p>
           </div>
+
+          <!--ELECOM SIDE BAR NAVIGATION LINKS-->
           <ul class="menu">
             <li routerLink="/elecom-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span>Elecom Dashboard</span></li>
             <li routerLink="/elecom-voters" routerLinkActive="active"><span>Voters</span></li>
@@ -101,6 +112,7 @@
               <p class="content-subtitle">Manage elections and voters.</p>
             </div>
 
+          <!--TOPBAR-->
             <div class="topbar-right">
               <div class="notification-icon" (click)="goToNotifications()">
                 <span class="bell">🔔</span>
@@ -129,6 +141,7 @@
     <!-- ================= STUDENT LAYOUT ================= -->
     <ng-template #studentLayout>
       <div class="app-layout student-layout">
+        
         <!-- Sidebar -->
         <aside class="sidebar" [class.active]="sidebarOpen">
           <div class="logo-section">
@@ -136,6 +149,7 @@
             <h2>E-Voting</h2>
           </div>
 
+        <!--STUDENT SIDE BAR NAVIGATION LINKS-->
           <nav class="nav-menu">
             <ul class="menu">
               <li routerLink="/student-dashboard" routerLinkActive="active"><span>Dashboard</span></li>
@@ -160,14 +174,15 @@
               </div>
             </div>
 
- <!-- Topbar -->
-<div class="topbar-right">
-  <!-- Notification Icon -->
-  <div class="notification-icon" (click)="goToNotifications()">
-    <span class="bell">🔔</span>
-    <span class="badge" *ngIf="unseenCount > 0">{{ unseenCount }}</span>
-  </div>
+              <!-- Topbar -->
+              <div class="topbar-right">
+                <!-- Notification Icon -->
+                <div class="notification-icon" (click)="goToNotifications()">
+                  <span class="bell">🔔</span>
+                  <span class="badge" *ngIf="unseenCount > 0">{{ unseenCount }}</span>
+                </div>
 
+                
               <!-- Profile -->
               <div class="profile-dropdown" (click)="toggleProfileMenu()">
                 <span class="profile-name">{{ auth.getCurrentUser()?.name || 'Student User' }}</span>

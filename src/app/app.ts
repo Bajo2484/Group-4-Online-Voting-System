@@ -1,16 +1,8 @@
 import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import {
-  Router,
-  RouterOutlet,
-  RouterLink,
-  RouterLinkActive,
-  NavigationEnd
-} from '@angular/router';
+import {Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd} from '@angular/router';
 import { NgIf } from '@angular/common';
-
 import { AuthService, CurrentUser } from './services/auth.service';
 import { NotificationService, Notification } from './services/notification.service';
-
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,6 +12,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./app.css'],
   imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf]
 })
+
 export class App implements OnInit, OnDestroy {
 
   protected readonly title = signal('e-voting');
@@ -32,6 +25,8 @@ export class App implements OnInit, OnDestroy {
   unseenCount = 0;
 
   private notifSub?: Subscription;
+  private routerSub?: Subscription;
+  private userSub?: Subscription;
 
   constructor(
     private readonly router: Router,
@@ -40,8 +35,7 @@ export class App implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
 
-    // ✅ SAFE ROUTE HANDLING (NO WARNING)
-    this.router.events.subscribe((event) => {
+    this.routerSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateRouteState(event.urlAfterRedirects);
         this.checkRedirect(event.urlAfterRedirects);
@@ -50,29 +44,38 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // ✅ ONLY INITIALIZE (NO AUTO REDIRECT HERE)
-    this.subscribeNotifications();
+   this.userSub = this.auth.user$.subscribe((user) => {
+
+    if(!user) {
+      this.notifications = [];
+      this.unseenCount = 0;
+      this.notifSub?.unsubscribe();
+      return;
+    } 
+
+    this.subscribeNotifications(user);
+   });
   }
 
   ngOnDestroy(): void {
     this.notifSub?.unsubscribe();
+    this.routerSub?.unsubscribe();
+    this.userSub?.unsubscribe();
   }
 
   // =========================
   // NOTIFICATIONS
   // =========================
-  private subscribeNotifications(): void {
+  private subscribeNotifications(user: CurrentUser): void {
     this.notifSub?.unsubscribe();
 
-    const user = this.auth.getCurrentUser();
-    if (!user) return;
 
     if (user.role === 'admin') {
       this.notifSub = this.notificationService.getAdminNotifications()
         .subscribe((data) => {
           this.notifications = data || [];
           this.unseenCount = (data || []).filter(n => !n.seen).length;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         });
     }
 
@@ -81,7 +84,7 @@ export class App implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.notifications = data || [];
           this.unseenCount = (data || []).filter(n => !n.seen).length;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         });
     }
 
@@ -90,7 +93,7 @@ export class App implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.notifications = data || [];
           this.unseenCount = (data || []).filter(n => !n.seen).length;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         });
     }
   }
@@ -190,7 +193,7 @@ export class App implements OnInit, OnDestroy {
 
     // Firestore update
     this.notifications.forEach(n => {
-      if (!n.seen && n.id) {
+      if (n.id) {
         this.notificationService.markAsSeen(n.id).catch(() => {});
       }
     });

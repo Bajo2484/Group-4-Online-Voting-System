@@ -1,11 +1,5 @@
-.result-page {
-  padding: 25px;
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-}
-
 /* ===================== TITLE ===================== */
-h2 {
+.result-page h2 {
   font-size: 22px;
   margin-bottom: 15px;
   color: #2f4050;
@@ -70,11 +64,18 @@ h2 {
   font-size: 16px;
   margin-bottom: 12px;
   padding: 6px 10px;
- background: #ffe6e6;
+  background: #ffe6e6;
   color: #a10000;
   border-left: 4px solid #ff4d4d;
   border-radius: 6px;
   width: fit-content;
+}
+
+/* ===================== TABLE WRAPPER (NEW FIX) ===================== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 /* ===================== TABLE ===================== */
@@ -86,6 +87,7 @@ h2 {
   overflow: hidden;
   margin-top: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  min-width: 700px; /* IMPORTANT FOR MOBILE SCROLL */
 }
 
 /* HEADER */
@@ -161,11 +163,13 @@ h2 {
   transition: width 0.4s ease;
 }
 
+/* STATUS COLUMN */
 .result-table td:last-child {
   text-align: center;
   vertical-align: middle;
 }
 
+/* WINNER BADGE */
 .winner-badge { 
   background: #fff3c4;
   color: #7a5a00;
@@ -175,7 +179,8 @@ h2 {
   font-weight: 700;
   display: inline-block;
 }
-/* ===================== WINNER ===================== */
+
+/* ===================== WINNER EFFECT ===================== */
 .winner-row {
   position: relative;
   background: linear-gradient(90deg, #fff3b0, #ffffff);
@@ -187,7 +192,6 @@ h2 {
   z-index: 1;
 }
 
-/* SHINE EFFECT */
 .winner-row::after {
   content: "";
   position: absolute;
@@ -205,11 +209,79 @@ h2 {
   animation: winnerShine 2.5s infinite;
 }
 
+/* ===================== EMPTY STATE ===================== */
+.empty-state {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #6b7280;
+}
+
+.empty-state h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2f4050;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+}
+
+/* ICON BOX */
+.icon-box {
+  width: 35px;
+  height: 35px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: #2f4050;
+  color: white;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+/* TITLE */
+.result-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #2f4050;
+}
+
 /* ===================== LOADING ===================== */
 .loading-spinner {
-  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
   font-size: 14px;
-  color: #666;
+  color: #2f4050;
+  font-weight: 600;
+  position: relative;
+}
+
+.loading-spinner::after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
+  border: 3px solid #ddd;
+  border-top: 3px solid #2f4050;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ===================== ANIMATIONS ===================== */
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes winnerShine {
@@ -218,5 +290,42 @@ h2 {
   }
   100% {
     left: 150%;
+  }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+
+  .result-page {
+    padding: 15px;
+  }
+
+  .result-table {
+    min-width: 650px;
+  }
+
+  .position-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .table-img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .name-cell {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .result-table {
+    min-width: 600px;
+  }
+
+  .org-tabs {
+    flex-direction: column;
   }
 }

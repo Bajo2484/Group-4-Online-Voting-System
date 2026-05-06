@@ -29,11 +29,11 @@
       <div class="message">{{ n.message }}</div>
       
       <!-- Date -->
-      <div class="date">{{ n.date | date:'medium' }}</div>
+      <div class="date">{{ n.createdAt | date:'medium' }}</div>
 
       <!-- Countdown for election type -->
       <div *ngIf="n.type === 'election'" class="countdown">
-        {{ getRemainingDays(n.date) }} day{{ getRemainingDays(n.date) > 1 ? 's' : '' }} left
+        {{ getRemainingDays(n.createdAt) }} day{{ getRemainingDays(n.createdAt) > 1 ? 's' : '' }} left
       </div>
     </li>
   </ul>

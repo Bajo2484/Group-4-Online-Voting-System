@@ -18,29 +18,29 @@
         
         <div class="form-group">
           <label for="fullname">Full Name</label>
-          <input id="fullname" type="text" [(ngModel)]="admin.fullName" name="fullName" required>
+          <input id="fullname" type="text" [(ngModel)]="elecom.fullName" name="fullName" required>
         </div>
 
         <div class="form-group">
           <label for="contactNo">Contact Number</label>
-          <input id="contactNo" type="text" [(ngModel)]="admin.contactNo" name="contactNo">
+          <input id="contactNo" type="text" [(ngModel)]="elecom.contactNo" name="contactNo">
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input id="email" type="email" [(ngModel)]="admin.email" name="email" required>
+          <input id="email" type="email" [(ngModel)]="elecom.email" name="email" required>
         </div>
 
         <div class="form-group">
           <label for="language">Language Preference</label>
-          <select id="language" [(ngModel)]="admin.language" name="language">
+          <select id="language" [(ngModel)]="elecom.language" name="language">
             <option value="en">English</option>
             <option value="tl">Tagalog</option>
           </select>
         </div>
         <div class="form-group">
           <label for="theme">Theme</label>
-          <select id="theme" [(ngModel)]="admin.theme" name="theme">
+          <select id="theme" [(ngModel)]="elecom.theme" name="theme">
             <option value="light">Light</option>
             <option value="dark">Dark</option>
             <option value="system">System Default</option>
@@ -60,7 +60,7 @@
        <input
       type="checkbox"
       id="receiveNotifications"
-      [(ngModel)]="admin.receiveNotifications"
+      [(ngModel)]="elecom.receiveNotifications"
       name="receiveNotifications"
     >
 
@@ -74,34 +74,34 @@
 
     </div>
         
-        <p>Receive notifications: {{ admin.receiveNotifications ? 'Yes' : 'No' }}</p>
+        <p>Receive notifications: {{ elecom.receiveNotifications ? 'Yes' : 'No' }}</p>
 
         <hr>
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifElectionUpdates" name="notifElectionUpdates">
+            <input type="checkbox" [(ngModel)]="elecom.notifElectionUpdates" name="notifElectionUpdates">
             Election Updates
           </label>
         </div>
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifVotingReminders" name="notifVotingReminders">
+            <input type="checkbox" [(ngModel)]="elecom .notifVotingReminders" name="notifVotingReminders">
             Voting Reminders
           </label>
         </div>
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifResults" name="notifResults">
+            <input type="checkbox" [(ngModel)]="elecom.notifResults" name="notifResults">
             Election Results
           </label>
         </div>
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifSystemAlerts" name="notifSystemAlerts">
+            <input type="checkbox" [(ngModel)]="elecom.notifSystemAlerts" name="notifSystemAlerts">
             System Alerts
           </label>
         </div>
@@ -110,20 +110,20 @@
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifEmail" name="notifEmail">
+            <input type="checkbox" [(ngModel)]="elecom.notifEmail" name="notifEmail">
             Email
           </label>
         </div>
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifSMS" name="notifSMS">
+            <input type="checkbox" [(ngModel)]="elecom.notifSMS" name="notifSMS">
             SMS
           </label>
         </div>
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.notifInApp" name="notifInApp">
+            <input type="checkbox" [(ngModel)]="elecom.notifInApp" name="notifInApp">
             In-App
           </label>
         </div>
@@ -161,7 +161,7 @@
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.enable2FA" name="enable2FA">
+            <input type="checkbox" [(ngModel)]="elecom.enable2FA" name="enable2FA">
             Enable Two-Factor Authentication (2FA)
           </label>
           <button class="btn-save" (click)="toggle2FA()">Toggle 2FA</button>
@@ -169,7 +169,7 @@
 
         <div class="form-group">
           <label>
-            <input type="checkbox" [(ngModel)]="admin.loginAlerts" name="loginAlerts">
+            <input type="checkbox" [(ngModel)]="elecom.loginAlerts" name="loginAlerts">
             Receive login alerts
           </label>
         </div>

@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword
 } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 export type UserRole = 'admin' | 'student' | 'elecom';
 
@@ -24,6 +25,10 @@ export interface CurrentUser {
   providedIn: 'root',
 })
 export class AuthService {
+
+  private userSubject = new BehaviorSubject<CurrentUser | null>(null);
+  user$ = this.userSubject.asObservable();
+  
   private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
 
@@ -32,6 +37,10 @@ export class AuthService {
 
   constructor() {
     this.currentUser = this.loadFromStorage();
+
+    if (this.currentUser) {
+      this.userSubject.next(this.currentUser);
+    }
   }
 
 
@@ -182,13 +191,22 @@ export class AuthService {
     else localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
   }
 
-  setCurrentUser(user: CurrentUser): void { this.currentUser = user; this.saveToStorage(user); }
-  getCurrentUser(): CurrentUser | undefined { return this.currentUser; }
-  clear(): void { this.currentUser = undefined; this.saveToStorage(undefined); }
+  setCurrentUser(user: CurrentUser): void { 
+    this.currentUser = user;
+    this.saveToStorage(user); 
+    this.userSubject.next(user);
+  }
 
-  // =========================
+  getCurrentUser(): CurrentUser | undefined { return this.currentUser; }
+  
+  clear(): void { 
+    this.currentUser = undefined;
+    this.saveToStorage(undefined); 
+    this.userSubject.next(null);
+  }
+
+
   // Role helpers
-  // =========================
   isAdmin(): boolean { return this.currentUser?.role === 'admin'; }
   isStudent(): boolean { return this.currentUser?.role === 'student'; }
   isElecom(): boolean { return this.currentUser?.role === 'elecom'; }

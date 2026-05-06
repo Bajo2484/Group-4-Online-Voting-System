@@ -18,9 +18,20 @@ import {
 })
 export class ElecomDashboardComponent implements OnInit {
 
+  isLoading = true;
+  private loadCount = 0;
+
   totalStudents = 0;
   totalCandidates = 0;
   overallParticipation = 0;
+
+  private markedLoaded() {
+    this.loadCount++;
+    if (this.loadCount >= 4) {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  }
 
   // Election state
   firebaseStatus: string = '';
@@ -55,12 +66,15 @@ export class ElecomDashboardComponent implements OnInit {
         ? Math.round((votedCount / this.totalStudents) * 100)
         : 0;
 
+      this.markedLoaded();
       this.cdr.detectChanges();
     });
 
     collectionData(query(collection(this.firestore, 'candidates')))
       .subscribe((candidates: any[]) => {
         this.totalCandidates = candidates.length;
+
+        this.markedLoaded();
         this.cdr.detectChanges();
       });
   }
@@ -84,6 +98,7 @@ export class ElecomDashboardComponent implements OnInit {
         this.startCountdown();
       }
 
+      this.markedLoaded();
       this.cdr.detectChanges();
     } else {
       console.warn('No active election found.');
@@ -159,6 +174,7 @@ export class ElecomDashboardComponent implements OnInit {
       });
 
       this.cdr.detectChanges();
+      this.markedLoaded();
     });
   }
 

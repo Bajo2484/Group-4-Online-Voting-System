@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { getAuth, Auth, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from '@angular/fire/auth';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-elecom-settings',
@@ -16,10 +18,10 @@ export class ElecomSettingsComponent {
   activeTab: string = 'profile';
 
   // Admin data model
-  admin = {
-    fullName: 'Admin Name',
+  elecom = {
+    fullName: 'Elecom Name',
     contactNo: '',
-    email: 'admin@school.edu',
+    email: 'elecomExample@gmail.com',
     language: 'en',
     theme: 'light',
   
@@ -68,45 +70,111 @@ faqs = [
 toggleFAQ(index: number) {
   this.faqs[index].open = !this.faqs[index].open;
 }
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private auth: Auth
+  ) {}
 
   
 
   updateProfile() {
-    console.log('Profile updated:', this.admin);
+    console.log('Profile updated:', this.elecom);
     alert('Profile updated successfully!');
   }
 
   /** ================= Security Methods ================= */
-  updatePassword() {
-    if (!this.password.current) {
-      alert('Enter current password!');
-    }
 
-    if (this.password.new !== this.password.confirm) {
-      alert('Passwords do not match!');
-      return;
-    }
+  async updatePassword() {
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-    console.log('Password updated:', this.password.new);
-    alert('Password updated successfully!');
+   if (!user || !user.email) {
+    alert('No user is currently logged in.');
+    return;
+  }
+   if (!this.password.current ) {
+    alert('Please enter your current password.');
+    return;
+   }
+
+   if (!this.password.new || !this.password.confirm) {
+    alert('Password do not match!');
+    return;
+   }
+
+   try {
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      this.password.current
+    );
+
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, this.password.new);
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Password Updated',
+      text: 'Your password has been updated successfully.',
+      confirmButtonText: 'OK'
+    });
+
+    this.password.current = '';
     this.password.new = '';
     this.password.confirm = '';
-  }
+   } catch (error: any) {
+    console.error(error);
+    if (error.code === 'auth/wrong-password') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Password Error',
+        text: 'Current password is incorrect.',
+        confirmButtonText: 'OK'
+      });
+    } else if (error.code === 'auth/requires-recent-login') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Required',
+        text: 'Please login again and try.',
+        confirmButtonText: 'OK'
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update password.',
+        confirmButtonText: 'OK'
+      });
+    }
+   }
+   }
+  
 
 saveNotifications() {
-  alert('Notification settings saved!');
+  Swal.fire({
+    icon: 'success',
+    title: 'Settings Saved',
+    text: 'Notification settings have been saved.',
+    confirmButtonText: 'OK'
+  });
 }
 toggle2FA(){
-  this.admin.enable2FA = !this.admin.enable2FA;
+  this.elecom.enable2FA = !this.elecom.enable2FA;
 }
 logoutAllDevices() {
-  alert('All devices logged out!');
+  Swal.fire({
+    icon: 'success',
+    title: 'Logged Out',
+    text: 'All devices have been logged out.',
+    confirmButtonText: 'OK'
+  });
 }
 
   /** ================= Other Methods ================= */
   logout() {
-    alert('Logging out...');
-    this.router.navigate(['/login']);
+    signOut(this.auth).then(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/login';
+    })
   }
 }

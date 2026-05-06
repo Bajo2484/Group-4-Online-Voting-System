@@ -5,6 +5,7 @@ import { NotificationService } from '../../../services/notification.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '@app/services/auth.service';
 
 @Component({
   selector: 'app-student-apply-candidate',
@@ -14,6 +15,8 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, CommonModule]
 })
 export class ApplyCandidateComponent {
+
+  isSubmitting = false;
 
   // FORM FIELDS
   fullName = '';
@@ -48,7 +51,8 @@ export class ApplyCandidateComponent {
 
   constructor(
     private candidateService: CandidateService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private authService: AuthService
   ) {}
 
   onOrganizationChange() {
@@ -71,17 +75,32 @@ export class ApplyCandidateComponent {
   }
 
   async submitApplication() {
-    if (!this.fullName || !this.organization || !this.position || !this.party || !this.platform || !this.photoPreview) {
+
+    const user = this.authService.getCurrentUser();
+
+    if (
+      !this.fullName ||
+      !this.organization ||
+      !this.position ||
+      !this.party ||
+      !this.platform ||
+      !this.photoPreview) {
+        
       Swal.fire('Notice','Please acknowledge the guidelines before submitting your application.','warning');
+      this.isSubmitting = false;
       return;
     }
 
     if (!this.fullName || !this.organization || !this.position || !this.party || !this.platform) {
       Swal.fire('Incomplete','Please fill all required fields and upload a photo.','warning');
+      this.isSubmitting = false;
       return;
     }
 
+    this.isSubmitting = true;
+
     const candidate: Candidate = {
+      studentId: user?.uid,
       fullName: this.fullName,
       organization: this.organization,
       position: this.position,
@@ -97,11 +116,10 @@ export class ApplyCandidateComponent {
       await this.candidateService.addCandidate(candidate);
 
       // Send notification to admin
-      await this.notificationService.addNotification({
-        studentId: 'admin', 
+      await this.notificationService.addNotification({ 
         target: 'admin',
         message: `NEW CANDIDATE APPLICATION: ${this.fullName} applied for ${this.position} under ${this.organization}. Peding ELECOM approval`,
-        date: new Date(),
+        createdAt: new Date(),
         type: 'request',
         seen: false
       });
@@ -116,6 +134,7 @@ export class ApplyCandidateComponent {
   }
 
   resetForm() {
+    this.isSubmitting = false;
     this.fullName = '';
     this.organization = '';
     this.position = '';

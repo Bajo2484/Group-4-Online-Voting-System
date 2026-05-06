@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component,OnInit } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { Firestore, collection, getDocs, query, where } from '@angular/fire/firestore';
 
@@ -24,9 +24,10 @@ interface Position {
   templateUrl: './student-result.html',
   styleUrls: ['./student-result.css']
 })
-export class StudentResult {
-  isloading: boolean = false;
+export class StudentResult implements OnInit {
 
+  isloading: boolean = true;
+  firebaseStatus: string = '';
   orgList: string[] = ['USG', 'ATLAS', 'STCM', 'AEMT'];
   activeOrg: string = 'USG';
 
@@ -61,9 +62,30 @@ export class StudentResult {
   constructor(
     private firestore: Firestore,
     private cdr: ChangeDetectorRef
-  ) {
-    this.loadAllData();
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.getElectionStatus();
+
+    if (this.firebaseStatus !== 'upcoming') {
+      this.loadAllData();
+    }else {
+      this.isloading = false;
+      this.cdr.detectChanges();
+    }
   }
+
+//GET ELECTION STATUS
+  async getElectionStatus(): Promise<void> {
+    const ref = collection(this.firestore, 'elections');
+    const snap = await getDocs(ref);
+
+    if (!snap.empty) {
+      const data = snap.docs[0].data();
+      this.firebaseStatus = (data['status'] || '').toLowerCase();
+    }
+  }
+
 
   // LOAD DATA
   async loadAllData() {

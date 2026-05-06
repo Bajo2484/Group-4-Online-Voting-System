@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc } from '@angular/fire/firestore';
 import { AuthService } from '@app/services/auth.service';
 import { getAuth, updatePassword } from 'firebase/auth';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-student-settings',
@@ -31,6 +33,8 @@ export class StudentSettingsComponent implements OnInit {
   firestoreDocId: string = '';
 
   loading: boolean = true;
+
+
   
   // INIT
   
@@ -90,13 +94,23 @@ export class StudentSettingsComponent implements OnInit {
 
       } else {
         
-        alert('Student record not found!');
+        Swal.fire({
+          icon: 'error',
+          title: 'Student Not Found',
+          text: 'No student record found.',
+          confirmButtonText: 'OK'
+        });
         this.loading = false;
       }
 
     } catch (err) {
       console.error('Error loading student:', err);
-      alert('Failed to load student data.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load student data.',
+        confirmButtonText: 'OK'
+      });
     } finally {
       this.loading = false; 
       this.cdr.detectChanges();
@@ -122,14 +136,24 @@ export class StudentSettingsComponent implements OnInit {
         email: this.student.email.toLowerCase().trim()
       });
 
-      alert('Profile updated successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated',
+        text: 'Your profile has been updated successfully.',
+        confirmButtonText: 'OK'
+      });
       setTimeout(() => {
       this.loadStudent();
 });
 
     } catch (err) {
       console.error('Profile update failed:', err);
-      alert('Failed to update profile.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update profile.',
+        confirmButtonText: 'OK'
+      });
     }
   }
 
@@ -157,16 +181,32 @@ export class StudentSettingsComponent implements OnInit {
 
     try {
       await updatePassword(user, this.passwords.newPassword);
-      alert('Password updated successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Password Updated',
+        text: 'Your password has been updated successfully.',
+        confirmButtonText: 'OK'
+      });
+
       this.passwords.newPassword = '';
       this.passwords.confirmPassword = '';
 
     } catch (error: any) {
       console.error(error);
       if (error.code === 'auth/requires-recent-login') {
-        alert('Please login again before changing password.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Required',
+          text: 'Please login again before changing password.',
+          confirmButtonText: 'OK'
+        });
       } else {
-        alert('Failed to update password.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to update password.',
+          confirmButtonText: 'OK'
+        });
       }
     }
   }
@@ -174,8 +214,11 @@ export class StudentSettingsComponent implements OnInit {
  
   // LOGOUT
   logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+   this.auth.logout().then(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = '/login';
+   })
   }
 
   

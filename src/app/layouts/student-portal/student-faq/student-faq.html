@@ -1,64 +1,93 @@
 <div class="faq-page">
 
-  <!-- HEADER -->
-  <div class="faq-header">
-    <h2>Help Center</h2>
-    <p>Find answers to common questions</p>
+  <!-- WRAPPER (IMPORTANT FOR MODERN LOOK) -->
+  <div class="faq-container">
 
-    <input
-      type="text"
-      placeholder="Search for help..."
-      [(ngModel)]="searchText"
-      class="search-bar"
-    />
-  </div>
+    <!-- HEADER -->
+    <div class="faq-header">
+      <h2>Help Center</h2>
+      <p>Find answers to common questions</p>
 
-  <!-- CATEGORY CARDS -->
-  <div class="faq-categories">
-    <div class="category-card" (click)="filterCategory('all')">
-      <span>📚</span>
-      <p>All</p>
+      <input
+        type="text"
+        placeholder="Search for help..."
+        [(ngModel)]="searchText"
+        class="search-bar"
+      />
     </div>
 
-    <div class="category-card" (click)="filterCategory('account')">
-      <span>🧑</span>
-      <p>Account</p>
-    </div>
+    <!-- CATEGORY CARDS (IMPROVED) -->
+    <div class="faq-categories">
 
-    <div class="category-card" (click)="filterCategory('voting')">
-      <span>🗳</span>
-      <p>Voting</p>
-    </div>
-
-    <div class="category-card" (click)="filterCategory('results')">
-      <span>📊</span>
-      <p>Results</p>
-    </div>
-  </div>
-
-  <!-- FAQ LIST -->
-  <div class="faq-list">
-
-    <div
-      class="faq-item"
-      *ngFor="let faq of filteredFaqs; let i = index"
-    >
-     <div class="faq-question" (click)="toggle(i)">
-  {{ faq.question }}
-  <i class="fa fa-chevron-down arrow" [class.open]="activeIndex === i"></i>
-</div>
-
-      <div class="faq-answer" *ngIf="activeIndex === i">
-        {{ faq.answer }}
+      <div class="category-card"
+           [class.active]="selectedCategory === 'all'"
+           (click)="filterCategory('all')">
+        <span>📁</span>
+        <p>All</p>
       </div>
+
+      <div class="category-card"
+           [class.active]="selectedCategory === 'account'"
+           (click)="filterCategory('account')">
+        <span>👤</span>
+        <p>Account</p>
+      </div>
+
+      <div class="category-card"
+           [class.active]="selectedCategory === 'voting'"
+           (click)="filterCategory('voting')">
+        <span>🗳️</span>
+        <p>Voting</p>
+      </div>
+
+      <div class="category-card"
+           [class.active]="selectedCategory === 'results'"
+           (click)="filterCategory('results')">
+        <span>📈</span>
+        <p>Results</p>
+      </div>
+
+    </div>
+
+    <!-- FAQ LIST -->
+    <div class="faq-list">
+
+      <div *ngIf="filteredFaqs.length === 0" class="no-results">
+        No results found for your search.
+      </div>
+
+      <div class="faq-item"
+           *ngFor="let faq of filteredFaqs; let i = index">
+
+        <div class="faq-question"
+             (click)="toggle(i)">
+          
+          <span>{{ faq.question }}</span>
+
+          <i class="fa fa-chevron-down arrow"
+             [class.open]="activeIndex === i"></i>
+        </div>
+
+        <div class="faq-answer"
+             *ngIf="activeIndex === i">
+          {{ faq.answer }}
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CONTACT (UPGRADED CTA STYLE) -->
+    <div class="faq-contact">
+
+      <div class="contact-card">
+        <h3>Still need help?</h3>
+        <p>Contact the admin for further assistance</p>
+
+        <button>Contact Admin</button>
+      </div>
+
     </div>
 
   </div>
-
-  <!-- CONTACT -->
-  <div class="faq-contact">
-    <p>Still need help?</p>
-    <button>Contact Admin</button>
-  </div>
-
 </div>

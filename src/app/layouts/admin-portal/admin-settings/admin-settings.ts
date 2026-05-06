@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Auth, signOut } from '@angular/fire/auth';
-
+import { getAuth, Auth, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from '@angular/fire/auth';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-settings',
@@ -77,7 +77,7 @@ export class AdminSettingsComponent {
     }
   }
 
-  // 🔥 THEME FUNCTION (IMPORTANT)
+  // THEME FUNCTION (IMPORTANT)
   setTheme(theme: string) {
     this.admin.theme = theme;
 
@@ -108,26 +108,102 @@ export class AdminSettingsComponent {
 
   updateProfile() {
     console.log('Profile updated:', this.admin);
-    alert('Profile updated successfully!');
+    Swal.fire({
+      icon: 'success',
+      title: 'Profile Updated',
+      text: 'Your profile has been updated successfully.',
+      confirmButtonText: 'OK'
+    });
   }
 
-  updatePassword() {
-    if (!this.password.current) {
-      alert('Enter current password!');
-    }
+  async updatePassword() {
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-    if (this.password.new !== this.password.confirm) {
-      alert('Passwords do not match!');
+    if (!user || !user.email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No user is currently logged in.',
+        confirmButtonText: 'OK'
+      });
       return;
     }
 
-    alert('Password updated successfully!');
-    this.password.new = '';
-    this.password.confirm = '';
+    if (!this.password.current) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please enter your current password.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    if (!this.password.new || !this.password.confirm) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please enter and confirm your new password.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        this.password.current
+      );
+
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, this.password.new);
+      Swal.fire({ 
+        icon: 'success',  
+        title: 'Password Updated',
+        text: 'Your password has been updated successfully.',
+        confirmButtonText: 'OK'
+      });
+
+      this.password.current = '';
+      this.password.new = '';
+      this.password.confirm = '';
+
+    } catch (error: any) {
+      console.error(error);
+
+      if (error.code === 'auth/wrong-password') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Password Error',
+          text: 'Current password is incorrect.',
+          confirmButtonText: 'OK'
+        });
+      } else if (error.code === 'auth/requires-recent-login') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Required',
+          text: 'Please login again and try.',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while updating the password.',
+          confirmButtonText: 'OK'
+        });
+      }
+    }
   }
 
   saveNotifications() {
-    alert('Notification settings saved!');
+    Swal.fire({
+      icon: 'success',
+      title: 'Settings Saved',
+      text: 'Notification settings have been saved.',
+      confirmButtonText: 'OK'
+    });
   }
 
   toggle2FA() {

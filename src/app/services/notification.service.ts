@@ -5,13 +5,12 @@ import { map } from 'rxjs/operators';
 
 export interface Notification {
   id?: string;
-  target: 'admin' | 'student' | 'elecom'; // Role who will receive it
-  studentId?: string; // optional if targeting a specific student
+  target: 'admin' | 'student' | 'elecom'; 
   message: string;
-  date: Date;
-  type: 'general' | 'request' | 'approved' | 'election';
+  studentId?: string;
+  type: 'general' | 'request' | 'approved' |'rejected' | 'election';
   seen: boolean;
-  createdAt?: Date;
+  createdAt?: any;
 }
 
 @Injectable({
@@ -24,14 +23,25 @@ export class NotificationService {
   // Get notifications for admin
   getAdminNotifications(): Observable<Notification[]> {
     const notifRef = collection(this.firestore, 'notifications');
-    const q = query(notifRef, where('target', '==', 'admin'), orderBy('date', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
+
+    const q = query(
+      notifRef,
+      where('target', '==', 'admin'),
+      orderBy('createdAt', 'desc')
+    );
+
+    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;  
+    
   }
 
   // Get notifications for elecom
   getElecomNotifications(): Observable<Notification[]> {
     const notifRef = collection(this.firestore, 'notifications');
-    const q = query(notifRef, where('target', '==', 'elecom'), orderBy('date', 'desc'));
+    const q = query(
+      notifRef,
+      where('target','==', 'elecom'),
+      orderBy('createdAt', 'desc')
+    );
     return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
   }
 
@@ -39,24 +49,23 @@ export class NotificationService {
   getStudentNotifications(studentId: string): Observable<Notification[]> {
     const notifRef = collection(this.firestore, 'notifications');
     const q = query(
-      notifRef, 
-      where('target', '==', 'student'), 
+      notifRef,
+      where('target', '==', 'student'),
       where('studentId', '==', studentId),
-      orderBy('date', 'desc')
+      orderBy('createdAt', 'desc')
     );
-   return collectionData(q, { idField: 'id' }).pipe(
-    map(notifs => notifs.map(n => ({
-      ...n,
-      // Convert Firestore Timestamp to JS Date
-       date: (n['date'] && (n['date'] as any)?.toDate) ? (n['date'] as any).toDate() : n['date']
-    })))
-  ) as Observable<Notification[]>;
-}
+    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
+  }
 
   // Add a new notification
   addNotification(notification: Notification) {
     const notifRef = doc(collection(this.firestore, 'notifications'));
-    return setDoc(notifRef, notification);
+   
+    return setDoc(notifRef, {
+      ...notification,
+      createdAt: new Date(),
+      seen: false
+    });
   }
 
   // Mark notification as seen

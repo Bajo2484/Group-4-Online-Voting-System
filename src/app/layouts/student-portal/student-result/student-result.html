@@ -1,6 +1,13 @@
-<div class="result-page">
+<!-- UPCOMING STATE -->
+<div *ngIf="firebaseStatus === 'upcoming'" class="empty-state">
+  <h2>No result yet</h2>
+  <p>Election has not started yet.</p>
+</div>
 
-  <!-- TABS (UNCHANGED) -->
+<!-- RESULTS PAGE -->
+<div *ngIf="firebaseStatus !== 'upcoming'" class="result-page">
+
+  <!-- TABS -->
   <div class="org-tabs">
     <button *ngFor="let org of orgList"
             [class.active]="activeOrg === org"
@@ -9,37 +16,38 @@
     </button>
   </div>
 
-  <!-- RESULTS -->
-  <div *ngFor="let org of orgList">
+  <!-- ACTIVE ORGANIZATION -->
+  <ng-container *ngIf="activeOrg as org">
 
-    <div *ngIf="activeOrg === org">
+    <h2 class="result-title">
+      <span class="icon-box">🗳️</span>
+      {{ org }} Results
+    </h2>
 
-      <h2>{{ org }} Results</h2>
+    <!-- LOADING -->
+    <div class="loading-spinner" *ngIf="isloading">
+      Loading results...
+    </div>
 
-      <!-- LOADING -->
-      <div class="loading-spinner" *ngIf="isloading">
-        Loading results...
+    <!-- POSITION LOOP -->
+    <div class="position-card"
+         *ngFor="let position of getPositions(org)">
+
+      <div class="position-header">
+        <h3>{{ position.name }}</h3>
+
+        <span class="total">
+          Total Votes: {{ getTotalVotes(position) }}
+        </span>
       </div>
 
-      <!-- POSITION LOOP -->
-      <div class="position-card"
-           *ngFor="let position of getPositions(org)">
+      <div class="abstain-info">
+        Abstain Votes: {{ position.abstain.votes }}
+      </div>
 
-        <!-- POSITION HEADER -->
-        <div class="position-header">
-          <h3>{{ position.name }}</h3>
+      <!-- ✅ RESPONSIVE WRAPPER (IMPORTANT FIX) -->
+      <div class="table-wrapper">
 
-          <span class="total">
-            Total Votes: {{ getTotalVotes(position) }}
-          </span>
-        </div>
-
-        <!-- ABSTAIN SUMMARY (KEEP HERE ONLY) -->
-        <div class="abstain-info">
-          Abstain Votes: {{ position.abstain.votes }}
-        </div>
-
-        <!-- MODERN LEADERBOARD TABLE -->
         <table class="result-table">
 
           <thead>
@@ -53,32 +61,26 @@
 
           <tbody>
 
-            <!-- CANDIDATES -->
             <tr *ngFor="let candidate of getRankedCandidates(position)"
                 [ngClass]="{ 'winner-row': candidate.isWinner }">
 
-              <!-- CANDIDATE (IMAGE + NAME TOGETHER) -->
-              <td class="candidate-cell">
+              <td>
                 <div class="candidate-info">
 
                   <img class="table-img"
                        [src]="candidate.photo"
                        alt="profile"
-                       (error)="candidate.photo='https://via.placeholder.com/40'">
+                      >
 
-                  <span class="candidate-name">
+                  <span class="name-cell">
                     #{{ candidate.rank }} {{ candidate.name }}
                   </span>
 
                 </div>
               </td>
 
-              <!-- VOTES -->
-              <td>
-                {{ candidate.votes }}
-              </td>
+              <td>{{ candidate.votes }}</td>
 
-              <!-- PERCENTAGE -->
               <td class="percent-cell">
 
                 <div class="percent-text">
@@ -93,7 +95,6 @@
 
               </td>
 
-              <!-- STATUS -->
               <td>
                 <span *ngIf="candidate.isWinner" class="winner-badge">
                   🏆 Winner
@@ -110,6 +111,7 @@
       </div>
 
     </div>
-  </div>
+
+  </ng-container>
 
 </div>
