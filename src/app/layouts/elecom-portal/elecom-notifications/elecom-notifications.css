@@ -4,7 +4,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 🔔 Header with badge */
+
 .header-row {
   display: flex;
   align-items: center;
@@ -23,7 +23,7 @@ h2 {
   padding: 20px 0;
 }
 
-/* 📩 Notification Card */
+
 .notification-card {
   background-color: #fff;
   border-radius: 10px;

@@ -172,7 +172,7 @@
 /* WINNER BADGE */
 .winner-badge { 
   background: #fff3c4;
-  color: #7a5a00;
+  color: #417a00;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
@@ -183,7 +183,7 @@
 /* ===================== WINNER EFFECT ===================== */
 .winner-row {
   position: relative;
-  background: linear-gradient(90deg, #fff3b0, #ffffff);
+  background: linear-gradient(90deg, #b4ff91, #ffffff);
   overflow: hidden;
 }
 

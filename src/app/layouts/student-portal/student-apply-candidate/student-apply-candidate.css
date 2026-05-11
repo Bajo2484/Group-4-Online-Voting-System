@@ -27,22 +27,11 @@
   font-size: 14px;
 }
 
-/* ================= INSTRUCTIONS ================= */
-.instructions-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-  background-color: #eef6fb;
-  padding: 12px;
-  border-radius: 8px;
-  align-items: stretch;
-}
 
 /* ================= RULES BOX (GLOBAL FIX) ================= */
 .rules-box {
-  background-color: #fff3cd;
-  border-left: 6px solid #fd7e14;
+  background-color: #e9e9e9;
+  border-left: 6px solid #0d6612;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -156,7 +145,7 @@
   padding: 8px 10px;
   font-size: 14px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc;
   box-sizing: border-box;
 }
 

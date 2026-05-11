@@ -63,9 +63,8 @@ export class App implements OnInit, OnDestroy {
     this.userSub?.unsubscribe();
   }
 
-  // =========================
+  
   // NOTIFICATIONS
-  // =========================
   private subscribeNotifications(user: CurrentUser): void {
     this.notifSub?.unsubscribe();
 
@@ -98,9 +97,7 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
-  // =========================
   // ROUTING
-  // =========================
   private updateRouteState(url: string): void {
     const cleaned = url.split('?')[0];
     this.isLoginRoute =
@@ -131,9 +128,8 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
-  // =========================
+ 
   // UI CONTROLS
-  // =========================
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
   }
@@ -142,9 +138,8 @@ export class App implements OnInit, OnDestroy {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
-  // =========================
+
   // NAVIGATION
-  // =========================
   goToSetting(): void {
     if (this.auth.isAdmin()) {
       this.router.navigate(['/myprofile']);

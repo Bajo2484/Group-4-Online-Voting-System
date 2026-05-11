@@ -37,13 +37,17 @@ export class NotificationService {
   // Get notifications for elecom
   getElecomNotifications(): Observable<Notification[]> {
     const notifRef = collection(this.firestore, 'notifications');
+
     const q = query(
       notifRef,
-      where('target','==', 'elecom'),
+      where('target', '==', 'elecom'),
       orderBy('createdAt', 'desc')
     );
-    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;
+
+    return collectionData(q, { idField: 'id' }) as Observable<Notification[]>;  
+    
   }
+
 
   // Get notifications for a specific student
   getStudentNotifications(studentId: string): Observable<Notification[]> {

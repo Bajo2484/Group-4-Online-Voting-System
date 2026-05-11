@@ -50,9 +50,8 @@ export const routes: Routes = [
   // Admin managing Elecom accounts
   { path: 'manage-elecom', component: ElecomComponent, canActivate: [authGuard], data: { role: 'admin' } },
 
-  // =========================
+
   // Elecom Routes
-  // =========================
   { path: 'elecom-dashboard', component: ElecomDashboardComponent, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-voters', component: Voters, canActivate: [authGuard], data: { role: 'elecom' } },
   { path: 'elecom-candidates', component: CandidatesComponent, canActivate: [authGuard], data: { role: 'elecom' } },

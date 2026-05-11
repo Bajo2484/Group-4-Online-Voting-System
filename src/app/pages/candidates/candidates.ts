@@ -317,6 +317,13 @@ export class CandidatesComponent implements OnInit {
       seen: false
     });
 
+    await this.notificationService.addNotification({
+      target: 'elecom',
+      message: `You approved ${c.fullName} for ${c.position}.`,
+      type: 'approved',
+      seen: false
+    });
+
     this.loadCandidates();
   }
 
@@ -336,6 +343,13 @@ export class CandidatesComponent implements OnInit {
       target: 'student',
       message: `Sorry, your application for ${c.position} has been rejected.`,
       createdAt: Date.now(),
+      type: 'rejected',
+      seen: false
+    });
+
+    await this.notificationService.addNotification({
+      target: 'elecom',
+      message: `You rejected ${c.fullName} for ${c.position}.`,
       type: 'rejected',
       seen: false
     });

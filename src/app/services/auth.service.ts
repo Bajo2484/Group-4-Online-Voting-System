@@ -169,9 +169,6 @@ export class AuthService {
     }
   }
 
-  // =========================
-  // Logout
-  // =========================
   async logout() {
     await signOut(this.auth);
     this.clear();

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NotificationService, Notification } from '../../../services/notification.service';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
-
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 @Component({
   selector: 'app-elecom-notifications',
   standalone: true,
@@ -17,15 +17,17 @@ export class ElecomNotifications implements OnInit {
 
   constructor(
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private firestore: Firestore
   ) {}
 
   ngOnInit(): void {
     this.notificationService.getAdminNotifications().subscribe((data) => {
-      // Convert Firebase Timestamp to JS Date if needed
+      
+
       this.notifications = data.map(n => ({
         ...n,
-        createdAt: (n.createdAt && (n.createdAt as any)?.toDate) ? (n.createdAt as any).toDate() : n.createdAt
+        createdAt: n.createdAt?.toDate ? n.createdAt.toDate() : n.createdAt
       }));
 
       this.unreadCount = this.notifications.filter(n => !n.seen).length;
@@ -62,5 +64,26 @@ export class ElecomNotifications implements OnInit {
         setTimeout(() => badge.classList.remove('animate'), 400);
       }
     });
+  }
+  async approvedStudentRequest(student: any) {
+    try {
+
+      await updateDoc(
+        doc(this.firestore, `candidateRequests/${student.requestId}`),
+        { status: 'approved' }
+      );
+
+      await this.notificationService.addNotification({
+        target: 'student',
+        studentId: student.id,
+        message: 'Your candidacy request has been approved.',
+        type: 'approved',
+        seen: false,
+      });
+
+      console.log('Student request approved and notification sent.');
+    } catch (error) {
+      console.error('Error approving student request:', error);
+    }
   }
 }
