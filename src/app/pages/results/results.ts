@@ -16,6 +16,7 @@ interface Candidate {
 interface Position {
   name: string;
   candidates: Candidate[];
+  abstainVotes?: number;
 }
 
 @Component({
@@ -49,7 +50,7 @@ export class Result {
     this.loadAllData();
   }
 
-  // ================= LOAD =================
+  // LOAD data
   async loadAllData() {
     this.isloading = true;
 
@@ -245,10 +246,8 @@ export class Result {
 
       positions.push({
         name: pos,
-        candidates: [
-          ...sorted,
-          ...(abstain ? [abstain] : [])
-        ]
+        candidates: sorted,
+        abstainVotes: abstain ? abstain.votes : 0
       });
     });
 
@@ -396,8 +395,8 @@ exportPDF(org: string) {
     startY = (doc as any).lastAutoTable.finalY + 8;
     startY = checkPageBreak(startY);
 
-    const abstain = pos.candidates.find(c => c.id === 'ABSTAIN');
-    const abstainVotes = abstain ? abstain.votes : 0;
+   
+    const abstainVotes = pos.abstainVotes || 0;
 
     doc.setFontSize(10);
     doc.text(`Abstain Votes: ${abstainVotes}`, 14, startY);

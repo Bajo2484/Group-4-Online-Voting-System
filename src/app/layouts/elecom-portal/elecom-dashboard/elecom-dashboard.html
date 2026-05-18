@@ -8,40 +8,50 @@
   <h1 class="welcome-title">Welcome, Elecom!</h1>
   <p class="subtitle">Here’s the current voting summary.</p>
 
+  <!-- ================= HERO COUNTDOWN ================= -->
+  <section class="hero-section">
+
+    <div class="status-pill" [ngClass]="electionStatus.toLowerCase()">
+      {{ electionStatus }}
+    </div>
+
+    <div class="hero-title">Live Election Countdown</div>
+
+    <div class="countdown">
+      {{ remainingTime }}
+    </div>
+
+    <div class="countdown-labels">
+      <span>HOURS</span>
+      <span>MINUTES</span>
+      <span>SECONDS</span>
+    </div>
+
+  </section>
+
   <!-- ================= STATS CARDS ================= -->
-  <div class="stats">
-    <div class="card blue">
-      <h3>Total Students</h3>
-      <p>{{ totalStudents }}</p>
+  <section class="stats-section">
+
+    <div class="stats">
+      <div class="card blue">
+        <h3>Total Students</h3>
+        <p>{{ totalStudents }}</p>
+      </div>
+
+      <div class="card green">
+        <h3>Total Candidates</h3>
+        <p>{{ totalCandidates }}</p>
+      </div>
+
+      <div class="card yellow">
+        <h3>Overall Participation</h3>
+        <p>{{ overallParticipation }}%</p>
+      </div>
     </div>
 
-    <div class="card green">
-      <h3>Total Candidates</h3>
-      <p>{{ totalCandidates }}</p>
-    </div>
+  </section>
 
-    <div class="card yellow">
-      <h3>Overall Participation</h3>
-      <p>{{ overallParticipation }}%</p>
-    </div>
-  </div>
-
-  <!-- ================= STATUS SECTION ================= -->
-  <div class="election-status">
-    <span>⏱️</span>
-
-    <span>
-      All elections are currently
-      <b class="status-text" [ngClass]="electionStatus.toLowerCase()">
-        {{ electionStatus }}
-      </b>
-
-      | Remaining Time:
-      <strong>{{ remainingTime }}</strong>
-    </span>
-  </div>
-
-  <!-- ================= EMPTY TEMPLATE ================= -->
+  <!-- ================= EMPTY STATE ================= -->
   <ng-template #emptyState>
     <div class="empty-state">
       <p>No voting data available yet.</p>
@@ -50,76 +60,71 @@
   </ng-template>
 
   <!-- ================= OVERVIEW ================= -->
-  <div class="overview">
-    <h2>Voting Overview</h2>
+  <section class="overview-section">
 
-    <!-- UPCOMING STATE -->
-    <ng-container *ngIf="firebaseStatus === 'upcoming'; else tableBlock">
-      <ng-container *ngTemplateOutlet="emptyState"></ng-container>
-    </ng-container>
+    <div class="overview">
 
-    <!-- TABLE BLOCK -->
-    <ng-template #tableBlock>
+      <h2>Voting Overview</h2>
+      <p class="overview-subtitle">
+        Real-time election breakdown per organization
+      </p>
 
-      <table *ngIf="votingData.length > 0; else noData">
+      <ng-container *ngIf="firebaseStatus === 'upcoming'; else tableBlock">
+        <ng-container *ngTemplateOutlet="emptyState"></ng-container>
+      </ng-container>
 
-        <thead>
-          <tr>
-            <th>Organization</th>
-            <th>Enrolled</th>
-            <th>Votes Cast</th>
-            <th>Non-Voted</th>
-            <th>Turnout</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+      <ng-template #tableBlock>
 
-        <tbody>
-          <tr *ngFor="let org of votingData" class="table-row">
+        <table *ngIf="votingData.length > 0; else noData">
 
-            <td>{{ org.name }}</td>
+          <thead>
+            <tr>
+              <th>Org</th>
+              <th>Enrolled</th>
+              <th>Votes</th>
+              <th>Abstain</th>
+              <th>Turnout</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-            <td>
-              <span class="badge">{{ org.enrolled }}</span>
-            </td>
+          <tbody>
+            <tr *ngFor="let org of votingData">
 
-            <td>{{ org.votes }}</td>
+              <td>{{ org.name }}</td>
 
-            <td>
-              <span class="badge abstain">
-                {{ org.abstain }}
-              </span>
-            </td>
+              <td><span class="badge">{{ org.enrolled }}</span></td>
 
-            <td>
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  [style.width.%]="org.turnout">
+              <td>{{ org.votes }}</td>
+
+              <td><span class="badge abstain">{{ org.abstain }}</span></td>
+
+              <td>
+                <div class="progress">
+                  <div class="progress-fill" [style.width.%]="org.turnout"></div>
                 </div>
-              </div>
+                <small>{{ org.turnout }}%</small>
+              </td>
 
-              <small>{{ org.turnout }}%</small>
-            </td>
+              <td>
+                <span class="status" [ngClass]="org.status">
+                  {{ org.status }}
+                </span>
+              </td>
 
-            <td>
-             <span class="status" [ngClass]="org.status">
-              {{ electionStatus }}
-            </span>
-            </td>
+            </tr>
+          </tbody>
 
-          </tr>
-        </tbody>
+        </table>
 
-      </table>
+      </ng-template>
 
-    </ng-template>
+      <ng-template #noData>
+        <ng-container *ngTemplateOutlet="emptyState"></ng-container>
+      </ng-template>
 
-    <!-- NO DATA -->
-    <ng-template #noData>
-      <ng-container *ngTemplateOutlet="emptyState"></ng-container>
-    </ng-template>
+    </div>
 
-  </div>
+  </section>
 
 </div>

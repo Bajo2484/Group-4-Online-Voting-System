@@ -11,7 +11,7 @@
     <h3>Login to Your Account</h3>
     <p class="hint">Please enter your credentials to continue.</p>
 
-    <form (ngSubmit)="login()" autocomplete="on">
+    <form (ngSubmit)="login()" autocomplete="on" novalidate>
 
       <input
         type="text"
@@ -24,14 +24,13 @@
 
       <div class="password-field">
         <input
-          type="password"
+          [type]="showPassword ? 'text' : 'password'"
           placeholder="Password"
           [(ngModel)]="password"
           name="password"
-          autocomplete="current-password"
           [disabled]="loading"
         />
-        <span class="eye"></span>
+        <span class="eye" (click)="togglePassword()"></span>
       </div>
 
      <button type="submit" [disabled]="loading">
@@ -40,12 +39,18 @@
          Sign In
       </span>
 
-    <span *ngIf="loading" class="loading-text">
-    <span class="spinner"></span> Logging in...
-  </span>
+      <span *ngIf="loading" class="loading-text">
+      <span class="spinner"></span> Logging in...
+    </span>
 
-</button>
-    </form>
+    </button>
+        </form>
+
+        <div class="forgot-password">
+        <a (click)="openHelp()" class="help-link">
+        Can't access account?
+      </a>
+      </div>
 
     <div class="links">
       <span class="footer-text">©2026 USTP E-Voting System. All Rights Reserved.</span>

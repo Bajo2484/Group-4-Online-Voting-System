@@ -5,8 +5,9 @@ import Swal from 'sweetalert2';
 import { AuthService } from '@app/services/auth.service';
 
 import { CandidateService } from '../../services/candidate.service';
-import { Candidate } from '../../services/candidate.model';
-import { Election, ElectionService } from '../../services/election.service';
+import { Candidate } from '../../models/candidate.model';
+import { ElectionService } from '../../services/election.service';
+import { Election } from '../../models/election.model';
 import { Timestamp } from '@angular/fire/firestore';
 import { NotificationService } from '@app/services/notification.service';
 
@@ -19,7 +20,6 @@ import { NotificationService } from '@app/services/notification.service';
 })
 export class CandidatesComponent implements OnInit {
 
-  // ================= LOADING =================
   isSaving = false;
   isUploading = false;
 
@@ -72,7 +72,7 @@ export class CandidatesComponent implements OnInit {
     private electionService: ElectionService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService  
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -108,13 +108,11 @@ export class CandidatesComponent implements OnInit {
   filterCandidates() {
     const term = this.searchTerm.toLowerCase();
 
-    const filtered = this.allCandidates.filter(c =>
+    this.currentCandidates = this.allCandidates.filter(c =>
       c.fullName.toLowerCase().includes(term) ||
       c.position.toLowerCase().includes(term) ||
       c.organization.toLowerCase().includes(term)
-    );
-
-    this.currentCandidates = filtered.slice(0, this.pageSize);
+    ).slice(0, this.pageSize);
   }
 
   // ================= PAGINATION =================
@@ -142,11 +140,11 @@ export class CandidatesComponent implements OnInit {
 
   // ================= SORT =================
   applySort() {
-    if (this.sortOption === 'dateAsc') {
-      this.allCandidates.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
-    } else {
-      this.allCandidates.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
-    }
+    this.allCandidates.sort((a, b) =>
+      this.sortOption === 'dateAsc'
+        ? (a.createdAt ?? 0) - (b.createdAt ?? 0)
+        : (b.createdAt ?? 0) - (a.createdAt ?? 0)
+    );
   }
 
   // ================= MODAL =================
@@ -167,7 +165,7 @@ export class CandidatesComponent implements OnInit {
   }
 
   onPhotoSelected(event: any) {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     this.photoFile = file;
@@ -179,92 +177,97 @@ export class CandidatesComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  // ================= TOR UPLOAD =================
-  uploadTOR(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!this.torFile) return reject('No TOR file');
+  // ================= SAVE (STRICT + NO DUPLICATE) =================
+ async registerCandidate() {
 
-      const formData = new FormData();
-      formData.append('file', this.torFile);
-      formData.append('upload_preset', 'unsigned_upload');
+  const user = this.authService.getCurrentUser();
+  const studentId = user?.uid;
 
-      fetch('https://api.cloudinary.com/v1_1/dmjemocb2/upload', {
-        method: 'POST',
-        body: formData
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.secure_url) reject('Upload failed');
-          else resolve(data.secure_url);
-        })
-        .catch(err => reject(err));
-    });
+  if (!studentId) {
+    Swal.fire('Error', 'User not logged in', 'error');
+    return;
   }
 
-  // ================= SAVE (FIXED) =================
-  async registerCandidate() {
+  const fullName = this.fullName?.trim();
+  const position = this.position?.trim();
+  const course = this.course?.trim();
+  const electionId = this.selectedElectionId?.trim();
 
-    const user = this.authService.getCurrentUser();
-    const studentId = user?.uid;
+  const partyName = this.partyName?.trim();
+  const platform = this.platform?.trim();
 
-    if (!studentId) {
-      Swal.fire('Error', 'User not logged in or session expired', 'error');
-      return;
-    }
-
-    if (!this.fullName || !this.position || !this.course) {
-      Swal.fire('Missing Fields', 'Please complete all required fields', 'warning');
-      return;
-    }
-
-    this.isSaving = true;
-
-    try {
-      let torUrl = '';
-
-      // ================= UPLOAD =================
-      if (this.torFile) {
-        this.isUploading = true;
-        torUrl = await this.uploadTOR();
-      }
-
-      // ================= DATA =================
-      const candidate: Candidate = {
-        studentId: studentId,
-        fullName: this.fullName,
-        organization: this.course,
-        position: this.position,
-        partyName: this.partyName,
-        platform: this.platform,
-        electionId: this.selectedElectionId,
-        status: 'pending',
-        photoUrl: this.photoPreview as string || '',
-        createdAt: Date.now(),
-        torUrl: torUrl
-      };
-
-      // ================= SAVE =================
-      if (this.isEditMode && this.editingId) {
-        await this.candidateService.updateCandidate(this.editingId, candidate);
-        Swal.fire('Updated', 'Candidate updated successfully', 'success');
-      } else {
-        await this.candidateService.addCandidate(candidate);
-        Swal.fire('Success', 'Candidate added successfully', 'success');
-      }
-
-      this.closeModal();
-      this.loadCandidates();
-
-    } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Something went wrong', 'error');
-
-    } finally {
-      // 🔥 ALWAYS STOP LOADING
-      this.isSaving = false;
-      this.isUploading = false;
-    }
+  // ================= REQUIRED FIELD CHECK =================
+  if (!fullName || !position || !course || !electionId) {
+    Swal.fire(
+      'Missing Fields',
+      'Full Name, Position, Course, and Election are required.',
+      'warning'
+    );
+    return;
   }
+
+  // 🔴 NEW: REQUIRED PARTY + PLATFORM
+  if (!partyName || !platform) {
+    Swal.fire(
+      'Missing Information',
+      'Party List and Platform are required before submitting.',
+      'warning'
+    );
+    return;
+  }
+
+  // ================= DUPLICATE CHECK =================
+  const duplicate = this.allCandidates.some(c =>
+    c.fullName?.trim().toLowerCase() === fullName.toLowerCase() &&
+    c.organization?.trim().toLowerCase() === course.toLowerCase() &&
+    c.position?.trim().toLowerCase() === position.toLowerCase() &&
+    c.electionId === electionId &&
+    (!this.isEditMode || c.id !== this.editingId)
+  );
+
+  if (duplicate) {
+    Swal.fire(
+      'Duplicate Entry',
+      'Candidate with same name, organization, and position already exists.',
+      'error'
+    );
+    return;
+  }
+
+  this.isSaving = true;
+
+  try {
+
+    const candidate: Candidate = {
+      studentId,
+      fullName,
+      organization: course,
+      position,
+      partyName,
+      platform,
+      electionId,
+      status: 'pending',
+      photoUrl: this.photoPreview ? String(this.photoPreview) : '',
+      createdAt: Date.now()
+    };
+
+    if (this.isEditMode && this.editingId) {
+      await this.candidateService.updateCandidate(this.editingId, candidate);
+      Swal.fire('Updated', 'Candidate updated successfully', 'success');
+    } else {
+      await this.candidateService.addCandidate(candidate);
+      Swal.fire('Success', 'Candidate added successfully', 'success');
+    }
+
+    this.closeModal();
+    this.loadCandidates();
+
+  } catch (err: any) {
+    Swal.fire('Error', err?.message || 'Something went wrong', 'error');
+  } finally {
+    this.isSaving = false;
+  }
+}
 
   // ================= ACTIONS =================
   editCandidate(c: Candidate) {
@@ -297,12 +300,10 @@ export class CandidatesComponent implements OnInit {
     }
   }
 
+  // ================= APPROVE =================
   async approveCandidate(c: Candidate) {
-    if (!c.id) return;
-
-    if (!c.studentId) {
-      console.error('Candidate missing studentId');
-      Swal.fire('Error', 'this candidate has no student ID', 'error');
+    if (!c.id || !c.studentId) {
+      Swal.fire('Error', 'Invalid candidate data', 'error');
       return;
     }
 
@@ -311,7 +312,7 @@ export class CandidatesComponent implements OnInit {
     await this.notificationService.addNotification({
       studentId: c.studentId,
       target: 'student',
-      message: `Congratulations! Your application for ${c.position} has been approved.`,
+      message: `Approved: ${c.position}`,
       createdAt: Date.now(),
       type: 'approved',
       seen: false
@@ -319,7 +320,7 @@ export class CandidatesComponent implements OnInit {
 
     await this.notificationService.addNotification({
       target: 'elecom',
-      message: `You approved ${c.fullName} for ${c.position}.`,
+      message: `Approved ${c.fullName}`,
       type: 'approved',
       seen: false
     });
@@ -327,12 +328,10 @@ export class CandidatesComponent implements OnInit {
     this.loadCandidates();
   }
 
+  // ================= REJECT =================
   async rejectCandidate(c: Candidate) {
-    if (!c.id) return;
-
-    if (!c.studentId) {
-      console.error('Candidate missing studentId');
-      Swal.fire('Error', 'this candidate has no student ID', 'error');
+    if (!c.id || !c.studentId) {
+      Swal.fire('Error', 'Invalid candidate data', 'error');
       return;
     }
 
@@ -341,7 +340,7 @@ export class CandidatesComponent implements OnInit {
     await this.notificationService.addNotification({
       studentId: c.studentId,
       target: 'student',
-      message: `Sorry, your application for ${c.position} has been rejected.`,
+      message: `Rejected: ${c.position}`,
       createdAt: Date.now(),
       type: 'rejected',
       seen: false
@@ -349,7 +348,7 @@ export class CandidatesComponent implements OnInit {
 
     await this.notificationService.addNotification({
       target: 'elecom',
-      message: `You rejected ${c.fullName} for ${c.position}.`,
+      message: `Rejected ${c.fullName}`,
       type: 'rejected',
       seen: false
     });

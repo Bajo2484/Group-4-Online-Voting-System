@@ -64,7 +64,7 @@ export class AuthService {
     }
   ): Promise<CurrentUser> {
     try {
-      const fakeEmail = `${studentId}@students.evoting.com`; // required for Firebase Auth
+      const fakeEmail = `${studentId}@students.evoting.com`; 
 
       const credential = await createUserWithEmailAndPassword(this.auth, fakeEmail, password);
       const uid = credential.user.uid;
@@ -112,7 +112,6 @@ export class AuthService {
     let email = input.trim();
 
     try {
-      // If input is all digits, assume it's a student ID
       if (/^\d+$/.test(input)) {
         email = `${input}@students.evoting.com`;
       }
@@ -124,7 +123,6 @@ export class AuthService {
       let user: CurrentUser | null = null;
 
       if (/^\d+$/.test(input)) {
-        // Student login: fetch from students collection
         const studentDocRef = doc(this.firestore, 'students', uid);
         const studentSnap = await getDoc(studentDocRef);
         if (!studentSnap.exists()) throw new Error('Student record not found.');
@@ -139,8 +137,8 @@ export class AuthService {
           hasVoted: data['hasVoted'] || false,
           isActive: data['isActive'] ?? true
         };
+        
       } else {
-        // Admin or Elecom: fetch from users collection
         const userDocRef = doc(this.firestore, 'users', uid);
         const userSnap = await getDoc(userDocRef);
         if (!userSnap.exists()) throw new Error('User record not found.');

@@ -19,7 +19,7 @@ const swalUI = {
 @Component({
   selector: 'app-auth-login',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
 })
@@ -28,20 +28,45 @@ export class LoginComponent {
   password = '';
   loading = false;
 
+  showPassword = false;
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   constructor(
     private readonly router: Router,
     private readonly auth: AuthService
   ) {}
 
+  openHelp() {
+    Swal.fire({
+      title: 'Online Voting System Help',
+      html: `
+        <div style="text-align:left; font-size:14px; line-height:1.6">
+          <p><b>Login Issues</b></p>
+          <p>If you cannot access your account, make sure you are using the correct username or Student ID and password provided by the system administrator.</p>
+          <p><b>Student Accounts</b></p>
+          <p>Students must use their registered Student ID or school email format to log in.</p>
+          <p><b>Forgot Password</b></p>
+          <p>If you forgot your password, please wait for system admin assistance or follow the password reset process if available in your institution.</p>
+          <p><b>Important Note</b></p>
+          <p>Accounts are managed by the election system administrator. Make sure your credentials are correct before trying again.</p>
+        </div>
+      `,
+      confirmButtonText: 'Got it',
+      width: '600px'
+    });
+  }
+
   async login() {
-    this.loading=true;
+    if (this.loading) return;
+    this.loading = true;
 
     const input = this.username.trim();
     const password = this.password.trim();
 
     if (!input || !password) {
       this.loading = false;
-
       Swal.fire({
         ...swalUI,
         icon: 'warning',
@@ -55,18 +80,14 @@ export class LoginComponent {
     try {
       let user: CurrentUser;
 
-      // Check if input is admin username
-      if (!input.includes('@')) {
-        
+      // Admin login (no @ in username)
+      if (!input.includes('@')) { 
         user = await this.auth.login(input, password); 
-
-        // Your AuthService.login now handles admin username internally
       } else {
-
-        // For Elecom and Student
+        // Elecom or Student login
         let email = input;
 
-        // Convert student ID to fake email
+        // Convert numeric student ID to Firebase email format
         if (/^\d+$/.test(input)) {
           email = `${input}@students.evoting.com`;
         }
@@ -74,17 +95,17 @@ export class LoginComponent {
         user = await this.auth.login(email, password);
       }
 
-      
+      // Handle inactive Elecom accounts
       if (user.role === 'elecom' && !user.isActive) {
-        Swal.fire({
+        await Swal.fire({
           ...swalUI,
           icon: 'warning',
           title: 'Account Inactive',
           text: 'This Elecom account is currently inactive.',
           confirmButtonText: 'Got it',
         });
-
-        this.loading = false;
+        this.username = '';
+        this.password = '';
         return;
       }
 
@@ -94,33 +115,41 @@ export class LoginComponent {
         icon: 'success',
         title: `Welcome ${user.name || user.role}!`,
         text: 'Login successful',
-        width: '360px',
+        width: '400px',
         backdrop: 'rgba(15, 23, 42, 0.4)',
         timer: 1500,
         showConfirmButton: false,
-
         customClass: {
           popup: 'swal-popup-success'
         }
       });
 
-      this.loading = false;
+      this.username = '';
+      this.password = ''; 
 
       // Redirect based on role
-      if (user.role === 'admin') this.router.navigate(['/dashboard']);
-      else if (user.role === 'student') this.router.navigate(['/student-dashboard']);
-      else if (user.role === 'elecom') this.router.navigate(['/elecom-dashboard']);
+      if (user.role === 'admin') {
+        this.router.navigate(['/dashboard']);
+      } else if (user.role === 'student') {
+        this.router.navigate(['/student-dashboard']);
+      } else if (user.role === 'elecom') {
+        this.router.navigate(['/elecom-dashboard']);
+      }
 
     } catch (error: any) {
-       this.loading = false;
-
+      this.password = '';
+      this.username = '';
       Swal.fire({
         ...swalUI,
         icon: 'error',
         title: 'Login Failed',
         text: error.message || 'Invalid username or password',
         confirmButtonText: 'Try Again',
+      }).then(() => {
+        window.location.reload(); 
       });
+    } finally {
+      this.loading = false;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CandidateService } from '../../../services/candidate.service';
-import { Candidate } from '../../../services/candidate.model';
+import { Candidate } from '../../../models/candidate.model';
 import { NotificationService } from '../../../services/notification.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';

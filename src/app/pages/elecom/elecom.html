@@ -108,6 +108,27 @@
       </select>
       </div>
 
+        <!-- STATUS -->
+  <div class="form-group">
+    <label for="status">Status</label>
+
+    <select
+      id="status"
+      [(ngModel)]="newElecom.isActive"
+      name="isActive"
+      required>
+
+      <option [ngValue]="true">
+        Active
+      </option>
+
+      <option [ngValue]="false">
+        Inactive
+      </option>
+
+    </select>
+  </div>
+
       <input *ngIf="!isEditMode"
              type="password"
              placeholder="Password"

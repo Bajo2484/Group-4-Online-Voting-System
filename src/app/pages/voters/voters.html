@@ -16,21 +16,25 @@
       <h4>BSIT Students</h4>
       <p>{{ totalBSIT }}</p>
     </div>
-    <div class="total-card">
-      <h4>BSEMT Students</h4>
-      <p>{{ totalBSEMT }}</p>
-    </div>
+
     <div class="total-card">
       <h4>BSTCM Students</h4>
       <p>{{ totalBSTCM }}</p>
     </div>
+
+    <div class="total-card">
+      <h4>BSEMT Students</h4>
+      <p>{{ totalBSEMT }}</p>
+    </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal-backdrop" *ngIf="showModal">
-    <div class="modal-card">
+  <!-- MODAL -->
+  <div class="modal-backdrop"
+       *ngIf="showModal"
+       (click)="closeModal()">
 
-    
+    <div class="modal-card"
+         (click)="$event.stopPropagation()">
 
       <!-- HEADER -->
       <div class="modal-header">
@@ -41,28 +45,71 @@
       <!-- FORM -->
       <form (ngSubmit)="saveStudent()" class="form-grid">
 
-        <!-- ID & Password -->
+        <!-- Student ID -->
         <div class="form-group">
-          <label>Student ID</label>
-          <input type="text" [(ngModel)]="newStudent.id" name="id" placeholder="Enter Student ID" required>
+          <label for="studentId">Student ID</label>
+          <input
+            id="studentId"
+            type="text"
+            [(ngModel)]="newStudent.id"
+            name="id"
+            placeholder="Enter Student ID"
+            required>
         </div>
 
+        <!-- Password -->
         <div class="form-group">
-          <label>Password</label>
-          <input type="password" [(ngModel)]="newStudent.password" name="password" placeholder="Enter Password" required>
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="newStudent.password"
+            name="password"
+            placeholder="Enter Password"
+            required>
         </div>
 
         <!-- Name Group -->
         <div class="form-group name-group">
-          <input type="text" [(ngModel)]="newStudent.firstName" name="firstName" placeholder="First Name" required>
-          <input type="text" [(ngModel)]="newStudent.middleName" name="middleName" placeholder="Middle Name">
-          <input type="text" [(ngModel)]="newStudent.lastName" name="lastName" placeholder="Last Name" required>
+
+          <div>
+            <label>First Name</label>
+            <input
+              type="text"
+              [(ngModel)]="newStudent.firstName"
+              name="firstName"
+              placeholder="First Name"
+              required>
+          </div>
+
+          <div>
+            <label>Middle Name</label>
+            <input
+              type="text"
+              [(ngModel)]="newStudent.middleName"
+              name="middleName"
+              placeholder="Middle Name (Optional)">
+          </div>
+
+          <div>
+            <label>Last Name</label>
+            <input
+              type="text"
+              [(ngModel)]="newStudent.lastName"
+              name="lastName"
+              placeholder="Last Name"
+              required>
+          </div>
+
         </div>
 
         <!-- Gender -->
         <div class="form-group">
           <label for="gender">Gender</label>
-          <select id="gender" [(ngModel)]="newStudent.gender" name="gender" required>
+          <select id="gender"
+                  [(ngModel)]="newStudent.gender"
+                  name="gender"
+                  required>
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -72,7 +119,10 @@
         <!-- Program -->
         <div class="form-group">
           <label for="course">Program</label>
-          <select id="course" [(ngModel)]="newStudent.course" name="course" required>
+          <select id="course"
+                  [(ngModel)]="newStudent.course"
+                  name="course"
+                  required>
             <option value="">Select Program</option>
             <option *ngFor="let p of programs" [value]="p">{{ p }}</option>
           </select>
@@ -80,8 +130,11 @@
 
         <!-- Year Level -->
         <div class="form-group">
-          <label for="yearlevel">Year Level</label>
-          <select id="yearlevel" [(ngModel)]="newStudent.yearLevel" name="yearLevel" required>
+          <label for="yearLevel">Year Level</label>
+          <select id="yearLevel"
+                  [(ngModel)]="newStudent.yearLevel"
+                  name="yearLevel"
+                  required>
             <option value="">Select Year Level</option>
             <option *ngFor="let y of yearLevels" [value]="y">{{ y }}</option>
           </select>
@@ -90,7 +143,10 @@
         <!-- Status -->
         <div class="form-group">
           <label for="status">Status</label>
-          <select id="status" [(ngModel)]="newStudent.status" name="status" required>
+          <select id="status"
+                  [(ngModel)]="newStudent.status"
+                  name="status"
+                  required>
             <option value="">Select Status</option>
             <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
           </select>
@@ -98,33 +154,58 @@
 
         <!-- Section -->
         <div class="form-group">
-          <label>Section</label>
-          <input type="text" [(ngModel)]="newStudent.section" name="section" placeholder="Enter Section" required>
+          <label for="section">Section</label>
+          <input
+            id="section"
+            type="text"
+            [(ngModel)]="newStudent.section"
+            name="section"
+            placeholder="Enter Section"
+            required>
         </div>
 
         <!-- Email -->
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" [(ngModel)]="newStudent.email" name="email" placeholder="Enter Email" required>
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="newStudent.email"
+            name="email"
+            placeholder="Enter Email"
+            required>
         </div>
 
         <!-- Mobile -->
         <div class="form-group">
-          <label>Mobile Number</label>
-          <input type="text" [(ngModel)]="newStudent.mobile" name="mobile" placeholder="Enter Mobile Number" required>
+          <label for="mobile">Mobile Number</label>
+          <input
+            id="mobile"
+            type="text"
+            [(ngModel)]="newStudent.mobile"
+            name="mobile"
+            placeholder="Enter Mobile Number"
+            required>
         </div>
 
         <!-- ACTIONS -->
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
-         
-          <button type="submit" class="btn-save" [disabled]="isLoading">
-           <span *ngIf="isLoading" class="btn-spinner"></span>
 
-           <span>
-            {{ isEditMode ? 'Update Voter' : 'Save Voter' }}
-            </span>
+          <button type="button"
+                  class="btn-cancel"
+                  (click)="closeModal()">
+            Cancel
           </button>
+
+          <button type="submit"
+                  class="btn-save"
+                  [disabled]="isLoading">
+
+            <span *ngIf="isLoading" class="btn-spinner"></span>
+
+            {{ isEditMode ? 'Update Voter' : 'Save Voter' }}
+          </button>
+
         </div>
 
       </form>
@@ -144,12 +225,11 @@
 
     <!-- SEARCH -->
     <div class="search-bar">
-      <input 
-        type="text" 
-        placeholder="Search voters by ID, name, or program..." 
-        [(ngModel)]="searchText" 
-        (input)="filterVoters()"
-      >
+      <input
+        type="text"
+        placeholder="Search voters by ID, name, or program..."
+        [(ngModel)]="searchText"
+        (input)="filterVoters()">
     </div>
 
     <table class="voter-table">
@@ -165,6 +245,7 @@
       </thead>
 
       <tbody>
+
         <tr *ngFor="let student of filteredStudents">
           <td>{{ student.id }}</td>
           <td>{{ student.name }}</td>
@@ -179,9 +260,10 @@
 
         <tr *ngIf="filteredStudents.length === 0">
           <td colspan="6" class="no-voters">
-            No voters found.
+            🚫 No voters found.
           </td>
         </tr>
+
       </tbody>
     </table>
 

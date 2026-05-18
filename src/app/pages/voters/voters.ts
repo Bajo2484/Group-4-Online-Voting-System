@@ -1,12 +1,12 @@
 // src/app/pages/voters/voters.ts
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, DOCUMENT } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { StudentAccountService } from '../../services/student-account.service';
-import { StudentAccount } from '../../services/student-account.model';
+import { StudentAccount } from '../../models/student-account.model';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
-import jsPDF  from 'jspdf';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -19,43 +19,26 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class Voters implements OnInit, OnDestroy {
 
-  searchText: string = '';
+  searchText = '';
   filteredStudents: StudentAccount[] = [];
   showModal = false;
   isEditMode = false;
+  isLoading = false;
+
   students: StudentAccount[] = [];
-  programs: string[] = ['BSIT', 'BSTCM', 'BSEMT'];
-  statuses: string[] = ['UNDERGRADUATE', 'GRADUATE'];
-  yearLevels: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
-  courseOrder: string[] = ['BSIT', 'BSTCM', 'BSEMT'];
-  yearOrder: string[] = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+  programs = ['BSIT', 'BSTCM', 'BSEMT'];
+  statuses = ['UNDERGRADUATE', 'GRADUATE'];
+  yearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+  courseOrder = ['BSIT', 'BSTCM', 'BSEMT'];
+  yearOrder = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
   newStudent: StudentAccount = this.getEmptyStudent();
 
   totalBSIT = 0;
   totalBSTCM = 0;
   totalBSEMT = 0;
-
-  isLoading = false;
-
-  sortStudents(students: StudentAccount[]): StudentAccount[] {
-    return students.sort((a,b) => {
-
-      const courseDiff = 
-        this.courseOrder.indexOf(a.course) 
-        - this.courseOrder.indexOf(b.course);
-
-        if (courseDiff !==0) return courseDiff;
-
-        const yearDiff = 
-          this.yearOrder.indexOf(a.yearLevel) -
-          this.yearOrder.indexOf(b.yearLevel);
-
-        if (yearDiff !==0) return yearDiff;
-        return (a.name || '').localeCompare(b.name || '');
-    });
-  }
-  
 
   private destroy$ = new Subject<void>();
 
@@ -65,11 +48,11 @@ export class Voters implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
+  // ================= INIT =================
   ngOnInit(): void {
-    this.studentService
-      .getAll$()
+    this.studentService.getAll$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((students) => {
+      .subscribe(students => {
         this.students = this.sortStudents(students);
         this.filterVoters();
         this.countStudentsPerCourse();
@@ -82,7 +65,7 @@ export class Voters implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /** Initialize empty student object */
+  // ================= EMPTY MODEL =================
   getEmptyStudent(): StudentAccount {
     return {
       id: '',
@@ -102,27 +85,42 @@ export class Voters implements OnInit, OnDestroy {
     };
   }
 
-  /** Filter students for search bar */
+  // ================= SORT =================
+  sortStudents(students: StudentAccount[]): StudentAccount[] {
+    return [...students].sort((a, b) => {
+      const courseDiff =
+        this.courseOrder.indexOf(a.course) -
+        this.courseOrder.indexOf(b.course);
+
+      if (courseDiff !== 0) return courseDiff;
+
+      const yearDiff =
+        this.yearOrder.indexOf(a.yearLevel) -
+        this.yearOrder.indexOf(b.yearLevel);
+
+      if (yearDiff !== 0) return yearDiff;
+
+      return (a.name || '').localeCompare(b.name || '');
+    });
+  }
+
+  // ================= FILTER =================
   filterVoters() {
     const text = this.searchText.toLowerCase();
-    const filtered = this.students.filter(
-      s =>
-        s.id.toLowerCase().includes(text) ||
-        s.name.toLowerCase().includes(text) ||
-        s.course.toLowerCase().includes(text)
+
+    const filtered = this.students.filter(s =>
+      (s.id ?? '').toLowerCase().includes(text) ||
+      (s.name ?? '').toLowerCase().includes(text) ||
+      (s.course ?? '').toLowerCase().includes(text)
     );
+
     this.filteredStudents = this.sortStudents(filtered);
   }
 
-  /** Modal controls */
+  // ================= MODAL =================
   openModal(student?: StudentAccount) {
-    if (student) {
-      this.isEditMode = true;
-      this.newStudent = { ...student };
-    } else {
-      this.isEditMode = false;
-      this.newStudent = this.getEmptyStudent();
-    }
+    this.isEditMode = !!student;
+    this.newStudent = student ? { ...student } : this.getEmptyStudent();
     this.showModal = true;
   }
 
@@ -130,73 +128,113 @@ export class Voters implements OnInit, OnDestroy {
     this.showModal = false;
   }
 
-  /** Save student */
+  editStudent(student: StudentAccount) {
+    this.openModal(student);
+  }
+
+  // ================= SAVE (STRICT + FULL VALIDATION) =================
   async saveStudent(): Promise<void> {
-    if (
-      !this.newStudent.id ||
-      !this.newStudent.password ||
-      !this.newStudent.firstName ||
-      !this.newStudent.lastName
-    ) {
+
+    const s = this.newStudent;
+
+    // ================= REQUIRED FIELDS =================
+    const requiredFields = [
+      s.id,
+      s.firstName,
+      s.lastName,
+      s.password,
+      s.course,
+      s.yearLevel,
+      s.section,
+      s.gender,
+      s.status,
+      s.email,
+      s.mobile
+    ];
+
+    if (requiredFields.some(f => !f || f.toString().trim() === '')) {
       Swal.fire(
-        'Error',
-        'Please fill all required fields (ID, Password, First Name, Last Name).',
+        'Transaction Cancelled',
+        'All fields are required except Middle Name.',
         'warning'
+      );
+      return;
+    }
+
+    // ================= DUPLICATE CHECK (NEW RULE) =================
+    const newKey = `${(s.firstName || '').trim().toLowerCase()}|${(s.lastName || '').trim().toLowerCase()}|${(s.yearLevel || '').trim().toLowerCase()}|${(s.section || '').trim().toLowerCase()}`;
+
+    const duplicate = this.students.find(st => {
+      const existingKey = `${(st.firstName || '').trim().toLowerCase()}|${(st.lastName || '').trim().toLowerCase()}|${(st.yearLevel || '').trim().toLowerCase()}|${(st.section || '').trim().toLowerCase()}`;
+      return existingKey === newKey;
+    });
+
+    if (!this.isEditMode && duplicate) {
+      Swal.fire(
+        'Duplicate Student Detected',
+        'Same Name + Year Level + Section already exists.',
+        'error'
       );
       return;
     }
 
     this.isLoading = true;
 
-    // Combine full name
-    this.newStudent.name = [this.newStudent.firstName, this.newStudent.middleName, this.newStudent.lastName]
-      .filter(n => n && n.trim() !== '')
-      .join(' ');
-
     try {
+
+      // ================= ATOMIC FULL NAME =================
+      const fullName = [
+        s.firstName,
+        s.middleName,
+        s.lastName
+      ].filter(n => n && n.trim() !== '').join(' ');
+
+      const payload: StudentAccount = {
+        ...s,
+        name: fullName,
+        middleName: s.middleName || ''
+      };
+
+      // ================= SAVE =================
       if (this.isEditMode) {
-        await this.studentService.update(this.newStudent);
+        await this.studentService.update(payload);
         Swal.fire('Updated!', 'Voter updated successfully.', 'success');
       } else {
         await this.authService.registerStudent(
-          this.newStudent.id,
-          this.newStudent.name,
-          this.newStudent.password,
+          s.id,
+          fullName,
+          s.password,
           {
-            firstName: this.newStudent.firstName,
-            middleName: this.newStudent.middleName,
-            lastName: this.newStudent.lastName,
-            course: this.newStudent.course,
-            yearLevel: this.newStudent.yearLevel,
-            section: this.newStudent.section,
-            gender: this.newStudent.gender,
-            status: this.newStudent.status,
-            email: this.newStudent.email,
-            mobile: this.newStudent.mobile,
+            firstName: s.firstName,
+            middleName: s.middleName || '',
+            lastName: s.lastName,
+            course: s.course,
+            yearLevel: s.yearLevel,
+            section: s.section,
+            gender: s.gender,
+            status: s.status,
+            email: s.email,
+            mobile: s.mobile,
           }
         );
-        await Swal.fire('Created!', 'Voter added successfully.', 'success');
-      } 
+
+        Swal.fire('Created!', 'Voter added successfully.', 'success');
+      }
 
       this.showModal = false;
       this.newStudent = this.getEmptyStudent();
       this.isEditMode = false;
 
       this.cdr.detectChanges();
-      
+
     } catch (err: any) {
-      Swal.fire('Error', err.message || 'An unexpected error occurred', 'error');
-    }finally {
+      Swal.fire('Error', err.message || 'Failed to save student', 'error');
+    } finally {
       this.isLoading = false;
     }
   }
 
-  /** Edit student */
-  editStudent(student: StudentAccount) {
-    this.openModal(student);
-  }
-
-  /** Delete voter from Firebase */
+  // ================= DELETE =================
   deleteStudent(id: string): void {
     Swal.fire({
       title: 'Delete this voter?',
@@ -209,145 +247,74 @@ export class Voters implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         try {
           await this.studentService.delete(id);
-          Swal.fire('Deleted!', 'Voter has been removed.', 'success');
+          Swal.fire('Deleted!', 'Voter removed.', 'success');
         } catch (err: any) {
-          Swal.fire('Error', err.message || 'Failed to delete voter.', 'error');
+          Swal.fire('Error', err.message || 'Delete failed.', 'error');
         }
       }
     });
   }
 
-    countStudentsPerCourse() {
-      this.totalBSIT = this.students.filter(s => s.course === 'BSIT').length;
-      this.totalBSTCM = this.students.filter(s => s.course === 'BSTCM').length;
-      this.totalBSEMT = this.students.filter(s => s.course === 'BSEMT').length;
-    }
+  // ================= COUNTERS =================
+  countStudentsPerCourse() {
+    this.totalBSIT = this.students.filter(s => s.course === 'BSIT').length;
+    this.totalBSTCM = this.students.filter(s => s.course === 'BSTCM').length;
+    this.totalBSEMT = this.students.filter(s => s.course === 'BSEMT').length;
+  }
 
-   exportStudentsPDF() {
-  const doc = new jsPDF();
+  // ================= PDF =================
+  exportStudentsPDF() {
+    const doc = new jsPDF();
 
-  const pageHeight = doc.internal.pageSize.height;
-  const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
 
-  let startY = 60;
+    let startY = 60;
 
-  const drawHeader = () => {
-    doc.setFontSize(10);
+    const drawHeader = () => {
+      doc.setFontSize(10);
 
-    doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
-    doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
+      doc.addImage('ustp.jpg', 'JPG', 10, 5, 25, 25);
+      doc.addImage('elecom-logo.jpg', 'JPG', 170, 5, 25, 25);
 
-    doc.text(
-      'University of Science and Technology of Southern Philippines - Villanueva',
-      pageWidth / 2,
-      10,
-      { align: 'center' }
-    );
+      doc.text('USTP VOTER REPORT', pageWidth / 2, 10, { align: 'center' });
+      doc.text('ENROLLED STUDENTS', pageWidth / 2, 20, { align: 'center' });
 
-    doc.text('STUDENT VOTER MANAGEMENT REPORT', pageWidth / 2, 16, { align: 'center' });
-    doc.text('USTP VILLANUEVA CAMPUS', pageWidth / 2, 22, { align: 'center' });
+      doc.line(10, 30, 200, 30);
+    };
 
-    doc.line(10, 30, 200, 30);
+    drawHeader();
 
-    doc.setFontSize(14);
-    doc.text('ENROLLED STUDENTS REPORT', pageWidth / 2, 38, { align: 'center' });
+    const courses = ['BSIT', 'BSTCM', 'BSEMT'];
 
-    doc.line(10, 42, 200, 42);
+    courses.forEach(course => {
 
-    doc.setFontSize(10);
-    doc.text(`Date Generated: ${new Date().toDateString()}`, 14, 50);
-  };
+      const filtered = this.students.filter(s => s.course === course);
 
-  const checkPage = (space: number) => {
-    if (startY + space >= pageHeight - 30) {
-      doc.addPage();
-      drawHeader(); // IMPORTANT: redraw header
-      startY = 60;  // RESET POSITION CLEANLY
-    }
-  };
+      if (!filtered.length) return;
 
-  // ================= INITIAL PAGE =================
-  drawHeader();
-  startY = 60;
+      doc.setFontSize(12);
+      doc.text(`${course}`, pageWidth / 2, startY, { align: 'center' });
 
-  const courses = ['BSIT', 'BSTCM', 'BSEMT'];
+      startY += 10;
 
-  courses.forEach(course => {
+      autoTable(doc, {
+        head: [['ID', 'Name', 'Year', 'Section', 'Status']],
+        body: filtered.map(s => [
+          s.id,
+          s.name,
+          s.yearLevel,
+          s.section,
+          s.status
+        ]),
+        startY,
+        theme: 'grid',
+        styles: { fontSize: 9 }
+      });
 
-    const filtered = this.students
-      .filter(s => s.course === course)
-      .sort((a, b) =>
-        (a.yearLevel || '').localeCompare(b.yearLevel || '')
-      );
-
-    if (filtered.length === 0) return;
-
-    checkPage(30);
-
-    doc.setFontSize(12);
-    doc.text(`${course} STUDENTS`, pageWidth / 2, startY, { align: 'center' });
-
-    startY += 8;
-
-    autoTable(doc, {
-      head: [['Student ID', 'Full Name', 'Year Level', 'Section', 'Status']],
-      body: filtered.map(s => [
-        s.id,
-        s.name,
-        s.yearLevel,
-        s.section,
-        s.status
-      ]),
-      startY: startY,
-      theme: 'grid',
-      styles: { fontSize: 9, cellPadding: 2 },
-      headStyles: { fillColor: [0, 102, 204] },
-
-      pageBreak: 'auto',
-
-      didDrawPage: () => {
-        // optional: page number later
-      }
+      startY = (doc as any).lastAutoTable.finalY + 10;
     });
 
-    startY = (doc as any).lastAutoTable.finalY + 10;
-  });
-
-  // ================= SUMMARY =================
-  checkPage(60);
-
-  doc.setFontSize(12);
-  doc.text('SUMMARY OF STUDENTS', pageWidth / 2, startY, { align: 'center' });
-
-  startY += 10;
-
-  doc.setFontSize(10);
-  doc.text(`BSIT: ${this.totalBSIT}`, 14, startY);
-  startY += 6;
-
-  doc.text(`BSTCM: ${this.totalBSTCM}`, 14, startY);
-  startY += 6;
-
-  doc.text(`BSEMT: ${this.totalBSEMT}`, 14, startY);
-  startY += 10;
-
-  doc.setFont('helvetica', 'bold');
-  doc.text(`TOTAL STUDENTS: ${this.students.length}`, 14, startY);
-
-  // ================= FOOTER =================
-  checkPage(50);
-
-  startY += 20;
-
-  doc.setFont('helvetica', 'normal');
-  doc.text('Prepared by:', 14, startY);
-  doc.text('_____________________', 14, startY + 5);
-  doc.text('Administrator / Election Committee', 14, startY + 10);
-
-  doc.text('Noted by:', 140, startY);
-  doc.text('_____________________', 140, startY + 5);
-  doc.text('Campus Registrar', 140, startY + 10);
-
-  doc.save('Enrolled_Students_Report.pdf');
-}
+    doc.save('Enrolled_Students_Report.pdf');
+  }
 }

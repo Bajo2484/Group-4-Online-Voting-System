@@ -2,7 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { ElectionService, Election } from '../../services/election.service';
+import { ElectionService } from '../../services/election.service';
+import { Election } from '../../models/election.model';
 
 @Component({
   selector: 'app-election',
@@ -34,7 +35,8 @@ export class ElectionComponent implements OnInit {
 
   constructor(
     public electionService: ElectionService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+
   ) {}
 
   ngOnInit() {
@@ -45,7 +47,7 @@ export class ElectionComponent implements OnInit {
         endDate: this.toDate(item.endDate)
       }));
 
-      // ✅ Update status dynamically based on current date
+
       this.elections.forEach(election => this.updateElectionStatus(election));
 
       this.elections.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
@@ -107,11 +109,9 @@ export class ElectionComponent implements OnInit {
       return;
     }
 
-    // Merge date + time
     this.newElection.startDate = new Date(`${this.startDateInput}T${this.startTimeInput}`);
     this.newElection.endDate = new Date(`${this.endDateInput}T${this.endTimeInput}`);
 
-    // ✅ Automatically update status based on current date
     this.updateElectionStatus(this.newElection);
 
     // Create unique electionId if new

@@ -11,7 +11,7 @@ import {
   where,
   getDocs,
 } from '@angular/fire/firestore';
-import { StudentAccount } from './student-account.model';
+import { StudentAccount } from '../models/student-account.model';
 import { Observable, map } from 'rxjs';
 
 @Injectable({
